@@ -1,17 +1,22 @@
 package io.beyondwords.player
 
 import android.annotation.SuppressLint
+import android.app.DownloadManager
 import android.content.Context
 import android.graphics.Color
+import android.net.Uri
 import android.util.AttributeSet
 import android.util.Log
+import android.webkit.DownloadListener
 import android.webkit.JavascriptInterface
+import android.webkit.WebResourceRequest
 import android.webkit.WebSettings.LOAD_NO_CACHE
 import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.FrameLayout
+import androidx.core.content.ContextCompat.getSystemService
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import java.lang.Exception
 
 @SuppressLint("SetJavaScriptEnabled")
 class PlayerView @JvmOverloads constructor(
@@ -58,6 +63,30 @@ class PlayerView @JvmOverloads constructor(
             }
         }
     }
+    private val webViewClient = object : WebViewClient() {
+        override fun shouldOverrideUrlLoading(
+            view: WebView?,
+            request: WebResourceRequest?
+        ): Boolean {
+            return false
+        }
+    }
+    private val downloadListener = object : DownloadListener {
+        override fun onDownloadStart(
+            url: String?,
+            userAgent: String?,
+            contentDisposition: String?,
+            mimetype: String?,
+            contentLength: Long
+        ) {
+            getSystemService(context, DownloadManager::class.java)?.let { downloadManager ->
+                val uri = Uri.parse(url)
+                val request = DownloadManager.Request(uri)
+                request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                downloadManager.enqueue(request)
+            }
+        }
+    }
 
     init {
         addView(webView, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
@@ -78,6 +107,8 @@ class PlayerView @JvmOverloads constructor(
 
         webView.setBackgroundColor(Color.TRANSPARENT)
         webView.addJavascriptInterface(bridge, "AndroidBridge")
+        webView.webViewClient = webViewClient
+        webView.setDownloadListener(downloadListener)
         webView.loadDataWithBaseURL(
             "https://beyondwords.io",
             resources.openRawResource(R.raw.player)
