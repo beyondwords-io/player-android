@@ -12,7 +12,8 @@
             }
 
             player = new BeyondWords.Player(Object.assign({}, settings, {
-                target: document.body
+                target: document.body,
+                downloadFormats: [],
             }))
             player.addEventListener("<any>", function (event) {
                 AndroidBridge.onEvent(JSON.stringify(event))
