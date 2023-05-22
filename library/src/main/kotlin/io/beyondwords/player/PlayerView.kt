@@ -94,7 +94,7 @@ class PlayerView @JvmOverloads constructor(
             try {
                 load(${gson.toJson(playerSettings)})
             } catch (e) {
-                console.error("PlayerView:load", e)
+                console.error("PlayerView:load", e.message, e)
             }
         """
         if (!ready) {
