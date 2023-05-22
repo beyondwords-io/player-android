@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="transparent" content="true">
+    <script src='https://proxy.beyondwords.io/npm/@beyondwords/player@latest/dist/umd.js'></script>
+    <script>
+        var player = null
+        function load(settings) {
+            if (player !== null) {
+                player.destroy()
+            }
+
+            player = new BeyondWords.Player(Object.assign({}, settings, {
+                target: document.body
+            }))
+            player.addEventListener("<any>", function (event) {
+                AndroidBridge.onEvent(JSON.stringify(event))
+            })
+        }
+        AndroidBridge.onReady()
+    </script>
+</head>
+
+<body style="background: transparent;"></body>
+
+</html>
