@@ -16,7 +16,7 @@ The table below illustrates compatibility between the Player Settings of the [We
 
 | Name                      | Web               | Android     |
 |---------------------------|-------------------|-------------|
-| <any>                     |:heavy_check_mark: |:heavy_check_mark: |
+| \<any\>                     |:heavy_check_mark: |:heavy_check_mark: |
 | PressedPlay               |:heavy_check_mark: |:heavy_check_mark: |
 
 ## MediaSession compatibility
