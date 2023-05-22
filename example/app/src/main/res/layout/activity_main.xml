@@ -14,7 +14,7 @@
         <io.beyondwords.player.PlayerView
             android:id="@+id/player_view"
             android:layout_width="match_parent"
-            android:layout_height="100dp" />
+            android:layout_height="250dp" />
 
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
