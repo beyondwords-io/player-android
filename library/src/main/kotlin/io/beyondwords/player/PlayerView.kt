@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.net.Uri
 import android.util.AttributeSet
 import android.util.Log
+import android.util.TypedValue
 import android.webkit.DownloadListener
 import android.webkit.JavascriptInterface
 import android.webkit.WebResourceRequest
@@ -15,6 +16,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.FrameLayout
 import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.view.updateLayoutParams
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 
@@ -38,28 +40,49 @@ class PlayerView @JvmOverloads constructor(
     private val bridge = object {
         @JavascriptInterface
         fun onReady() {
-            Log.d("PlayerView:onReady", "pendingCommands: $pendingCommands")
-            ready = true
-            pendingCommands.forEach {
-                webView.evaluateJavascript(it, null)
+            post {
+                ready = true
+                pendingCommands.forEach {
+                    webView.evaluateJavascript(it, null)
+                }
+                pendingCommands.clear()
             }
-            pendingCommands.clear()
+        }
+
+        @JavascriptInterface
+        fun onResize(width: Int, height: Int) {
+            post {
+                updateLayoutParams {
+                    this.width = TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_DIP,
+                        width.toFloat(),
+                        resources.displayMetrics
+                    ).toInt()
+                    this.height = TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_DIP,
+                        height.toFloat(),
+                        resources.displayMetrics
+                    ).toInt()
+                }
+            }
         }
 
         @JavascriptInterface
         fun onEvent(event: String) {
-            val parsedEvent: PlayerEvent
-            try {
-                parsedEvent = gson.fromJson(event, PlayerEvent::class.java)
-            } catch (e: Exception) {
-                Log.e("PlayerView:onEvent", "Failed to parse event $event", e)
-                return
-            }
-            listeners.forEach {
-                when (parsedEvent.type) {
-                    "PressedPlay" -> it.onPressedPlay(parsedEvent)
+            post {
+                val parsedEvent: PlayerEvent
+                try {
+                    parsedEvent = gson.fromJson(event, PlayerEvent::class.java)
+                } catch (e: Exception) {
+                    Log.e("PlayerView:onEvent", "Failed to parse event $event", e)
+                    return@post
                 }
-                it.onAny(parsedEvent)
+                listeners.forEach {
+                    when (parsedEvent.type) {
+                        "PressedPlay" -> it.onPressedPlay(parsedEvent)
+                    }
+                    it.onAny(parsedEvent)
+                }
             }
         }
     }
@@ -100,6 +123,7 @@ class PlayerView @JvmOverloads constructor(
             mediaPlaybackRequiresUserGesture = false
             builtInZoomControls = false
             displayZoomControls = false
+            loadWithOverviewMode = true
             setSupportZoom(false)
             setGeolocationEnabled(false)
             setSupportMultipleWindows(false)
