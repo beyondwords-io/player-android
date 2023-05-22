@@ -4,7 +4,7 @@ The table below illustrates compatibility between the Player Settings properties
 
 ### Properties
 
-| Name                      | Web                   | Android     |
-|---------------------------|-----------------------|-------------|
-| playerApiUrl              |[x]                    |[x]          |
-| target                    |[x]                    |[ ]          |
+| Name                      | Web               | Android     |
+|---------------------------|-------------------|-------------|
+| playerApiUrl              |:heavy_check_mark: |:heavy_check_mark: |
+| target                    |:heavy_check_mark: |-                  |
