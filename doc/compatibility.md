@@ -5,6 +5,9 @@ The table below illustrates compatibility between the Player Settings of the [We
 | Name                      | Web               | Android     |
 |---------------------------|-------------------|-------------|
 | playerApiUrl              |:heavy_check_mark: |:heavy_check_mark: |
+| projectId                 |:heavy_check_mark: |:heavy_check_mark: |
+| contentId                 |:heavy_check_mark: |:heavy_check_mark: |
+| sourceId                  |:heavy_check_mark: |:heavy_check_mark: |
 | target                    |:heavy_check_mark: |-                  |
 
 ## Events compatibility
