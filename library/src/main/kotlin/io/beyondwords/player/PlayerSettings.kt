@@ -5,4 +5,5 @@ data class PlayerSettings(
     var projectId: String? = null,
     var contentId: String? = null,
     var sourceId: String? = null,
+    var playerStyle: String? = null
 )

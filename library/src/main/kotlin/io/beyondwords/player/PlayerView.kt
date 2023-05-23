@@ -8,6 +8,7 @@ import android.net.Uri
 import android.util.AttributeSet
 import android.util.Log
 import android.util.TypedValue
+import android.view.Gravity
 import android.webkit.DownloadListener
 import android.webkit.JavascriptInterface
 import android.webkit.WebResourceRequest
@@ -112,7 +113,7 @@ class PlayerView @JvmOverloads constructor(
     }
 
     init {
-        addView(webView, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
+        addView(webView, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, Gravity.CENTER))
 
         webView.settings.apply {
             javaScriptEnabled = true
@@ -144,26 +145,51 @@ class PlayerView @JvmOverloads constructor(
         )
     }
 
-    fun load(playerSettings: PlayerSettings) {
-        val loadCommand = """
-            try {
-                load(${gson.toJson(playerSettings)})
-            } catch (e) {
-                console.error("PlayerView:load", e.message, e)
-            }
-        """
-        if (!ready) {
-            pendingCommands.add(loadCommand)
-        } else {
-            webView.evaluateJavascript(loadCommand, null)
-        }
-    }
-
     fun addEventListener(listener: EventListener) {
         listeners.add(listener)
     }
 
     fun removeEventListener(listener: EventListener) {
         listeners.remove(listener)
+    }
+
+    fun load(playerSettings: PlayerSettings) {
+        callFunction("load", gson.toJson(playerSettings))
+    }
+
+    fun setPlayerStyle(playerStyle: String) {
+        setProp("player.playerStyle", "\"$playerStyle\"")
+    }
+
+    private fun callFunction(name: String, args: String) {
+        execCommand(
+            """
+                try {
+                    $name($args)
+                } catch (e) {
+                    console.error("PlayerView:callFunction", e.message, e)
+                }
+            """
+        )
+    }
+
+    private fun setProp(name: String, value: String) {
+        execCommand(
+            """
+                try {
+                    $name = $value
+                } catch (e) {
+                    console.error("PlayerView:setProp", e.message, e)
+                }
+            """
+        )
+    }
+
+    private fun execCommand(command: String) {
+        if (!ready) {
+            pendingCommands.add(command)
+        } else {
+            webView.evaluateJavascript(command, null)
+        }
     }
 }
