@@ -22,12 +22,12 @@
         }
         // TODO @juggle/resize-observer
         setInterval(() => {
-            AndroidBridge.onResize(document.body.clientWidth, document.body.clientHeight)
+            AndroidBridge.onResize(document.documentElement.offsetWidth, document.documentElement.offsetHeight)
         }, 1000)
         AndroidBridge.onReady()
     </script>
 </head>
 
-<body style="background: transparent; margin: 0;"></body>
+<body style="margin: 0;"></body>
 
 </html>

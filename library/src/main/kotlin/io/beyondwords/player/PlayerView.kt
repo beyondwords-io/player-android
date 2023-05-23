@@ -8,7 +8,6 @@ import android.net.Uri
 import android.util.AttributeSet
 import android.util.Log
 import android.util.TypedValue
-import android.view.Gravity
 import android.webkit.DownloadListener
 import android.webkit.JavascriptInterface
 import android.webkit.WebResourceRequest
@@ -35,6 +34,7 @@ class PlayerView @JvmOverloads constructor(
     }
 
     private var ready = false
+    private val webViewContainer = FrameLayout(context)
     private val webView = WebView(context)
     private val listeners = mutableSetOf<EventListener>()
     private val pendingCommands = mutableListOf<String>()
@@ -52,13 +52,8 @@ class PlayerView @JvmOverloads constructor(
 
         @JavascriptInterface
         fun onResize(width: Int, height: Int) {
-            post {
-                updateLayoutParams {
-                    this.width = TypedValue.applyDimension(
-                        TypedValue.COMPLEX_UNIT_DIP,
-                        width.toFloat(),
-                        resources.displayMetrics
-                    ).toInt()
+            webViewContainer.post {
+                webViewContainer.updateLayoutParams {
                     this.height = TypedValue.applyDimension(
                         TypedValue.COMPLEX_UNIT_DIP,
                         height.toFloat(),
@@ -113,7 +108,8 @@ class PlayerView @JvmOverloads constructor(
     }
 
     init {
-        addView(webView, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, Gravity.CENTER))
+        addView(webViewContainer, LayoutParams(LayoutParams.MATCH_PARENT, 0))
+        webViewContainer.addView(webView, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
 
         webView.settings.apply {
             javaScriptEnabled = true
