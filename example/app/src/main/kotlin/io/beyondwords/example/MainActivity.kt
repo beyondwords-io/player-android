@@ -11,9 +11,11 @@ import io.beyondwords.player.EventListener
 import io.beyondwords.player.PlayerEvent
 import io.beyondwords.player.PlayerSettings
 import io.beyondwords.player.PlayerView
+import io.beyondwords.player.WidgetView
 
 class MainActivity : AppCompatActivity() {
     private lateinit var playerView: PlayerView
+    private lateinit var widgetView: WidgetView
     private lateinit var projectIdInput: TextInputEditText
     private lateinit var contentIdInput: TextInputEditText
     private lateinit var playerStyleInput: AutoCompleteTextView
@@ -24,11 +26,15 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         playerView = findViewById(R.id.player_view)
+        widgetView = findViewById(R.id.widget_view)
         projectIdInput = findViewById(R.id.project_id_input)
         contentIdInput = findViewById(R.id.content_id_input)
         playerStyleInput = findViewById(R.id.player_style_input)
         loadButton = findViewById(R.id.load_button)
 
+        playerView.setWidgetView(widgetView)
+        widgetView.setPlayerView(playerView)
+        
         playerView.addEventListener(object : EventListener {
             override fun onPressedPlay(event: PlayerEvent) {
                 Log.d("PlayerView", "onPressedPlay($event)")

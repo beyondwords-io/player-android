@@ -1,27 +1,23 @@
 package io.beyondwords.player
 
 import android.annotation.SuppressLint
-import android.app.DownloadManager
 import android.content.Context
 import android.graphics.Color
-import android.net.Uri
 import android.util.AttributeSet
 import android.util.Log
 import android.util.TypedValue
-import android.webkit.DownloadListener
 import android.webkit.JavascriptInterface
 import android.webkit.WebResourceRequest
 import android.webkit.WebSettings.LOAD_NO_CACHE
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.FrameLayout
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.view.updateLayoutParams
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 
 @SuppressLint("SetJavaScriptEnabled")
-class PlayerView @JvmOverloads constructor(
+class WidgetView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
@@ -34,10 +30,9 @@ class PlayerView @JvmOverloads constructor(
     }
 
     private var ready = false
-    private var widgetView: WidgetView? = null
+    private var playerView: PlayerView? = null
     private val webViewContainer = FrameLayout(context)
     private val webView = WebView(context)
-    private val listeners = mutableSetOf<EventListener>()
     private val pendingCommands = mutableListOf<String>()
     private val bridge = object {
         @JavascriptInterface
@@ -71,16 +66,10 @@ class PlayerView @JvmOverloads constructor(
                 try {
                     parsedEvent = gson.fromJson(event, PlayerEvent::class.java)
                 } catch (e: Exception) {
-                    Log.e("PlayerView:onEvent", "Failed to parse event $event", e)
+                    Log.e("WidgetView:onEvent", "Failed to parse event $event", e)
                     return@post
                 }
-                widgetView?.onPlayerEvent(parsedEvent)
-                listeners.forEach {
-                    when (parsedEvent.type) {
-                        "PressedPlay" -> it.onPressedPlay(parsedEvent)
-                    }
-                    it.onAny(parsedEvent)
-                }
+                playerView?.onWidgetEvent(parsedEvent)
             }
         }
     }
@@ -90,22 +79,6 @@ class PlayerView @JvmOverloads constructor(
             request: WebResourceRequest?
         ): Boolean {
             return true
-        }
-    }
-    private val downloadListener = object : DownloadListener {
-        override fun onDownloadStart(
-            url: String?,
-            userAgent: String?,
-            contentDisposition: String?,
-            mimetype: String?,
-            contentLength: Long
-        ) {
-            getSystemService(context, DownloadManager::class.java)?.let { downloadManager ->
-                val uri = Uri.parse(url)
-                val request = DownloadManager.Request(uri)
-                request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                downloadManager.enqueue(request)
-            }
         }
     }
 
@@ -131,10 +104,9 @@ class PlayerView @JvmOverloads constructor(
         webView.setBackgroundColor(Color.TRANSPARENT)
         webView.addJavascriptInterface(bridge, "AndroidBridge")
         webView.webViewClient = webViewClient
-        webView.setDownloadListener(downloadListener)
         webView.loadDataWithBaseURL(
             "https://beyondwords.io",
-            resources.openRawResource(R.raw.player)
+            resources.openRawResource(R.raw.widget)
                 .bufferedReader()
                 .use { it.readText() },
             "text/html",
@@ -143,28 +115,12 @@ class PlayerView @JvmOverloads constructor(
         )
     }
 
-    fun addEventListener(listener: EventListener) {
-        listeners.add(listener)
+    fun setPlayerView(playerView: PlayerView) {
+        this.playerView = playerView
     }
 
-    fun removeEventListener(listener: EventListener) {
-        listeners.remove(listener)
-    }
-
-    fun load(playerSettings: PlayerSettings) {
-        callFunction("load", gson.toJson(playerSettings))
-    }
-
-    fun setPlayerStyle(playerStyle: String) {
-        setProp("player.playerStyle", "\"$playerStyle\"")
-    }
-
-    fun setWidgetView(widgetView: WidgetView) {
-        this.widgetView = widgetView
-    }
-
-    fun onWidgetEvent(event: PlayerEvent) {
-        callFunction("onWidgetEvent", gson.toJson(event))
+    fun onPlayerEvent(event: PlayerEvent) {
+        callFunction("onPlayerEvent", gson.toJson(event))
     }
 
     private fun callFunction(name: String, args: String) {
@@ -173,7 +129,7 @@ class PlayerView @JvmOverloads constructor(
                 try {
                     $name($args)
                 } catch (e) {
-                    console.error("PlayerView:callFunction", e.message, e)
+                    console.error("WidgetView:callFunction", e.message, e)
                 }
             """
         )
@@ -185,7 +141,7 @@ class PlayerView @JvmOverloads constructor(
                 try {
                     $name = $value
                 } catch (e) {
-                    console.error("PlayerView:setProp", e.message, e)
+                    console.error("WidgetView:setProp", e.message, e)
                 }
             """
         )

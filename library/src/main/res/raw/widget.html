@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta name="transparent" content="true">
+    </head>
+
+    <body style="margin: 0;">
+        <button>Widget</button>
+        <script async defer>
+            document.querySelector('button').onclick = () => {
+                const event = { id: "UUID-1", type: "click-widget" }
+                console.log('Widget:onclick', performance.now(), JSON.stringify(event))
+                AndroidBridge.onEvent(JSON.stringify(event))
+            }
+            function onPlayerEvent(event) {
+                console.log('Widget:onPlayerEvent', performance.now(), JSON.stringify(event))
+            }
+            setInterval(() => {
+                AndroidBridge.onResize(document.documentElement.offsetWidth, document.documentElement.offsetHeight)
+            }, 1000)
+            AndroidBridge.onReady()
+        </script>
+    </body>
+
+</html>
