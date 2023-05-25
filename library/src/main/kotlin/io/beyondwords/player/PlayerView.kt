@@ -3,6 +3,7 @@ package io.beyondwords.player
 import android.annotation.SuppressLint
 import android.app.DownloadManager
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.util.AttributeSet
@@ -15,7 +16,7 @@ import android.webkit.WebSettings.LOAD_NO_CACHE
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.FrameLayout
-import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -87,6 +88,10 @@ class PlayerView @JvmOverloads constructor(
             view: WebView?,
             request: WebResourceRequest?
         ): Boolean {
+            request?.let {
+                val intent = Intent(Intent.ACTION_VIEW, it.url)
+                ContextCompat.startActivity(context, intent, null)
+            }
             return true
         }
     }
@@ -98,7 +103,7 @@ class PlayerView @JvmOverloads constructor(
             mimetype: String?,
             contentLength: Long
         ) {
-            getSystemService(context, DownloadManager::class.java)?.let { downloadManager ->
+            ContextCompat.getSystemService(context, DownloadManager::class.java)?.let { downloadManager ->
                 val uri = Uri.parse(url)
                 val request = DownloadManager.Request(uri)
                 request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
