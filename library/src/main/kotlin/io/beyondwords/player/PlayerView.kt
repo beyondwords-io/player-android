@@ -20,7 +20,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import java.util.Objects
 
 @SuppressLint("SetJavaScriptEnabled")
 class PlayerView @JvmOverloads constructor(
@@ -67,14 +66,15 @@ class PlayerView @JvmOverloads constructor(
 
         @JavascriptInterface
         fun onEvent(event: String) {
+            val parsedEvent: PlayerEvent
+            try {
+                parsedEvent = gson.fromJson(event, PlayerEvent::class.java)
+            } catch (e: Exception) {
+                Log.e("PlayerView:onEvent", "Failed to parse event $event", e)
+                return
+            }
+
             post {
-                val parsedEvent: PlayerEvent
-                try {
-                    parsedEvent = gson.fromJson(event, PlayerEvent::class.java)
-                } catch (e: Exception) {
-                    Log.e("PlayerView:onEvent", "Failed to parse event $event", e)
-                    return@post
-                }
                 listeners.forEach {
                     when (parsedEvent.type) {
                         "PressedPlay" -> it.onPressedPlay(parsedEvent)
@@ -104,18 +104,22 @@ class PlayerView @JvmOverloads constructor(
             mimetype: String?,
             contentLength: Long
         ) {
-            ContextCompat.getSystemService(context, DownloadManager::class.java)?.let { downloadManager ->
-                val uri = Uri.parse(url)
-                val request = DownloadManager.Request(uri)
-                request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                downloadManager.enqueue(request)
-            }
+            ContextCompat.getSystemService(context, DownloadManager::class.java)
+                ?.let { downloadManager ->
+                    val uri = Uri.parse(url)
+                    val request = DownloadManager.Request(uri)
+                    request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                    downloadManager.enqueue(request)
+                }
         }
     }
 
     init {
         addView(webViewContainer, LayoutParams(LayoutParams.MATCH_PARENT, 0))
-        webViewContainer.addView(webView, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
+        webViewContainer.addView(
+            webView,
+            LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+        )
 
         webView.settings.apply {
             javaScriptEnabled = true
