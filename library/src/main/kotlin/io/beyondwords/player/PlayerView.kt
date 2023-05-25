@@ -20,6 +20,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import java.util.Objects
 
 @SuppressLint("SetJavaScriptEnabled")
 class PlayerView @JvmOverloads constructor(
@@ -154,23 +155,19 @@ class PlayerView @JvmOverloads constructor(
         listeners.remove(listener)
     }
 
-    fun load(playerSettings: PlayerSettings) {
-        callFunction("load", gson.toJson(playerSettings))
+    fun createPlayer(playerSettings: PlayerSettings) {
+        callFunction("createPlayer", listOf(playerSettings))
     }
 
     fun setPlayerStyle(playerStyle: String) {
-        setProp("player.playerStyle", "\"$playerStyle\"")
+        setProp("player.playerStyle", playerStyle)
     }
 
-    fun onWidgetEvent(event: PlayerEvent) {
-        callFunction("onWidgetEvent", gson.toJson(event))
-    }
-
-    private fun callFunction(name: String, args: String) {
-        execCommand(
+    private fun callFunction(name: String, args: List<Any>) {
+        exec(
             """
                 try {
-                    $name($args)
+                    $name(${args.map { gson.toJson(it) }.joinToString(",") { it }})
                 } catch (e) {
                     console.error("PlayerView:callFunction", e.message, e)
                 }
@@ -178,11 +175,11 @@ class PlayerView @JvmOverloads constructor(
         )
     }
 
-    private fun setProp(name: String, value: String) {
-        execCommand(
+    private fun setProp(name: String, value: Any) {
+        exec(
             """
                 try {
-                    $name = $value
+                    $name = ${gson.toJson(value)}
                 } catch (e) {
                     console.error("PlayerView:setProp", e.message, e)
                 }
@@ -190,7 +187,7 @@ class PlayerView @JvmOverloads constructor(
         )
     }
 
-    private fun execCommand(command: String) {
+    private fun exec(command: String) {
         if (!ready) {
             pendingCommands.add(command)
         } else {

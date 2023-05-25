@@ -39,15 +39,15 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        loadButton.setOnClickListener { load() }
+        loadButton.setOnClickListener { loadOnClick() }
 
         playerStyleInput.addTextChangedListener {
             playerView.setPlayerStyle(playerStyleInput.text.toString())
         }
     }
 
-    private fun load() {
-        playerView.load(
+    private fun loadOnClick() {
+        playerView.createPlayer(
             PlayerSettings(
                 projectId = projectIdInput.text.toString(),
                 contentId = contentIdInput.text.toString(),

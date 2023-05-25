@@ -6,7 +6,7 @@
     <script src='https://proxy.beyondwords.io/npm/@beyondwords/player@latest/dist/umd.js'></script>
     <script>
         var player = null
-        function load(settings) {
+        function createPlayer(settings) {
             if (player !== null) {
                 player.destroy()
             }
