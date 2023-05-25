@@ -34,7 +34,6 @@ class PlayerView @JvmOverloads constructor(
     }
 
     private var ready = false
-    private var widgetView: WidgetView? = null
     private val webViewContainer = FrameLayout(context)
     private val webView = WebView(context)
     private val listeners = mutableSetOf<EventListener>()
@@ -74,7 +73,6 @@ class PlayerView @JvmOverloads constructor(
                     Log.e("PlayerView:onEvent", "Failed to parse event $event", e)
                     return@post
                 }
-                widgetView?.onPlayerEvent(parsedEvent)
                 listeners.forEach {
                     when (parsedEvent.type) {
                         "PressedPlay" -> it.onPressedPlay(parsedEvent)
@@ -157,10 +155,6 @@ class PlayerView @JvmOverloads constructor(
 
     fun setPlayerStyle(playerStyle: String) {
         setProp("player.playerStyle", "\"$playerStyle\"")
-    }
-
-    fun setWidgetView(widgetView: WidgetView) {
-        this.widgetView = widgetView
     }
 
     fun onWidgetEvent(event: PlayerEvent) {

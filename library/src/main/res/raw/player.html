@@ -6,10 +6,6 @@
     <script src='https://proxy.beyondwords.io/npm/@beyondwords/player@latest/dist/umd.js'></script>
     <script>
         var player = null
-        function onWidgetEvent(event) {
-            console.log('Player:onWidgetEvent', performance.now(), JSON.stringify(event))
-            AndroidBridge.onEvent(JSON.stringify(event))
-        }
         function load(settings) {
             if (player !== null) {
                 player.destroy()
