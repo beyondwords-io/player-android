@@ -428,6 +428,7 @@ class PlayerView @JvmOverloads constructor(
                 .setShowActionsInCompactView(1)
                 .setMediaSession(mediaSession?.sessionToken)
         )
+        notificationBuilder.setColorized(true)
         notificationBuilder.setSilent(true)
         notificationBuilder.setAutoCancel(false)
         notificationBuilder.setSound(null)
