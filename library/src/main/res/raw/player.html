@@ -3,6 +3,34 @@
 
 <head>
     <meta name="transparent" content="true">
+    <script>
+        // TODO use BeyondWords namespace
+        function MediaMetadata(props) {
+            this.title = (props || {}).title
+            this.artist = (props || {}).artist
+            this.album = (props || {}).album
+            this.artwork = (props || {}).artwork
+        }
+        navigator.mediaSession = {
+            _metadata: null,
+            _actionHandlers: {},
+            get metadata() {
+                return navigator.mediaSession._metadata
+            },
+            set metadata(value) {
+                navigator.mediaSession._metadata = value
+                AndroidBridge.onMetadataChanged(
+                    value.title,
+                    value.artist,
+                    value.album,
+                    value.artwork[0] ? value.artwork[0].src : null
+                )
+            },
+            setActionHandler: function (type, callback) {
+                navigator.mediaSession._actionHandlers[type] = callback
+            }
+        }
+    </script>
     <script src='https://proxy.beyondwords.io/npm/@beyondwords/player@latest/dist/umd.js'></script>
     <script>
         var player = null
@@ -17,11 +45,17 @@
                 widgetStyle: 'none',
             }))
             player.addEventListener("<any>", function (event) {
+                AndroidBridge.onPlaybackStateChanged(
+                    player.playbackState,
+                    player.currentTime,
+                    player.duration,
+                    player.playbackRate
+                )
                 AndroidBridge.onEvent(JSON.stringify(event))
             })
         }
         // TODO @juggle/resize-observer
-        setInterval(() => {
+        setInterval(function () {
             AndroidBridge.onResize(document.documentElement.offsetWidth, document.documentElement.offsetHeight)
         }, 1000)
         AndroidBridge.onReady()
