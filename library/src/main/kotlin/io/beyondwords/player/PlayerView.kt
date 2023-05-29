@@ -385,12 +385,12 @@ class PlayerView @JvmOverloads constructor(
             notificationBuilder.setContentTitle(it)
         }
         notificationBuilder.addAction(
-            R.drawable.ic_skip_previous,
-            "Skip to previous",
+            R.drawable.ic_rewind,
+            "Rewind",
             MediaButtonReceiver.buildMediaButtonPendingIntent(
                 context,
                 mediaSessionId,
-                PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
+                PlaybackStateCompat.ACTION_REWIND
             )
         )
         if (playbackState.state == PlaybackStateCompat.STATE_PLAYING) {
@@ -415,12 +415,12 @@ class PlayerView @JvmOverloads constructor(
             )
         }
         notificationBuilder.addAction(
-            R.drawable.ic_skip_next,
-            "Skip to next",
+            R.drawable.ic_fast_forward,
+            "Fast forward",
             MediaButtonReceiver.buildMediaButtonPendingIntent(
                 context,
                 mediaSessionId,
-                PlaybackStateCompat.ACTION_SKIP_TO_NEXT
+                PlaybackStateCompat.ACTION_FAST_FORWARD
             )
         )
         notificationBuilder.setStyle(
