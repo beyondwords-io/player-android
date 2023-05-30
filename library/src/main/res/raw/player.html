@@ -13,23 +13,34 @@
         }
         navigator.mediaSession = {
             _metadata: null,
+            _playbackState: 'none',
             _actionHandlers: {},
             get metadata() {
                 return navigator.mediaSession._metadata
             },
             set metadata(value) {
                 navigator.mediaSession._metadata = value
-                AndroidBridge.onMetadataChanged(
+                MediaSessionBridge.onMetadataChanged(
                     value.title,
                     value.artist,
                     value.album,
-                    (value.artwork || []).find(function(artwork) {
+                    (value.artwork || []).find(function (artwork) {
                         return artwork.src.indexOf('https://') === 0
                     }) || null
                 )
             },
+            get playbackState() {
+                return navigator.mediaSession._playbackState
+            },
+            set playbackState(value) {
+                navigator.mediaSession._playbackState = value
+                MediaSessionBridge.onPlaybackStateChanged(value)
+            },
             setActionHandler: function (type, callback) {
                 navigator.mediaSession._actionHandlers[type] = callback
+            },
+            setPositionState: function (args) {
+                MediaSessionBridge.onPositionStateChanged(args.position, args.duration, args.playbackRate)
             }
         }
     </script>
@@ -47,20 +58,30 @@
                 widgetStyle: 'none',
             }))
             player.addEventListener("<any>", function (event) {
-                AndroidBridge.onPlaybackStateChanged(
-                    player.playbackState,
-                    player.currentTime,
-                    player.duration,
-                    player.playbackRate
-                )
-                AndroidBridge.onEvent(JSON.stringify(event))
+                PlayerViewBridge.onEvent(JSON.stringify(event))
             })
+
+            player.addEventListener("DurationUpdated", updateMediaSession)
+            player.addEventListener("PlaybackRateUpdated", updateMediaSession)
+            player.addEventListener("PlaybackEnded", updateMediaSession)
+            player.addEventListener("PlaybackPaused", updateMediaSession)
+            player.addEventListener("PlaybackPlaying", updateMediaSession)
+            // player.addEventListener("CurrentTimeUpdated", updateMediaSession)
+
+            function updateMediaSession() {
+                navigator.mediaSession.playbackState = player.playbackState === 'stopped' ? 'none' : player.playbackState
+                navigator.mediaSession.setPositionState({
+                    position: player.currentTime,
+                    duration: player.duration,
+                    playbackRate: player.playbackRate
+                })
+            }
         }
         // TODO @juggle/resize-observer
         setInterval(function () {
-            AndroidBridge.onResize(document.documentElement.offsetWidth, document.documentElement.offsetHeight)
+            PlayerViewBridge.onResize(document.documentElement.offsetWidth, document.documentElement.offsetHeight)
         }, 1000)
-        AndroidBridge.onReady()
+        PlayerViewBridge.onReady()
     </script>
 </head>
 
