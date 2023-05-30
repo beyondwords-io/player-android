@@ -6,6 +6,8 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.net.Uri
 import android.support.v4.media.MediaMetadataCompat
@@ -28,6 +30,14 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.net.URL
 import java.util.concurrent.atomic.AtomicInteger
 
 //https://developer.android.com/about/versions/oreo/android-8.0-changes.html
@@ -71,6 +81,9 @@ class PlayerView @JvmOverloads constructor(
     private var playbackState: PlaybackStateCompat? = null
     private var mediaSession: MediaSessionCompat? = null
     private var mediaButtonReceiver: MediaButtonReceiver? = null
+    private var downloadArtworkJob: Job? = null
+    private var artwork: Bitmap? = null
+    private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private val webViewContainer = FrameLayout(context)
     private val webView = WebView(context)
     private val listeners = mutableSetOf<EventListener>()
@@ -122,8 +135,26 @@ class PlayerView @JvmOverloads constructor(
         }
 
         @JavascriptInterface
-        fun onMetadataChanged(title: String?, artist: String?, album: String?, artwork: String?) {
+        fun onMetadataChanged(
+            title: String?,
+            artist: String?,
+            album: String?,
+            artworkUrl: String?
+        ) {
             post {
+                if (mediaMetadata?.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI) != artworkUrl) {
+                    artwork = null
+                    downloadArtworkJob?.cancel()
+                    downloadArtworkJob = null
+                    artworkUrl?.let {
+                        downloadArtworkJob = coroutineScope.launch {
+                            artwork = withContext(Dispatchers.IO) {
+                                BitmapFactory.decodeStream(URL(it).openStream())
+                            }
+                            updateMediaSession()
+                        }
+                    }
+                }
                 val mediaMetadataBuilder = mediaMetadata?.let {
                     MediaMetadataCompat.Builder(it)
                 } ?: run {
@@ -134,7 +165,7 @@ class PlayerView @JvmOverloads constructor(
                 mediaMetadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, album)
                 mediaMetadataBuilder.putString(
                     MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI,
-                    artwork
+                    artworkUrl
                 )
                 mediaMetadata = mediaMetadataBuilder.build()
                 updateMediaSession()
@@ -255,6 +286,7 @@ class PlayerView @JvmOverloads constructor(
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
+        coroutineScope.cancel()
         mediaButtonReceiver?.let {
             context.unregisterReceiver(it)
         }
@@ -434,6 +466,7 @@ class PlayerView @JvmOverloads constructor(
         notificationBuilder.setSound(null)
         notificationBuilder.setVibrate(null)
         notificationBuilder.setOngoing(true)
+        notificationBuilder.setLargeIcon(artwork)
         notificationBuilder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
         notificationBuilder.priority = NotificationCompat.PRIORITY_LOW
         val notification = notificationBuilder.build()

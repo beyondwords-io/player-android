@@ -23,7 +23,9 @@
                     value.title,
                     value.artist,
                     value.album,
-                    value.artwork[0] ? value.artwork[0].src : null
+                    (value.artwork || []).find(function(artwork) {
+                        return artwork.src.indexOf('https://') === 0
+                    }) || null
                 )
             },
             setActionHandler: function (type, callback) {
