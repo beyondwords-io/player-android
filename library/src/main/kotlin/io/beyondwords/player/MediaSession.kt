@@ -209,17 +209,21 @@ class MediaSession(private val webView: WebView) {
     }
 
     private fun onPause() {
-        webView.evaluateJavascript("""
+        webView.evaluateJavascript(
+            """
             navigator.mediaSession._actionHandlers.pause()
-        """, null)
+        """, null
+        )
     }
 
     private fun onSeekTo(position: Long) {
-        webView.evaluateJavascript("""
+        webView.evaluateJavascript(
+            """
             navigator.mediaSession._actionHandlers.seekto({ 
                 seekTime: ${position / 1000}
             })
-        """, null)
+        """, null
+        )
     }
 
     private fun updateMediaSession() {
