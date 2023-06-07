@@ -231,12 +231,13 @@ class MediaSession(private val webView: WebView) {
     }
 
     private fun updateNotification() {
-        val metadata = mediaSession.controller?.metadata ?: return
-        val playbackState = mediaSession.controller?.playbackState ?: return
-
-        if (playbackState.state != PlaybackStateCompat.STATE_PLAYING &&
-            playbackState.state != PlaybackStateCompat.STATE_PAUSED
-        ) return
+        val metadata = mediaSession.controller?.metadata
+        val playbackState = mediaSession.controller?.playbackState
+        if (metadata == null || playbackState == null || playbackState.state == PlaybackStateCompat.STATE_NONE) {
+            ContextCompat.getSystemService(context, NotificationManager::class.java)
+                ?.cancel(mediaSessionId)
+            return
+        }
 
         registerNotificationChannel(context)
 
