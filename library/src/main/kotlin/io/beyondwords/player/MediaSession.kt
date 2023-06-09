@@ -40,17 +40,17 @@ class MediaSession(private val webView: WebView) {
 
         private fun ensureNotificationChannel(context: Context) {
             if (notificationChannelId != null) return
-            val channel = NotificationChannelCompat.Builder(
+            val channelBuilder = NotificationChannelCompat.Builder(
                 DEFAULT_NOTIFICATION_CHANNEL_ID,
                 NotificationManagerCompat.IMPORTANCE_LOW
             )
-                .setName("BeyondWords")
-                .setDescription("BeyondWords audio player")
-                .setLightsEnabled(false)
-                .setShowBadge(false)
-                .setVibrationEnabled(false)
-                .setSound(null, null)
-                .build()
+            channelBuilder.setName("BeyondWords")
+            channelBuilder.setDescription("BeyondWords audio player")
+            channelBuilder.setLightsEnabled(false)
+            channelBuilder.setShowBadge(false)
+            channelBuilder.setVibrationEnabled(false)
+            channelBuilder.setSound(null, null)
+            val channel = channelBuilder.build()
             NotificationManagerCompat.from(context)
                 .createNotificationChannel(channel)
         }
