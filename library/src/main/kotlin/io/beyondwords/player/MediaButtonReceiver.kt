@@ -43,6 +43,8 @@ open class MediaButtonReceiver(private val mediaSessionId: Int) : BroadcastRecei
             KeyEvent.KEYCODE_MEDIA_PAUSE -> onPause()
             KeyEvent.KEYCODE_MEDIA_PREVIOUS -> onSkipToPrevious()
             KeyEvent.KEYCODE_MEDIA_NEXT -> onSkipToNext()
+            KeyEvent.KEYCODE_MEDIA_FAST_FORWARD -> onFastForward()
+            KeyEvent.KEYCODE_MEDIA_REWIND -> onRewind()
         }
     }
 
@@ -53,4 +55,8 @@ open class MediaButtonReceiver(private val mediaSessionId: Int) : BroadcastRecei
     open fun onSkipToNext() {}
 
     open fun onSkipToPrevious() {}
+
+    open fun onFastForward() {}
+
+    open fun onRewind() {}
 }
