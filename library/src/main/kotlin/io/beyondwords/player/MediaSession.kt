@@ -39,7 +39,7 @@ class MediaSession(private val webView: WebView) {
         @JvmStatic
         var notificationChannelId: String? = null
 
-        private fun registerNotificationChannel(context: Context) {
+        private fun ensureNotificationChannel(context: Context) {
             if (notificationChannelId != null) return
             val channel = NotificationChannelCompat.Builder(
                 DEFAULT_NOTIFICATION_CHANNEL_ID,
@@ -245,7 +245,7 @@ class MediaSession(private val webView: WebView) {
             return
         }
 
-        registerNotificationChannel(context)
+        ensureNotificationChannel(context)
 
         val notificationBuilder = NotificationCompat.Builder(
             context,
