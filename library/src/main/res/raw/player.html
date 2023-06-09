@@ -4,7 +4,6 @@
 <head>
     <meta name="transparent" content="true">
     <script>
-        // TODO use BeyondWords namespace
         function MediaMetadata(props) {
             this.title = (props || {}).title
             this.artist = (props || {}).artist
@@ -86,7 +85,6 @@
         setInterval(function () {
             PlayerViewBridge.onResize(document.documentElement.offsetWidth, document.documentElement.offsetHeight)
         }, 1000)
-        PlayerViewBridge.onReady()
     </script>
 </head>
 
