@@ -73,6 +73,14 @@ class MediaSession(private val webView: WebView) {
                 this@MediaSession.onRewind()
             }
 
+            override fun onSkipToPrevious() {
+                this@MediaSession.onSkipToPrevious()
+            }
+
+            override fun onSkipToNext() {
+                this@MediaSession.onSkipToNext()
+            }
+
             override fun onSeekTo(position: Long) {
                 this@MediaSession.onSeekTo(position)
             }
@@ -94,6 +102,14 @@ class MediaSession(private val webView: WebView) {
         override fun onRewind() {
             this@MediaSession.onRewind()
         }
+
+        override fun onSkipToPrevious() {
+            this@MediaSession.onSkipToPrevious()
+        }
+
+        override fun onSkipToNext() {
+            this@MediaSession.onSkipToNext()
+        }
     }
     private val bridge = object {
         @JavascriptInterface
@@ -111,6 +127,8 @@ class MediaSession(private val webView: WebView) {
                     "seekto" -> PlaybackStateCompat.ACTION_SEEK_TO
                     "seekbackward" -> PlaybackStateCompat.ACTION_REWIND
                     "seekforward" -> PlaybackStateCompat.ACTION_FAST_FORWARD
+                    "previoustrack" -> PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
+                    "nexttrack" -> PlaybackStateCompat.ACTION_SKIP_TO_NEXT
                     else -> return@launch
                 }
                 if (attached) {
@@ -250,6 +268,14 @@ class MediaSession(private val webView: WebView) {
         onAction("seekbackward")
     }
 
+    private fun onSkipToPrevious() {
+        onAction("previoustrack")
+    }
+
+    private fun onSkipToNext() {
+        onAction("nexttrack")
+    }
+
     private fun onSeekTo(position: Long) {
         onAction("seekto", "{ seekTime: ${position / 1000} }")
     }
@@ -286,7 +312,17 @@ class MediaSession(private val webView: WebView) {
         metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)?.let {
             notificationBuilder.setContentTitle(it)
         }
-        if (playbackState.actions and PlaybackStateCompat.ACTION_REWIND != 0L) {
+        if (playbackState.actions and PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS != 0L) {
+            notificationBuilder.addAction(
+                R.drawable.ic_skip_previous,
+                "Previous",
+                MediaButtonReceiver.buildMediaButtonPendingIntent(
+                    context,
+                    mediaSessionId,
+                    PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
+                )
+            )
+        } else if (playbackState.actions and PlaybackStateCompat.ACTION_REWIND != 0L) {
             notificationBuilder.addAction(
                 R.drawable.ic_rewind,
                 "Rewind",
@@ -322,7 +358,17 @@ class MediaSession(private val webView: WebView) {
                 )
             }
         }
-        if (playbackState.actions and PlaybackStateCompat.ACTION_FAST_FORWARD != 0L) {
+        if (playbackState.actions and PlaybackStateCompat.ACTION_SKIP_TO_NEXT != 0L) {
+            notificationBuilder.addAction(
+                R.drawable.ic_skip_next,
+                "Next",
+                MediaButtonReceiver.buildMediaButtonPendingIntent(
+                    context,
+                    mediaSessionId,
+                    PlaybackStateCompat.ACTION_SKIP_TO_NEXT
+                )
+            )
+        } else if (playbackState.actions and PlaybackStateCompat.ACTION_FAST_FORWARD != 0L) {
             notificationBuilder.addAction(
                 R.drawable.ic_fast_forward,
                 "Fast forward",
@@ -335,8 +381,7 @@ class MediaSession(private val webView: WebView) {
         }
         notificationBuilder.setStyle(
             androidx.media.app.NotificationCompat.MediaStyle()
-                .setShowActionsInCompactView(*List(notificationBuilder.mActions.size) { index -> index }
-                    .toIntArray())
+                .setShowActionsInCompactView(*List(notificationBuilder.mActions.size.coerceAtMost(3)) { index -> index }.toIntArray())
                 .setMediaSession(mediaSession.sessionToken)
         )
         notificationBuilder.setColorized(true)
