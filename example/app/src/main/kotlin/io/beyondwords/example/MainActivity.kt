@@ -13,7 +13,7 @@ import io.beyondwords.player.PlayerSettings
 import io.beyondwords.player.PlayerView
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var playerView: PlayerView
+    private var playerView: PlayerView? = null
     private lateinit var projectIdInput: TextInputEditText
     private lateinit var contentIdInput: TextInputEditText
     private lateinit var playerStyleInput: AutoCompleteTextView
@@ -28,8 +28,8 @@ class MainActivity : AppCompatActivity() {
         contentIdInput = findViewById(R.id.content_id_input)
         playerStyleInput = findViewById(R.id.player_style_input)
         loadButton = findViewById(R.id.load_button)
-        
-        playerView.addEventListener(object : EventListener {
+
+        playerView?.addEventListener(object : EventListener {
             override fun onPressedPlay(event: PlayerEvent) {
                 Log.d("PlayerView", "onPressedPlay($event)")
             }
@@ -42,12 +42,12 @@ class MainActivity : AppCompatActivity() {
         loadButton.setOnClickListener { loadOnClick() }
 
         playerStyleInput.addTextChangedListener {
-            playerView.setPlayerStyle(playerStyleInput.text.toString())
+            playerView?.setPlayerStyle(playerStyleInput.text.toString())
         }
     }
 
     private fun loadOnClick() {
-        playerView.createPlayer(
+        playerView?.createPlayer(
             PlayerSettings(
                 projectId = projectIdInput.text.toString(),
                 contentId = contentIdInput.text.toString(),

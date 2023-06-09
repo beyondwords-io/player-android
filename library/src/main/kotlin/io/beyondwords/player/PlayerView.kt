@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.util.AttributeSet
 import android.util.Log
 import android.util.TypedValue
@@ -21,7 +22,7 @@ import androidx.core.view.updateLayoutParams
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 
-@SuppressLint("SetJavaScriptEnabled")
+@SuppressLint("SetJavaScriptEnabled", "ObsoleteSdkInt")
 class PlayerView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -115,6 +116,10 @@ class PlayerView @JvmOverloads constructor(
     }
 
     init {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) {
+            throw Exception("Beyondwords Player SDK is supported on Android 7.1+")
+        }
+
         addView(webViewContainer, LayoutParams(LayoutParams.MATCH_PARENT, 0))
         webViewContainer.addView(
             webView,
@@ -130,7 +135,7 @@ class PlayerView @JvmOverloads constructor(
             mediaPlaybackRequiresUserGesture = false
             builtInZoomControls = false
             displayZoomControls = false
-            loadWithOverviewMode = true
+            loadWithOverviewMode = false
             setSupportZoom(false)
             setGeolocationEnabled(false)
             setSupportMultipleWindows(false)
@@ -186,7 +191,7 @@ class PlayerView @JvmOverloads constructor(
                 try {
                     $name(${args.map { gson.toJson(it) }.joinToString(",") { it }})
                 } catch (e) {
-                    console.error("PlayerView:callFunction", e.message, e)
+                    console.error("PlayerView:callFunction:" + e.message, e)
                 }
             """
         )
@@ -198,7 +203,7 @@ class PlayerView @JvmOverloads constructor(
                 try {
                     $name = ${gson.toJson(value)}
                 } catch (e) {
-                    console.error("PlayerView:setProp", e.message, e)
+                    console.error("PlayerView:setProp:" + e.message, e)
                 }
             """
         )

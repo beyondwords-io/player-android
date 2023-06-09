@@ -11,11 +11,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <io.beyondwords.player.PlayerView
-            android:id="@+id/player_view"
-            android:layout_margin="4dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+        <include layout="@layout/player" />
 
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
