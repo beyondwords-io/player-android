@@ -6,5 +6,5 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:textSize="18sp"
-        android:text="Android SDK is supported on Android 7.1+" />
+        android:text="Android SDK is supported on Android 7+" />
 </merge>

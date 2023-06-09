@@ -116,8 +116,8 @@ class PlayerView @JvmOverloads constructor(
     }
 
     init {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) {
-            throw Exception("Beyondwords Player SDK is supported on Android 7.1+")
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            throw Exception("Beyondwords Player SDK is supported on Android 7+")
         }
 
         addView(webViewContainer, LayoutParams(LayoutParams.MATCH_PARENT, 0))
