@@ -35,6 +35,8 @@ class MediaSession(private val webView: WebView) {
                 PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS or
                 PlaybackStateCompat.ACTION_SEEK_TO
         private val currentMediaSessionId = AtomicInteger()
+
+        @JvmStatic
         var notificationChannelId: String? = null
 
         private fun registerNotificationChannel(context: Context) {
