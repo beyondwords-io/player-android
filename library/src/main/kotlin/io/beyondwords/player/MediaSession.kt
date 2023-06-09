@@ -213,8 +213,7 @@ class MediaSession(private val webView: WebView) {
         webView.removeJavascriptInterface("MediaSessionBridge")
         coroutineScope.cancel()
         mediaSession.release()
-        ContextCompat.getSystemService(context, NotificationManager::class.java)
-            ?.cancel(mediaSessionId)
+        updateNotification()
     }
 
     private fun onPlay() {
