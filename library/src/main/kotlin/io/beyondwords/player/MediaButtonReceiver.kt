@@ -12,6 +12,7 @@ open class MediaButtonReceiver(private val mediaSessionId: Int) : BroadcastRecei
     companion object {
         const val EXTRA_MEDIA_SESSION_ID = "io.beyondwords.player.MEDIA_SESSION_ID"
 
+        @JvmStatic
         fun buildMediaButtonPendingIntent(
             context: Context,
             mediaSessionId: Int,
