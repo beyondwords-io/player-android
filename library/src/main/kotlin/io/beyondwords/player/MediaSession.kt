@@ -9,7 +9,6 @@ import android.graphics.BitmapFactory
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import android.util.Log
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import androidx.core.app.NotificationChannelCompat
@@ -78,6 +77,14 @@ class MediaSession(private val webView: WebView) {
                 // TODO
             }
 
+            override fun onFastForward() {
+                // TODO
+            }
+
+            override fun onRewind() {
+                // TODO
+            }
+
             override fun onSeekTo(position: Long) {
                 this@MediaSession.onSeekTo(position)
             }
@@ -93,11 +100,19 @@ class MediaSession(private val webView: WebView) {
         }
 
         override fun onSkipToNext() {
-            Log.d("MediaSession", "onSkipToNext")
+            // TODO
         }
 
         override fun onSkipToPrevious() {
-            Log.d("MediaSession", "onSkipToPrevious")
+            // TODO
+        }
+
+        override fun onFastForward() {
+            // TODO
+        }
+
+        override fun onRewind() {
+            // TODO
         }
     }
     private val bridge = object {
