@@ -124,7 +124,8 @@ class MediaSession(private val webView: WebView) {
             artworkUrl: String?
         ) {
             coroutineScope.launch {
-                if (mediaMetadata?.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI) != artworkUrl) {
+                val metadata = mediaSession.controller?.metadata
+                if (metadata?.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI) != artworkUrl) {
                     artwork = null
                     downloadArtworkJob?.cancel()
                     downloadArtworkJob = null
@@ -137,45 +138,46 @@ class MediaSession(private val webView: WebView) {
                         }
                     }
                 }
-                val mediaMetadataBuilder = mediaMetadata?.let {
+                val metadataBuilder = metadata?.let {
                     MediaMetadataCompat.Builder(it)
                 } ?: run {
                     MediaMetadataCompat.Builder()
                 }
-                mediaMetadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_TITLE, title)
-                mediaMetadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist)
-                mediaMetadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, album)
-                mediaMetadataBuilder.putString(
+                metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_TITLE, title)
+                metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist)
+                metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, album)
+                metadataBuilder.putString(
                     MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI,
                     artworkUrl
                 )
-                mediaMetadata = mediaMetadataBuilder.build()
-                updateMediaSession()
+                mediaSession.setMetadata(metadataBuilder.build())
+                updateNotification()
             }
         }
 
         @JavascriptInterface
         fun onPositionStateChanged(position: Float, duration: Float, playbackSpeed: Float) {
             coroutineScope.launch {
-                val mediaMetadataBuilder = mediaMetadata?.let {
+                val metadataBuilder = mediaSession.controller?.metadata?.let {
                     MediaMetadataCompat.Builder(it)
                 } ?: run {
                     MediaMetadataCompat.Builder()
                 }
-                mediaMetadataBuilder.putLong(
+                metadataBuilder.putLong(
                     MediaMetadataCompat.METADATA_KEY_DURATION,
                     (duration * 1000).toLong()
                 )
                 val playbackStateBuilder = PlaybackStateCompat.Builder()
                     .setState(
-                        playbackState?.state ?: PlaybackStateCompat.STATE_NONE,
+                        mediaSession.controller?.playbackState?.state
+                            ?: PlaybackStateCompat.STATE_NONE,
                         (position * 1000).toLong(),
                         playbackSpeed
                     )
                     .setActions(SUPPORTED_ACTIONS)
-                playbackState = playbackStateBuilder.build()
-                mediaMetadata = mediaMetadataBuilder.build()
-                updateMediaSession()
+                mediaSession.setMetadata(metadataBuilder.build())
+                mediaSession.setPlaybackState(playbackStateBuilder.build())
+                updateNotification()
             }
         }
 
@@ -189,17 +191,17 @@ class MediaSession(private val webView: WebView) {
                             "paused" -> PlaybackStateCompat.STATE_PAUSED
                             else -> PlaybackStateCompat.STATE_NONE
                         },
-                        playbackState?.position ?: 0,
-                        playbackState?.playbackSpeed ?: 1f
+                        mediaSession.controller?.playbackState?.position ?: 0,
+                        mediaSession.controller?.playbackState?.playbackSpeed ?: 1f
                     )
                     .setActions(SUPPORTED_ACTIONS)
-                playbackState = playbackStateBuilder.build()
-                updateMediaSession()
+                val playbackState = playbackStateBuilder.build()
+                mediaSession.setPlaybackState(playbackState)
+                mediaSession.isActive = playbackState.state != PlaybackStateCompat.STATE_NONE
+                updateNotification()
             }
         }
     }
-    private var mediaMetadata: MediaMetadataCompat? = null
-    private var playbackState: PlaybackStateCompat? = null
     private var artwork: Bitmap? = null
     private var downloadArtworkJob: Job? = null
 
@@ -240,14 +242,6 @@ class MediaSession(private val webView: WebView) {
             })
         """, null
         )
-    }
-
-    private fun updateMediaSession() {
-        if (mediaMetadata == null || playbackState == null) return
-        mediaSession.setMetadata(mediaMetadata)
-        mediaSession.setPlaybackState(playbackState)
-        mediaSession.isActive = true
-        updateNotification()
     }
 
     private fun updateNotification() {
