@@ -1,5 +1,6 @@
 package io.beyondwords.player
 
+import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
@@ -28,11 +29,6 @@ import java.util.concurrent.atomic.AtomicInteger
 class MediaSession(private val webView: WebView) {
     companion object {
         private const val DEFAULT_NOTIFICATION_CHANNEL_ID = "BeyondWords"
-        private const val SUPPORTED_ACTIONS = PlaybackStateCompat.ACTION_PLAY or
-                PlaybackStateCompat.ACTION_PAUSE or
-                PlaybackStateCompat.ACTION_SKIP_TO_NEXT or
-                PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS or
-                PlaybackStateCompat.ACTION_SEEK_TO
         private val currentMediaSessionId = AtomicInteger()
 
         @JvmStatic
@@ -69,20 +65,12 @@ class MediaSession(private val webView: WebView) {
                 this@MediaSession.onPause()
             }
 
-            override fun onSkipToNext() {
-                // TODO
-            }
-
-            override fun onSkipToPrevious() {
-                // TODO
-            }
-
             override fun onFastForward() {
-                // TODO
+                this@MediaSession.onFastForward()
             }
 
             override fun onRewind() {
-                // TODO
+                this@MediaSession.onRewind()
             }
 
             override fun onSeekTo(position: Long) {
@@ -99,23 +87,42 @@ class MediaSession(private val webView: WebView) {
             this@MediaSession.onPause()
         }
 
-        override fun onSkipToNext() {
-            // TODO
-        }
-
-        override fun onSkipToPrevious() {
-            // TODO
-        }
-
         override fun onFastForward() {
-            // TODO
+            this@MediaSession.onFastForward()
         }
 
         override fun onRewind() {
-            // TODO
+            this@MediaSession.onRewind()
         }
     }
     private val bridge = object {
+        @JavascriptInterface
+        fun onActionHandlerChanged(type: String, attached: Boolean) {
+            coroutineScope.launch {
+                val playbackState = mediaSession.controller?.playbackState
+                val playbackStateBuilder = playbackState?.let {
+                    PlaybackStateCompat.Builder(it)
+                } ?: run {
+                    PlaybackStateCompat.Builder()
+                }
+                val action = when (type) {
+                    "play" -> PlaybackStateCompat.ACTION_PLAY
+                    "pause" -> PlaybackStateCompat.ACTION_PAUSE
+                    "seekto" -> PlaybackStateCompat.ACTION_SEEK_TO
+                    "seekbackward" -> PlaybackStateCompat.ACTION_REWIND
+                    "seekforward" -> PlaybackStateCompat.ACTION_FAST_FORWARD
+                    else -> return@launch
+                }
+                if (attached) {
+                    playbackStateBuilder.setActions((playbackState?.actions ?: 0L) or action)
+                } else {
+                    playbackStateBuilder.setActions((playbackState?.actions ?: 0L) and action.inv())
+                }
+                mediaSession.setPlaybackState(playbackStateBuilder.build())
+                updateNotification()
+            }
+        }
+
         @JavascriptInterface
         fun onMetadataChanged(
             title: String?,
@@ -158,7 +165,8 @@ class MediaSession(private val webView: WebView) {
         @JavascriptInterface
         fun onPositionStateChanged(position: Float, duration: Float, playbackSpeed: Float) {
             coroutineScope.launch {
-                val metadataBuilder = mediaSession.controller?.metadata?.let {
+                val metadata = mediaSession.controller?.metadata
+                val metadataBuilder = metadata?.let {
                     MediaMetadataCompat.Builder(it)
                 } ?: run {
                     MediaMetadataCompat.Builder()
@@ -167,14 +175,17 @@ class MediaSession(private val webView: WebView) {
                     MediaMetadataCompat.METADATA_KEY_DURATION,
                     (duration * 1000).toLong()
                 )
-                val playbackStateBuilder = PlaybackStateCompat.Builder()
-                    .setState(
-                        mediaSession.controller?.playbackState?.state
-                            ?: PlaybackStateCompat.STATE_NONE,
-                        (position * 1000).toLong(),
-                        playbackSpeed
-                    )
-                    .setActions(SUPPORTED_ACTIONS)
+                val playbackState = mediaSession.controller?.playbackState
+                val playbackStateBuilder = playbackState?.let {
+                    PlaybackStateCompat.Builder(it)
+                } ?: run {
+                    PlaybackStateCompat.Builder()
+                }
+                playbackStateBuilder.setState(
+                    playbackState?.state ?: PlaybackStateCompat.STATE_NONE,
+                    (position * 1000).toLong(),
+                    playbackSpeed
+                )
                 mediaSession.setMetadata(metadataBuilder.build())
                 mediaSession.setPlaybackState(playbackStateBuilder.build())
                 updateNotification()
@@ -184,20 +195,25 @@ class MediaSession(private val webView: WebView) {
         @JavascriptInterface
         fun onPlaybackStateChanged(state: String) {
             coroutineScope.launch {
-                val playbackStateBuilder = PlaybackStateCompat.Builder()
-                    .setState(
-                        when (state) {
-                            "playing" -> PlaybackStateCompat.STATE_PLAYING
-                            "paused" -> PlaybackStateCompat.STATE_PAUSED
-                            else -> PlaybackStateCompat.STATE_NONE
-                        },
-                        mediaSession.controller?.playbackState?.position ?: 0,
-                        mediaSession.controller?.playbackState?.playbackSpeed ?: 1f
-                    )
-                    .setActions(SUPPORTED_ACTIONS)
-                val playbackState = playbackStateBuilder.build()
-                mediaSession.setPlaybackState(playbackState)
-                mediaSession.isActive = playbackState.state != PlaybackStateCompat.STATE_NONE
+                val playbackState = mediaSession.controller?.playbackState
+                val playbackStateBuilder = playbackState?.let {
+                    PlaybackStateCompat.Builder(it)
+                } ?: run {
+                    PlaybackStateCompat.Builder()
+                }
+                playbackStateBuilder.setState(
+                    when (state) {
+                        "playing" -> PlaybackStateCompat.STATE_PLAYING
+                        "paused" -> PlaybackStateCompat.STATE_PAUSED
+                        else -> PlaybackStateCompat.STATE_NONE
+                    },
+                    playbackState?.position ?: 0,
+                    playbackState?.playbackSpeed ?: 1f
+                )
+                playbackStateBuilder.build().let {
+                    mediaSession.setPlaybackState(it)
+                    mediaSession.isActive = it.state != PlaybackStateCompat.STATE_NONE
+                }
                 updateNotification()
             }
         }
@@ -219,31 +235,38 @@ class MediaSession(private val webView: WebView) {
     }
 
     private fun onPlay() {
-        webView.evaluateJavascript(
-            """
-            navigator.mediaSession._actionHandlers.play()
-        """, null
-        )
+        onAction("play")
     }
 
     private fun onPause() {
-        webView.evaluateJavascript(
-            """
-            navigator.mediaSession._actionHandlers.pause()
-        """, null
-        )
+        onAction("pause")
+    }
+
+    private fun onFastForward() {
+        onAction("seekforward")
+    }
+
+    private fun onRewind() {
+        onAction("seekbackward")
     }
 
     private fun onSeekTo(position: Long) {
+        onAction("seekto", "{ seekTime: ${position / 1000} }")
+    }
+
+    private fun onAction(action: String, args: String = "{}") {
         webView.evaluateJavascript(
             """
-            navigator.mediaSession._actionHandlers.seekto({ 
-                seekTime: ${position / 1000}
-            })
+            try {
+                navigator.mediaSession._actionHandlers["$action"]($args)
+            } catch (e) {
+                console.error("MediaSession:onAction:" + e.message, e)
+            }
         """, null
         )
     }
 
+    @SuppressLint("RestrictedApi")
     private fun updateNotification() {
         val metadata = mediaSession.controller?.metadata
         val playbackState = mediaSession.controller?.playbackState
@@ -263,48 +286,57 @@ class MediaSession(private val webView: WebView) {
         metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)?.let {
             notificationBuilder.setContentTitle(it)
         }
-        notificationBuilder.addAction(
-            R.drawable.ic_rewind,
-            "Rewind",
-            MediaButtonReceiver.buildMediaButtonPendingIntent(
-                context,
-                mediaSessionId,
-                PlaybackStateCompat.ACTION_REWIND
-            )
-        )
-        if (playbackState.state == PlaybackStateCompat.STATE_PLAYING) {
+        if (playbackState.actions and PlaybackStateCompat.ACTION_REWIND != 0L) {
             notificationBuilder.addAction(
-                R.drawable.ic_pause,
-                "Pause",
+                R.drawable.ic_rewind,
+                "Rewind",
                 MediaButtonReceiver.buildMediaButtonPendingIntent(
                     context,
                     mediaSessionId,
-                    PlaybackStateCompat.ACTION_PAUSE
-                )
-            )
-        } else {
-            notificationBuilder.addAction(
-                R.drawable.ic_play,
-                "Play",
-                MediaButtonReceiver.buildMediaButtonPendingIntent(
-                    context,
-                    mediaSessionId,
-                    PlaybackStateCompat.ACTION_PLAY
+                    PlaybackStateCompat.ACTION_REWIND
                 )
             )
         }
-        notificationBuilder.addAction(
-            R.drawable.ic_fast_forward,
-            "Fast forward",
-            MediaButtonReceiver.buildMediaButtonPendingIntent(
-                context,
-                mediaSessionId,
-                PlaybackStateCompat.ACTION_FAST_FORWARD
+        if (playbackState.state == PlaybackStateCompat.STATE_PLAYING) {
+            if (playbackState.actions and PlaybackStateCompat.ACTION_PAUSE != 0L) {
+                notificationBuilder.addAction(
+                    R.drawable.ic_pause,
+                    "Pause",
+                    MediaButtonReceiver.buildMediaButtonPendingIntent(
+                        context,
+                        mediaSessionId,
+                        PlaybackStateCompat.ACTION_PAUSE
+                    )
+                )
+            }
+        } else {
+            if (playbackState.actions and PlaybackStateCompat.ACTION_PLAY != 0L) {
+                notificationBuilder.addAction(
+                    R.drawable.ic_play,
+                    "Play",
+                    MediaButtonReceiver.buildMediaButtonPendingIntent(
+                        context,
+                        mediaSessionId,
+                        PlaybackStateCompat.ACTION_PLAY
+                    )
+                )
+            }
+        }
+        if (playbackState.actions and PlaybackStateCompat.ACTION_FAST_FORWARD != 0L) {
+            notificationBuilder.addAction(
+                R.drawable.ic_fast_forward,
+                "Fast forward",
+                MediaButtonReceiver.buildMediaButtonPendingIntent(
+                    context,
+                    mediaSessionId,
+                    PlaybackStateCompat.ACTION_FAST_FORWARD
+                )
             )
-        )
+        }
         notificationBuilder.setStyle(
             androidx.media.app.NotificationCompat.MediaStyle()
-                .setShowActionsInCompactView(1)
+                .setShowActionsInCompactView(*List(notificationBuilder.mActions.size) { index -> index }
+                    .toIntArray())
                 .setMediaSession(mediaSession.sessionToken)
         )
         notificationBuilder.setColorized(true)

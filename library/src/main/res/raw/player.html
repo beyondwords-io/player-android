@@ -38,6 +38,7 @@
             },
             setActionHandler: function (type, callback) {
                 navigator.mediaSession._actionHandlers[type] = callback
+                MediaSessionBridge.onActionHandlerChanged(type, !!callback)
             },
             setPositionState: function (args) {
                 MediaSessionBridge.onPositionStateChanged(args.position, args.duration, args.playbackRate)
