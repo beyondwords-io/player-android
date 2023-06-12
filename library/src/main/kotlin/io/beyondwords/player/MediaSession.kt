@@ -248,6 +248,7 @@ class MediaSession(private val webView: WebView) {
         context.unregisterReceiver(mediaButtonReceiver)
         webView.removeJavascriptInterface("MediaSessionBridge")
         coroutineScope.cancel()
+        mediaSession.isActive = false
         mediaSession.release()
         updateNotification()
     }
@@ -296,7 +297,7 @@ class MediaSession(private val webView: WebView) {
     private fun updateNotification() {
         val metadata = mediaSession.controller?.metadata
         val playbackState = mediaSession.controller?.playbackState
-        if (metadata == null || playbackState == null || playbackState.state == PlaybackStateCompat.STATE_NONE) {
+        if (!mediaSession.isActive || metadata == null || playbackState == null || playbackState.state == PlaybackStateCompat.STATE_NONE) {
             ContextCompat.getSystemService(context, NotificationManager::class.java)
                 ?.cancel(mediaSessionId)
             return
