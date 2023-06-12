@@ -153,6 +153,9 @@ class PlayerView @JvmOverloads constructor(
         mediaSession?.release()
         mediaSession = null
         webView.loadUrl("about:blank")
+        webViewContainer.updateLayoutParams {
+            this.height = 0
+        }
     }
 
     fun addEventListener(listener: EventListener) {
