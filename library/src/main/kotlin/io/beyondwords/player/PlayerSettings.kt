@@ -6,5 +6,6 @@ data class PlayerSettings(
     var contentId: String? = null,
     var playlistId: String? = null,
     var sourceId: String? = null,
+    var skipButtonStyle: String? = null,
     var playerStyle: String? = null
 )

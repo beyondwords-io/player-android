@@ -6,4 +6,10 @@
         <item>large</item>
         <item>video</item>
     </string-array>
+    <string-array name="skip_button_style_items">
+        <item>auto</item>
+        <item>segments</item>
+        <item>seconds</item>
+        <item>tracks</item>
+    </string-array>
 </resources>
