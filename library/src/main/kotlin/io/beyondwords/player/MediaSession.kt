@@ -11,12 +11,16 @@ import android.os.Build
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import android.util.Log
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -30,6 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger
 class MediaSession(private val webView: WebView) {
     companion object {
         private const val DEFAULT_NOTIFICATION_CHANNEL_ID = "BeyondWords"
+        private val gson: Gson by lazy { GsonBuilder().create() }
         private val currentMediaSessionId = AtomicInteger()
 
         @JvmStatic
@@ -114,7 +119,15 @@ class MediaSession(private val webView: WebView) {
     }
     private val bridge = object {
         @JavascriptInterface
-        fun onActionHandlerChanged(type: String, attached: Boolean) {
+        fun onActionHandlersChanged(types: String) {
+            val parsedTypes: List<String>
+            try {
+                parsedTypes = gson.fromJson(types, object : TypeToken<List<String>>() {}.type)
+            } catch (e: Exception) {
+                Log.e("MediaSession:onActionHandlersChanged", "Failed to parse types $types", e)
+                return
+            }
+
             coroutineScope.launch {
                 val playbackState = mediaSession.controller?.playbackState
                 val playbackStateBuilder = playbackState?.let {
@@ -122,21 +135,19 @@ class MediaSession(private val webView: WebView) {
                 } ?: run {
                     PlaybackStateCompat.Builder()
                 }
-                val action = when (type) {
-                    "play" -> PlaybackStateCompat.ACTION_PLAY
-                    "pause" -> PlaybackStateCompat.ACTION_PAUSE
-                    "seekto" -> PlaybackStateCompat.ACTION_SEEK_TO
-                    "seekbackward" -> PlaybackStateCompat.ACTION_REWIND
-                    "seekforward" -> PlaybackStateCompat.ACTION_FAST_FORWARD
-                    "previoustrack" -> PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
-                    "nexttrack" -> PlaybackStateCompat.ACTION_SKIP_TO_NEXT
-                    else -> return@launch
+                val actions = parsedTypes.fold(0L) { actions, type ->
+                    actions or when (type) {
+                        "play" -> PlaybackStateCompat.ACTION_PLAY
+                        "pause" -> PlaybackStateCompat.ACTION_PAUSE
+                        "seekto" -> PlaybackStateCompat.ACTION_SEEK_TO
+                        "seekbackward" -> PlaybackStateCompat.ACTION_REWIND or if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS else 0L
+                        "seekforward" -> PlaybackStateCompat.ACTION_FAST_FORWARD or if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) PlaybackStateCompat.ACTION_SKIP_TO_NEXT else 0L
+                        "previoustrack" -> PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
+                        "nexttrack" -> PlaybackStateCompat.ACTION_SKIP_TO_NEXT
+                        else -> 0L
+                    }
                 }
-                if (attached) {
-                    playbackStateBuilder.setActions((playbackState?.actions ?: 0L) or action)
-                } else {
-                    playbackStateBuilder.setActions((playbackState?.actions ?: 0L) and action.inv())
-                }
+                playbackStateBuilder.setActions(actions)
                 mediaSession.setPlaybackState(playbackStateBuilder.build())
                 updateNotification()
             }
@@ -271,22 +282,36 @@ class MediaSession(private val webView: WebView) {
     }
 
     private fun onSkipToPrevious() {
-        onAction("previoustrack")
+        val actions = mediaSession.controller?.playbackState?.actions ?: 0L
+        if (actions and PlaybackStateCompat.ACTION_REWIND != 0L) {
+            onAction("seekbackward")
+        } else {
+            onAction("previoustrack")
+        }
     }
 
     private fun onSkipToNext() {
-        onAction("nexttrack")
+        val actions = mediaSession.controller?.playbackState?.actions ?: 0L
+        if (actions and PlaybackStateCompat.ACTION_FAST_FORWARD != 0L) {
+            onAction("seekforward")
+        } else {
+            onAction("nexttrack")
+        }
     }
 
     private fun onSeekTo(position: Long) {
-        onAction("seekto", "{ seekTime: ${position / 1000} }")
+        onAction("seekto", listOf(object {
+            val seekTime = position / 1000
+        }))
     }
 
-    private fun onAction(action: String, args: String = "{}") {
+    private fun onAction(action: String, args: List<Any> = listOf(object {})) {
         webView.evaluateJavascript(
             """
             try {
-                navigator.mediaSession._actionHandlers["$action"]($args)
+                navigator.mediaSession._actionHandlers["$action"](
+                    ${args.map { gson.toJson(it) }.joinToString(",") { it }}
+                )
             } catch (e) {
                 console.error("MediaSession:onAction:" + e.message, e)
             }

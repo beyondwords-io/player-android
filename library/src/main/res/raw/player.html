@@ -3,6 +3,7 @@
 
 <head>
     <meta name="transparent" content="true">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/core-js/3.30.2/minified.js" integrity="sha512-u60H4fcHTGKAVICDO65xbPZn/eTY9S/VkZxMBdfwkCaStJH88PELFskcCVXpAAyVsASRhyiyjP3zEVkFd/3KEA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
         function MediaMetadata(props) {
             this.title = (props || {}).title
@@ -37,14 +38,17 @@
             },
             setActionHandler: function (type, callback) {
                 navigator.mediaSession._actionHandlers[type] = callback
-                MediaSessionBridge.onActionHandlerChanged(type, !!callback)
+                var attachedHandlerTypes = Object.keys(navigator.mediaSession._actionHandlers)
+                    .filter(function(type) {
+                        return !!navigator.mediaSession._actionHandlers[type]
+                    })
+                MediaSessionBridge.onActionHandlersChanged(JSON.stringify(attachedHandlerTypes))
             },
             setPositionState: function (args) {
                 MediaSessionBridge.onPositionStateChanged(args.position, args.duration, args.playbackRate)
             }
         }
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/core-js/3.30.2/minified.js" integrity="sha512-u60H4fcHTGKAVICDO65xbPZn/eTY9S/VkZxMBdfwkCaStJH88PELFskcCVXpAAyVsASRhyiyjP3zEVkFd/3KEA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src='https://proxy.beyondwords.io/npm/@beyondwords/player@latest/dist/umd.js'></script>
     <script>
         var player = null
