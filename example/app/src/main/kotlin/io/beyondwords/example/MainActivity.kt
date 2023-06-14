@@ -16,6 +16,7 @@ class MainActivity : AppCompatActivity() {
     private var playerView: PlayerView? = null
     private lateinit var projectIdInput: TextInputEditText
     private lateinit var contentIdInput: TextInputEditText
+    private lateinit var playlistIdInput: TextInputEditText
     private lateinit var playerStyleInput: AutoCompleteTextView
     private lateinit var loadButton: AppCompatButton
 
@@ -26,6 +27,7 @@ class MainActivity : AppCompatActivity() {
         playerView = findViewById(R.id.player_view)
         projectIdInput = findViewById(R.id.project_id_input)
         contentIdInput = findViewById(R.id.content_id_input)
+        playlistIdInput = findViewById(R.id.playlist_id_input)
         playerStyleInput = findViewById(R.id.player_style_input)
         loadButton = findViewById(R.id.load_button)
 
@@ -51,6 +53,7 @@ class MainActivity : AppCompatActivity() {
             PlayerSettings(
                 projectId = projectIdInput.text.toString(),
                 contentId = contentIdInput.text.toString(),
+                playlistId = playlistIdInput.text.toString(),
                 playerStyle = playerStyleInput.text.toString()
             )
         )
