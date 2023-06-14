@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.Build
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
@@ -313,6 +314,7 @@ class MediaSession(private val webView: WebView) {
         metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)?.let {
             notificationBuilder.setContentTitle(it)
         }
+        var playPauseButtonIndex = -1
         if (playbackState.actions and PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS != 0L) {
             notificationBuilder.addAction(
                 R.drawable.ic_skip_previous,
@@ -336,6 +338,7 @@ class MediaSession(private val webView: WebView) {
         }
         if (playbackState.state == PlaybackStateCompat.STATE_PLAYING) {
             if (playbackState.actions and PlaybackStateCompat.ACTION_PAUSE != 0L) {
+                playPauseButtonIndex = notificationBuilder.mActions.size
                 notificationBuilder.addAction(
                     R.drawable.ic_pause,
                     "Pause",
@@ -348,6 +351,7 @@ class MediaSession(private val webView: WebView) {
             }
         } else {
             if (playbackState.actions and PlaybackStateCompat.ACTION_PLAY != 0L) {
+                playPauseButtonIndex = notificationBuilder.mActions.size
                 notificationBuilder.addAction(
                     R.drawable.ic_play,
                     "Play",
@@ -382,8 +386,22 @@ class MediaSession(private val webView: WebView) {
         }
         notificationBuilder.setStyle(
             androidx.media.app.NotificationCompat.MediaStyle()
-                .setShowActionsInCompactView(*List(notificationBuilder.mActions.size.coerceAtMost(3)) { index -> index }.toIntArray())
                 .setMediaSession(mediaSession.sessionToken)
+                .also {
+                    if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
+                        if (playPauseButtonIndex != -1 && notificationBuilder.mActions.size > 1) {
+                            it.setShowActionsInCompactView(playPauseButtonIndex)
+                        }
+                    } else if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
+                        it.setShowActionsInCompactView(
+                            *List(
+                                notificationBuilder.mActions.size.coerceAtMost(
+                                    3
+                                )
+                            ) { index -> index }.toIntArray()
+                        )
+                    }
+                }
         )
         notificationBuilder.setColorized(true)
         notificationBuilder.setSilent(true)
