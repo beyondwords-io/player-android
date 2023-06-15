@@ -330,16 +330,10 @@ class MediaSession(private val webView: WebView) {
         }
 
         ensureNotificationChannel(context)
-
         val notificationBuilder = NotificationCompat.Builder(
             context,
             notificationChannelId ?: DEFAULT_NOTIFICATION_CHANNEL_ID
         )
-        notificationBuilder.setSmallIcon(R.drawable.ic_volume_up)
-        metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)?.let {
-            notificationBuilder.setContentTitle(it)
-        }
-        var playPauseButtonIndex = -1
         if (playbackState.actions and PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS != 0L) {
             notificationBuilder.addAction(
                 R.drawable.ic_skip_previous,
@@ -361,6 +355,7 @@ class MediaSession(private val webView: WebView) {
                 )
             )
         }
+        var playPauseButtonIndex = -1
         if (playbackState.state == PlaybackStateCompat.STATE_PLAYING) {
             if (playbackState.actions and PlaybackStateCompat.ACTION_PAUSE != 0L) {
                 playPauseButtonIndex = notificationBuilder.mActions.size
@@ -428,12 +423,16 @@ class MediaSession(private val webView: WebView) {
                     }
                 }
         )
+        metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)?.let {
+            notificationBuilder.setContentTitle(it)
+        }
         notificationBuilder.setColorized(true)
         notificationBuilder.setSilent(true)
         notificationBuilder.setAutoCancel(false)
         notificationBuilder.setSound(null)
         notificationBuilder.setVibrate(null)
         notificationBuilder.setOngoing(true)
+        notificationBuilder.setSmallIcon(R.drawable.ic_volume_up)
         notificationBuilder.setLargeIcon(artwork)
         notificationBuilder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
         notificationBuilder.priority = NotificationCompat.PRIORITY_LOW
