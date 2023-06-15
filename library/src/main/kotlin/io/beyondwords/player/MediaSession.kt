@@ -58,6 +58,10 @@ class MediaSession(private val webView: WebView) {
         }
     }
 
+    data class SeekToParams(
+        val seekTime: Long
+    )
+
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private val mediaSessionId = currentMediaSessionId.getAndIncrement()
     private val context = webView.context
@@ -274,17 +278,17 @@ class MediaSession(private val webView: WebView) {
     }
 
     private fun onFastForward() {
-        onAction("seekforward")
+        onAction("seekforward", listOf(object {}))
     }
 
     private fun onRewind() {
-        onAction("seekbackward")
+        onAction("seekbackward", listOf(object {}))
     }
 
     private fun onSkipToPrevious() {
         val actions = mediaSession.controller?.playbackState?.actions ?: 0L
         if (actions and PlaybackStateCompat.ACTION_REWIND != 0L) {
-            onAction("seekbackward")
+            onAction("seekbackward", listOf(object {}))
         } else {
             onAction("previoustrack")
         }
@@ -293,19 +297,17 @@ class MediaSession(private val webView: WebView) {
     private fun onSkipToNext() {
         val actions = mediaSession.controller?.playbackState?.actions ?: 0L
         if (actions and PlaybackStateCompat.ACTION_FAST_FORWARD != 0L) {
-            onAction("seekforward")
+            onAction("seekforward", listOf(object {}))
         } else {
             onAction("nexttrack")
         }
     }
 
     private fun onSeekTo(position: Long) {
-        onAction("seekto", listOf(object {
-            val seekTime = position / 1000
-        }))
+        onAction("seekto", listOf(SeekToParams(position / 1000)))
     }
 
-    private fun onAction(action: String, args: List<Any> = listOf(object {})) {
+    private fun onAction(action: String, args: List<Any> = listOf()) {
         webView.evaluateJavascript(
             """
             try {
