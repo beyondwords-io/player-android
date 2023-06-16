@@ -38,8 +38,8 @@ class MainActivity : AppCompatActivity() {
                 Log.d("PlayerView", "onPressedPlay($event)")
             }
 
-            override fun onAny(event: PlayerEvent) {
-                Log.d("PlayerView", "onAny($event)")
+            override fun onAny(event: PlayerEvent, settings: PlayerSettings) {
+                Log.d("PlayerView", "onAny($event, $settings)")
             }
         })
 

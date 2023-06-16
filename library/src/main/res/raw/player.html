@@ -84,7 +84,8 @@
                 widgetStyle: 'none',
             }))
             player.addEventListener("<any>", function (event) {
-                PlayerViewBridge.onEvent(JSON.stringify(event))
+                var state = getState()
+                PlayerViewBridge.onEvent(JSON.stringify(event), JSON.stringify(state))
                 if (event.initiatedBy === "media-session-api") {
                     updateMediaSession(event)
                 }
@@ -103,6 +104,58 @@
                     duration: player.duration,
                     playbackRate: player.playbackRate
                 })
+            }
+            function getState() {
+                return {
+                    playerApiUrl: player.playerApiUrl,
+                    projectId: player.projectId,
+                    contentId: player.contentId,
+                    playlistId: player.playlistId,
+                    sourceId: player.sourceId,
+                    sourceUrl: player.sourceUrl,
+                    playlist: player.playlist,
+                    showUserInterface: player.showUserInterface,
+                    playerStyle: player.playerStyle,
+                    playerTitle: player.playerTitle,
+                    callToAction: player.callToAction,
+                    skipButtonStyle: player.skipButtonStyle,
+                    playlistStyle: player.playlistStyle,
+                    playlistToggle: player.playlistToggle,
+                    downloadFormats: player.downloadFormats,
+                    mediaSession: player.mediaSession,
+                    content: player.content,
+                    contentIndex: player.contentIndex,
+                    introsOutros: player.introsOutros,
+                    introsOutrosIndex: player.introsOutrosIndex,
+                    adverts: player.adverts,
+                    advertIndex: player.advertIndex,
+                    persistentAdImage: player.persistentAdImage,
+                    persistentIndex: player.persistentIndex,
+                    duration: player.duration,
+                    currentTime: player.currentTime,
+                    playbackState: player.playbackState,
+                    playbackRate: player.playbackRate,
+                    widgetStyle: player.widgetStyle,
+                    widgetPosition: player.widgetPosition,
+                    widgetWidth: player.widgetWidth,
+                    textColor: player.textColor,
+                    backgroundColor: player.backgroundColor,
+                    iconColor: player.iconColor,
+                    highlightColor: player.highlightColor,
+                    logoIconEnabled: player.logoIconEnabled,
+                    highlightSections: player.highlightSections,
+                    clickableSections: player.clickableSections,
+                    segmentWidgetSections: player.segmentWidgetSections,
+                    segmentWidgetPosition: player.segmentWidgetPosition,
+                    currentSegment: player.currentSegment,
+                    hoveredSegment: player.hoveredSegment,
+                    advertConsent: player.advertConsent,
+                    analyticsConsent: player.analyticsConsent,
+                    analyticsCustomUrl: player.analyticsCustomUrl,
+                    analyticsTag: player.analyticsTag,
+                    transitions: player.transitions,
+                    captureErrors: player.captureErrors
+                }
             }
         }
     </script>

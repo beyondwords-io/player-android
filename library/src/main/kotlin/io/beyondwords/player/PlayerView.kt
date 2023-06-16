@@ -52,7 +52,7 @@ class PlayerView @JvmOverloads constructor(
         }
 
         @JavascriptInterface
-        fun onEvent(event: String) {
+        fun onEvent(event: String, settings: String) {
             val parsedEvent: PlayerEvent
             try {
                 parsedEvent = gson.fromJson(event, PlayerEvent::class.java)
@@ -61,12 +61,20 @@ class PlayerView @JvmOverloads constructor(
                 return
             }
 
+            val parsedSettings: PlayerSettings
+            try {
+                parsedSettings = gson.fromJson(settings, PlayerSettings::class.java)
+            } catch (e: Exception) {
+                Log.e("PlayerView:onEvent", "Failed to parse settings $settings", e)
+                return
+            }
+
             post {
                 listeners.forEach {
                     when (parsedEvent.type) {
                         "PressedPlay" -> it.onPressedPlay(parsedEvent)
                     }
-                    it.onAny(parsedEvent)
+                    it.onAny(parsedEvent, parsedSettings)
                 }
             }
         }
@@ -166,8 +174,8 @@ class PlayerView @JvmOverloads constructor(
         listeners.remove(listener)
     }
 
-    fun createPlayer(playerSettings: PlayerSettings) {
-        callFunction("createPlayer", listOf(playerSettings))
+    fun createPlayer(settings: PlayerSettings) {
+        callFunction("createPlayer", listOf(settings))
     }
 
     fun setSkipButtonStyle(skipButtonStyle: String) {

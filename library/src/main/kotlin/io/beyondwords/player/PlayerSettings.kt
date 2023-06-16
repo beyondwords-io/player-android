@@ -9,5 +9,9 @@ data class PlayerSettings(
     var sourceUrl: String? = null,
     var showUserInterface: Boolean? = null,
     var skipButtonStyle: String? = null,
-    var playerStyle: String? = null
+    var playerStyle: String? = null,
+    var currentTime: Float? = null,
+    var duration: Float? = null,
+    var playbackState: String? = null,
+    var playbackRate: Float? = null
 )
