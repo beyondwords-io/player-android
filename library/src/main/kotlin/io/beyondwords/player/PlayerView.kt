@@ -186,6 +186,10 @@ class PlayerView @JvmOverloads constructor(
         setProp("player.playerStyle", playerStyle)
     }
 
+    fun setPlaybackState(playbackState: String) {
+        setProp("player.playbackState", playbackState)
+    }
+
     private fun callFunction(name: String, args: List<Any>) {
         webView.evaluateJavascript(
             """
