@@ -3,7 +3,9 @@
 
 <head>
     <meta name="transparent" content="true">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/core-js/3.30.2/minified.js" integrity="sha512-u60H4fcHTGKAVICDO65xbPZn/eTY9S/VkZxMBdfwkCaStJH88PELFskcCVXpAAyVsASRhyiyjP3zEVkFd/3KEA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/core-js/3.30.2/minified.js"
+        integrity="sha512-u60H4fcHTGKAVICDO65xbPZn/eTY9S/VkZxMBdfwkCaStJH88PELFskcCVXpAAyVsASRhyiyjP3zEVkFd/3KEA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
         function MediaMetadata(props) {
             this.title = (props || {}).title
@@ -39,7 +41,7 @@
             setActionHandler: function (type, callback) {
                 navigator.mediaSession._actionHandlers[type] = callback
                 var attachedHandlerTypes = Object.keys(navigator.mediaSession._actionHandlers)
-                    .filter(function(type) {
+                    .filter(function (type) {
                         return !!navigator.mediaSession._actionHandlers[type]
                     })
                 MediaSessionBridge.onActionHandlersChanged(JSON.stringify(attachedHandlerTypes))
@@ -51,8 +53,27 @@
     </script>
     <script src='https://proxy.beyondwords.io/npm/@beyondwords/player@latest/dist/umd.js'></script>
     <script>
+        var resizeObserver = null
+        function stopResizeObserver() {
+            clearInterval(resizeObserver)
+        }
+        function startResizeObserver() {
+            // TODO @juggle/resize-observer
+            stopResizeObserver()
+            resizeObserver = setInterval(function () {
+                PlayerViewBridge.onResize(document.documentElement.offsetWidth, document.documentElement.offsetHeight)
+            }, 1000)
+        }
+
         var player = null
         function createPlayer(settings) {
+            if (settings.showUserInterface !== false) {
+                startResizeObserver()
+            } else {
+                stopResizeObserver()
+                PlayerViewBridge.onResize(0, 0)
+            }
+
             if (player !== null) {
                 player.destroy()
             }
@@ -68,7 +89,6 @@
                     updateMediaSession(event)
                 }
             })
-
             player.addEventListener("DurationUpdated", updateMediaSession)
             player.addEventListener("PlaybackRateUpdated", updateMediaSession)
             player.addEventListener("PlaybackEnded", updateMediaSession)
@@ -76,7 +96,7 @@
             player.addEventListener("PlaybackPlaying", updateMediaSession)
             player.addEventListener("PlaybackErrored", updateMediaSession)
 
-            function updateMediaSession(e) {
+            function updateMediaSession(event) {
                 navigator.mediaSession.playbackState = player.playbackState === 'stopped' ? 'none' : player.playbackState
                 navigator.mediaSession.setPositionState({
                     position: player.currentTime,
@@ -85,10 +105,6 @@
                 })
             }
         }
-        // TODO @juggle/resize-observer
-        setInterval(function () {
-            PlayerViewBridge.onResize(document.documentElement.offsetWidth, document.documentElement.offsetHeight)
-        }, 1000)
     </script>
 </head>
 
