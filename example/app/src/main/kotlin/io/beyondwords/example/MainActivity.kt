@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadOnClick() {
-        playerView?.createPlayer(
+        playerView?.load(
             PlayerSettings(
                 projectId = projectIdInput.text.toString(),
                 contentId = contentIdInput.text.toString(),

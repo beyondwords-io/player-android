@@ -174,8 +174,8 @@ class PlayerView @JvmOverloads constructor(
         listeners.remove(listener)
     }
 
-    fun createPlayer(settings: PlayerSettings) {
-        callFunction("createPlayer", listOf(settings))
+    fun load(settings: PlayerSettings) {
+        callFunction("load", listOf(settings))
     }
 
     fun setSkipButtonStyle(skipButtonStyle: String) {
