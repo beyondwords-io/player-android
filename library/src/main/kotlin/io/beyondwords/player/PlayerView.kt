@@ -190,6 +190,10 @@ class PlayerView @JvmOverloads constructor(
         setProp("player.playbackState", playbackState)
     }
 
+    fun setCurrentTime(currentTime: Float) {
+        setProp("player.currentTime", currentTime)
+    }
+
     private fun callFunction(name: String, args: List<Any>) {
         webView.evaluateJavascript(
             """
