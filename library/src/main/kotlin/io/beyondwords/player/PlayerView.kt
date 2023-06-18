@@ -36,7 +36,19 @@ class PlayerView @JvmOverloads constructor(
     private val webViewContainer = FrameLayout(context)
     private val webView = WebView(context)
     private val listeners = mutableSetOf<EventListener>()
+    private val pendingCommands = mutableListOf<String>()
     private val bridge = object {
+        @JavascriptInterface
+        fun onReady() {
+            post {
+                ready = true
+                pendingCommands.forEach {
+                    webView.evaluateJavascript(it, null)
+                }
+                pendingCommands.clear()
+            }
+        }
+
         @Suppress("UNUSED_PARAMETER")
         @JavascriptInterface
         fun onResize(width: Int, height: Int) {
@@ -108,6 +120,7 @@ class PlayerView @JvmOverloads constructor(
                 }
         }
     }
+    private var ready: Boolean = false
     private var mediaSession: MediaSession? = null
 
     init {
@@ -195,26 +208,33 @@ class PlayerView @JvmOverloads constructor(
     }
 
     private fun callFunction(name: String, args: List<Any>) {
-        webView.evaluateJavascript(
-            """
-                try {
-                    $name(${args.map { gson.toJson(it) }.joinToString(",") { it }})
-                } catch (e) {
-                    console.error("PlayerView:callFunction:" + e.message, e)
-                }
-            """, null
+        exec("""
+            try {
+                $name(${args.map { gson.toJson(it) }.joinToString(",") { it }})
+            } catch (e) {
+                console.error("PlayerView:callFunction:" + e.message, e)
+            }
+        """
         )
     }
 
     private fun setProp(name: String, value: Any) {
-        webView.evaluateJavascript(
+        exec(
             """
-                try {
-                    $name = ${gson.toJson(value)}
-                } catch (e) {
-                    console.error("PlayerView:setProp:" + e.message, e)
-                }
-            """, null
+            try {
+                $name = ${gson.toJson(value)}
+            } catch (e) {
+                console.error("PlayerView:setProp:" + e.message, e)
+            }
+        """
         )
+    }
+
+    private fun exec(command: String) {
+        if (!ready) {
+            pendingCommands.add(command)
+        } else {
+            webView.evaluateJavascript(command, null)
+        }
     }
 }
