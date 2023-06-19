@@ -1,5 +1,6 @@
 package io.beyondwords.example
 
+import android.content.Context
 import android.os.Bundle
 import android.widget.AutoCompleteTextView
 import android.widget.FrameLayout
@@ -37,6 +38,8 @@ class MainActivity : AppCompatActivity() {
 
         playerUIInput.addTextChangedListener { playerUIOnChange() }
         loadButton.setOnClickListener { loadOnClick() }
+
+        loadSettings()
     }
 
     private fun playerUIOnChange() {
@@ -44,6 +47,7 @@ class MainActivity : AppCompatActivity() {
             "default" -> {
                 playerStyleInput.isEnabled = true
             }
+
             "custom" -> {
                 playerStyleInput.isEnabled = false
             }
@@ -61,6 +65,7 @@ class MainActivity : AppCompatActivity() {
             skipButtonStyle = skipButtonStyleInput.text.toString(),
             playerStyle = playerStyleInput.text.toString()
         )
+        saveSettings()
         when (playerUIInput.text.toString()) {
             "default" -> {
                 defaultPlayerView = PlayerView(this).also {
@@ -75,6 +80,31 @@ class MainActivity : AppCompatActivity() {
                     playerContainerLayout.addView(it)
                 }
             }
+        }
+    }
+
+    private fun saveSettings() {
+        getPreferences(Context.MODE_PRIVATE)?.let {
+            with(it.edit()) {
+                putString("playerUIInput", playerUIInput.text.toString())
+                putString("projectIdInput", projectIdInput.text.toString())
+                putString("contentIdInput", contentIdInput.text.toString())
+                putString("playlistIdInput", playlistIdInput.text.toString())
+                putString("skipButtonStyleInput", skipButtonStyleInput.text.toString())
+                putString("playerStyleInput", playerStyleInput.text.toString())
+                apply()
+            }
+        }
+    }
+
+    private fun loadSettings() {
+        getPreferences(Context.MODE_PRIVATE)?.let {
+            playerUIInput.setText(it.getString("playerUIInput", "default"), false)
+            projectIdInput.setText(it.getString("projectIdInput", ""))
+            contentIdInput.setText(it.getString("contentIdInput", ""))
+            playlistIdInput.setText(it.getString("playlistIdInput", ""))
+            skipButtonStyleInput.setText(it.getString("skipButtonStyleInput", "auto"), false)
+            playerStyleInput.setText(it.getString("playerStyleInput", "standard"), false)
         }
     }
 }
