@@ -18,7 +18,7 @@ BeyondWords Android Player is built on top of the [BeyondWords Web Player](https
 
 ## Documentation
 
-1. [Compatibility](./doc/compatibility.md): A table that illustrates the compatibility of [Player Settings](https://github.com/beyondwords-io/player/blob/main/doc/player-settings.md) between Web and Android SDK
+1. [Compatibility](./doc/compatibility.md): A table that illustrates the compatibility between the Player Settings of the [Web Player](https://github.com/beyondwords-io/player) and the Android Player.
 
 ## License
 

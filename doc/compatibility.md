@@ -1,24 +1,53 @@
 ## Player Settings compatibility
 
-The table below illustrates compatibility between the Player Settings of the [Web Player SDK](https://github.com/beyondwords-io/player) and the Android Player SDK.
+The table below illustrates the compatibility between the Player Settings of the [Web Player](https://github.com/beyondwords-io/player) and the Android Player.
 
-| Name                      | Web               | Android     |
-|---------------------------|-------------------|-------------|
-| playerApiUrl              |:heavy_check_mark: |:heavy_check_mark: |
-| projectId                 |:heavy_check_mark: |:heavy_check_mark: |
-| contentId                 |:heavy_check_mark: |:heavy_check_mark: |
-| sourceId                  |:heavy_check_mark: |:heavy_check_mark: |
-| target                    |:heavy_check_mark: |-                  |
-
-## Events compatibility
-
-The table below illustrates compatibility between the Player Settings of the [Web Player SDK](https://github.com/beyondwords-io/player) and the Android Player SDK.
-
-| Name                      | Web               | Android     |
-|---------------------------|-------------------|-------------|
-| \<any\>                     |:heavy_check_mark: |:heavy_check_mark: |
-| PressedPlay               |:heavy_check_mark: |:heavy_check_mark: |
-
-## MediaSession compatibility
-
-Controlling the playback from a media notification is not yet supported.
+| Name                      | Supported         |
+|---------------------------|-------------------|
+| playerApiUrl              |:heavy_check_mark: |
+| projectId                 |:heavy_check_mark: |
+| contentId                 |:heavy_check_mark: |
+| playlistId                |:heavy_check_mark: |
+| sourceId                  |:heavy_check_mark: |
+| sourceUrl                 |:heavy_check_mark: |
+| playlist                  |-                  |
+| showUserInterface         |:heavy_check_mark: |
+| playerStyle               |:heavy_check_mark: |
+| playerTitle               |:heavy_check_mark: |
+| callToAction              |:heavy_check_mark: |
+| skipButtonStyle           |:heavy_check_mark: |
+| playlistStyle             |:heavy_check_mark: |
+| playlistToggle            |:heavy_check_mark: |
+| downloadFormats           |-                  |
+| mediaSession              |:heavy_check_mark: |
+| content                   |-                  |
+| contentIndex              |:heavy_check_mark: |
+| introsOutros              |-                  |
+| introsOutrosIndex         |:heavy_check_mark: |
+| adverts                   |-                  |
+| advertIndex               |:heavy_check_mark: |
+| persistentAdImage         |:heavy_check_mark: |
+| persistentIndex           |:heavy_check_mark: |
+| duration                  |:heavy_check_mark: |
+| currentTime               |:heavy_check_mark: |
+| playbackState             |:heavy_check_mark: |
+| playbackRate              |:heavy_check_mark: |
+| widgetStyle               |-                  |
+| widgetPosition            |-                  |
+| widgetWidth               |-                  |
+| textColor                 |:heavy_check_mark: |
+| backgroundColor           |:heavy_check_mark: |
+| iconColor                 |:heavy_check_mark: |
+| highlightColor            |-                  |
+| logoIconEnabled           |:heavy_check_mark: |
+| highlightSections         |-                  |
+| clickableSections         |-                  |
+| segmentWidgetSections     |-                  |
+| segmentWidgetPosition     |-                  |
+| currentSegment            |-                  |
+| advertConsent             |:heavy_check_mark: |
+| analyticsConsent          |:heavy_check_mark: |
+| analyticsCustomUrl        |:heavy_check_mark: |
+| analyticsTag              |:heavy_check_mark: |
+| transitions               |-                  |
+| captureErrors             |:heavy_check_mark: |
