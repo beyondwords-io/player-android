@@ -16,6 +16,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var playerUIInput: AutoCompleteTextView
     private lateinit var projectIdInput: TextInputEditText
     private lateinit var contentIdInput: TextInputEditText
+    private lateinit var sourceIdInput: TextInputEditText
     private lateinit var playlistIdInput: TextInputEditText
     private lateinit var skipButtonStyleInput: AutoCompleteTextView
     private lateinit var playerStyleInput: AutoCompleteTextView
@@ -31,6 +32,7 @@ class MainActivity : AppCompatActivity() {
         playerUIInput = findViewById(R.id.player_ui_input)
         projectIdInput = findViewById(R.id.project_id_input)
         contentIdInput = findViewById(R.id.content_id_input)
+        sourceIdInput = findViewById(R.id.source_id_input)
         playlistIdInput = findViewById(R.id.playlist_id_input)
         skipButtonStyleInput = findViewById(R.id.skip_button_style_input)
         playerStyleInput = findViewById(R.id.player_style_input)
@@ -62,6 +64,7 @@ class MainActivity : AppCompatActivity() {
         val settings = PlayerSettings(
             projectId = projectIdInput.text.toString(),
             contentId = contentIdInput.text.toString(),
+            sourceId = sourceIdInput.text.toString(),
             playlistId = playlistIdInput.text.toString(),
             skipButtonStyle = skipButtonStyleInput.text.toString(),
             playerStyle = playerStyleInput.text.toString()
@@ -89,6 +92,7 @@ class MainActivity : AppCompatActivity() {
                 putString("playerUIInput", playerUIInput.text.toString())
                 putString("projectIdInput", projectIdInput.text.toString())
                 putString("contentIdInput", contentIdInput.text.toString())
+                putString("sourceIdInput", sourceIdInput.text.toString())
                 putString("playlistIdInput", playlistIdInput.text.toString())
                 putString("skipButtonStyleInput", skipButtonStyleInput.text.toString())
                 putString("playerStyleInput", playerStyleInput.text.toString())
@@ -102,6 +106,7 @@ class MainActivity : AppCompatActivity() {
             playerUIInput.setText(it.getString("playerUIInput", "default"), false)
             projectIdInput.setText(it.getString("projectIdInput", ""))
             contentIdInput.setText(it.getString("contentIdInput", ""))
+            sourceIdInput.setText(it.getString("sourceIdInput", ""))
             playlistIdInput.setText(it.getString("playlistIdInput", ""))
             skipButtonStyleInput.setText(it.getString("skipButtonStyleInput", "auto"), false)
             playerStyleInput.setText(it.getString("playerStyleInput", "standard"), false)
