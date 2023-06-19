@@ -72,7 +72,9 @@ class CustomPlayerView @JvmOverloads constructor(
     }
 
     fun load(settings: PlayerSettings) {
-        playerView.load(settings)
+        playerView.load(settings.copy(
+            showUserInterface = false
+        ))
     }
 
     override fun onAttachedToWindow() {
