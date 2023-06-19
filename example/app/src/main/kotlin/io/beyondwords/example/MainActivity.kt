@@ -55,6 +55,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadOnClick() {
+        saveSettings()
         playerContainerLayout.removeAllViews()
         defaultPlayerView = null
         customPlayerView = null
@@ -65,7 +66,6 @@ class MainActivity : AppCompatActivity() {
             skipButtonStyle = skipButtonStyleInput.text.toString(),
             playerStyle = playerStyleInput.text.toString()
         )
-        saveSettings()
         when (playerUIInput.text.toString()) {
             "default" -> {
                 defaultPlayerView = PlayerView(this).also {
