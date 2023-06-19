@@ -82,12 +82,7 @@ class PlayerView @JvmOverloads constructor(
             }
 
             post {
-                listeners.forEach {
-                    when (parsedEvent.type) {
-                        "PressedPlay" -> it.onPressedPlay(parsedEvent)
-                    }
-                    it.onAny(parsedEvent, parsedSettings)
-                }
+                listeners.forEach { it.onEvent(parsedEvent, parsedSettings) }
             }
         }
     }

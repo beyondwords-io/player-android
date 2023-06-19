@@ -23,7 +23,7 @@ class CustomPlayerView @JvmOverloads constructor(
     private val seekSlider: Slider by lazy { findViewById(R.id.seek_slider) }
     private val durationTextView: TextView by lazy { findViewById(R.id.duration_text_view) }
     private val playerEventListener = object : io.beyondwords.player.EventListener {
-        override fun onAny(event: PlayerEvent, settings: PlayerSettings) {
+        override fun onEvent(event: PlayerEvent, settings: PlayerSettings) {
             playPauseButton.isEnabled = true
             when (settings.playbackState) {
                 "playing" -> {
