@@ -5,6 +5,7 @@
     <uses-sdk tools:overrideLibrary="io.beyondwords.player" />
 
     <application
+        android:name=".MainApplication"
         android:label="BeyondWords Player SDK Example"
         android:theme="@style/Theme.MaterialComponents.Light">
         <activity
