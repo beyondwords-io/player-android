@@ -13,11 +13,9 @@ jobs:
       - name: Setup JDK 17
         uses: actions/setup-java@v3
         with:
-          distribution: 'zulu'
+          distribution: "zulu"
           java-version: 17
       - name: Setup Android SDK
         uses: android-actions/setup-android@v2
       - name: Build Player library
         run: ./gradlew --no-daemon --stacktrace build
-      - name: Build Player example
-        run: cd ./example && ./gradlew --no-daemon --stacktrace assembleRelease
