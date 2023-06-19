@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity() {
             projectId = projectIdInput.text.toString(),
             contentId = contentIdInput.text.toString(),
             sourceId = sourceIdInput.text.toString(),
-            playlistId = playlistIdInput.text.toString(),
+            playlistId = playlistIdInput.text.toString().toIntOrNull(),
             skipButtonStyle = skipButtonStyleInput.text.toString(),
             playerStyle = playerStyleInput.text.toString()
         )
