@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string-array name="player_ui_items">
+        <item>default</item>
+        <item>custom</item>
+    </string-array>
     <string-array name="player_style_items">
         <item>small</item>
         <item>standard</item>
