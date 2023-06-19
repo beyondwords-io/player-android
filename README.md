@@ -1,4 +1,6 @@
-# BeyondWords Android Player SDK
+## BeyondWords Android Player
+
+**Note:** This is a beta version of the new player that we’re sharing with customers as we finalize its documentation.
 
 ## License
 
