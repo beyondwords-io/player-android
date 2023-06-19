@@ -84,8 +84,8 @@
                 widgetStyle: 'none',
             }))
             player.addEventListener("<any>", function (event) {
-                var state = getState()
-                PlayerViewBridge.onEvent(JSON.stringify(event), JSON.stringify(state))
+                var settings = getPlayerSettings()
+                PlayerViewBridge.onEvent(JSON.stringify(event), JSON.stringify(settings))
                 if (event.initiatedBy === "media-session-api") {
                     updateMediaSession(event)
                 }
@@ -105,7 +105,7 @@
                     playbackRate: player.playbackRate
                 })
             }
-            function getState() {
+            function getPlayerSettings() {
                 return {
                     playerApiUrl: player.playerApiUrl,
                     projectId: player.projectId,
