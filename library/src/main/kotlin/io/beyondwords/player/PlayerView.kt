@@ -26,8 +26,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
+@RequiresApi(24)
 @SuppressLint("SetJavaScriptEnabled")
-class PlayerView @JvmOverloads @RequiresApi(24) constructor(
+class PlayerView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,

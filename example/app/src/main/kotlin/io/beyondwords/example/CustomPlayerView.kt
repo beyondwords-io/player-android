@@ -12,7 +12,8 @@ import io.beyondwords.player.PlayerSettings
 import io.beyondwords.player.PlayerView
 import kotlin.math.roundToLong
 
-class CustomPlayerView @JvmOverloads @RequiresApi(24) constructor(
+@RequiresApi(24)
+class CustomPlayerView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,

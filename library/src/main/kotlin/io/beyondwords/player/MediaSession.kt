@@ -32,7 +32,8 @@ import kotlinx.coroutines.withContext
 import java.net.URL
 import java.util.concurrent.atomic.AtomicInteger
 
-class MediaSession @RequiresApi(24) constructor(private val webView: WebView) {
+@RequiresApi(24)
+class MediaSession constructor(private val webView: WebView) {
     companion object {
         private const val DEFAULT_NOTIFICATION_CHANNEL_ID = "BeyondWords"
         private val gson: Gson by lazy { GsonBuilder().create() }
