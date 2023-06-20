@@ -44,13 +44,14 @@ data class PlayerSettings(
     )
 
     data class Media(
-        var id: Int,
+        var id: Int? = null,
         var url: String,
-        var contentType: String,
+        var contentType: String? = null,
     )
 
     data class Segment(
         var marker: String,
+        var section: String,
         var startTime: Float,
         var duration: Float? = null
     )
