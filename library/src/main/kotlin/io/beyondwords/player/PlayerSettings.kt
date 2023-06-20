@@ -18,6 +18,7 @@ data class PlayerSettings(
     var mediaSession: String? = null,
     var content: List<Content>? = null,
     var contentIndex: Int? = null,
+    var introsOutros: List<IntroOutro>? = null,
     var introsOutrosIndex: Int? = null,
     var advertIndex: Int? = null,
     var persistentAdImage: Boolean? = null,
@@ -66,5 +67,10 @@ data class PlayerSettings(
         var duration: Float? = null,
         var media: List<Media>? = null,
         var segments: List<Segment>? = null
+    )
+
+    data class IntroOutro(
+        val placement: String,
+        var media: List<Media>? = null,
     )
 }
