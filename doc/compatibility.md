@@ -20,7 +20,7 @@ The table below illustrates the compatibility between the Player Settings of the
 | playlistToggle            |:heavy_check_mark: |
 | downloadFormats           |-                  |
 | mediaSession              |:heavy_check_mark: |
-| content                   |-                  |
+| content                   |:heavy_check_mark: |
 | contentIndex              |:heavy_check_mark: |
 | introsOutros              |-                  |
 | introsOutrosIndex         |:heavy_check_mark: |
