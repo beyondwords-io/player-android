@@ -67,36 +67,34 @@ class MediaSession constructor(private val webView: WebView) {
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private val mediaSessionId = currentMediaSessionId.getAndIncrement()
     private val context = webView.context
-    private val mediaSession = MediaSessionCompat(context, "BeyondWords").apply {
-        setCallback(object : MediaSessionCompat.Callback() {
-            override fun onPlay() {
-                this@MediaSession.onPlay()
-            }
+    private val mediaSessionCallback = object : MediaSessionCompat.Callback() {
+        override fun onPlay() {
+            this@MediaSession.onPlay()
+        }
 
-            override fun onPause() {
-                this@MediaSession.onPause()
-            }
+        override fun onPause() {
+            this@MediaSession.onPause()
+        }
 
-            override fun onFastForward() {
-                this@MediaSession.onFastForward()
-            }
+        override fun onFastForward() {
+            this@MediaSession.onFastForward()
+        }
 
-            override fun onRewind() {
-                this@MediaSession.onRewind()
-            }
+        override fun onRewind() {
+            this@MediaSession.onRewind()
+        }
 
-            override fun onSkipToPrevious() {
-                this@MediaSession.onSkipToPrevious()
-            }
+        override fun onSkipToPrevious() {
+            this@MediaSession.onSkipToPrevious()
+        }
 
-            override fun onSkipToNext() {
-                this@MediaSession.onSkipToNext()
-            }
+        override fun onSkipToNext() {
+            this@MediaSession.onSkipToNext()
+        }
 
-            override fun onSeekTo(position: Long) {
-                this@MediaSession.onSeekTo(position)
-            }
-        })
+        override fun onSeekTo(position: Long) {
+            this@MediaSession.onSeekTo(position)
+        }
     }
     private val mediaButtonReceiver = object : MediaButtonReceiver(mediaSessionId) {
         override fun onPlay() {
@@ -135,6 +133,7 @@ class MediaSession constructor(private val webView: WebView) {
             }
 
             coroutineScope.launch {
+                val mediaSession = this@MediaSession.mediaSession ?: return@launch
                 val playbackState = mediaSession.controller?.playbackState
                 val playbackStateBuilder = playbackState?.let {
                     PlaybackStateCompat.Builder(it)
@@ -167,6 +166,7 @@ class MediaSession constructor(private val webView: WebView) {
             artworkUrl: String?
         ) {
             coroutineScope.launch {
+                val mediaSession = this@MediaSession.mediaSession ?: return@launch
                 val metadata = mediaSession.controller?.metadata
                 if (metadata?.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI) != artworkUrl) {
                     artwork = null
@@ -201,6 +201,7 @@ class MediaSession constructor(private val webView: WebView) {
         @JavascriptInterface
         fun onPositionStateChanged(position: Float, duration: Float, playbackSpeed: Float) {
             coroutineScope.launch {
+                val mediaSession = this@MediaSession.mediaSession ?: return@launch
                 val metadata = mediaSession.controller?.metadata
                 val metadataBuilder = metadata?.let {
                     MediaMetadataCompat.Builder(it)
@@ -231,6 +232,7 @@ class MediaSession constructor(private val webView: WebView) {
         @JavascriptInterface
         fun onPlaybackStateChanged(state: String) {
             coroutineScope.launch {
+                val mediaSession = this@MediaSession.mediaSession ?: return@launch
                 val playbackState = mediaSession.controller?.playbackState
                 val playbackStateBuilder = playbackState?.let {
                     PlaybackStateCompat.Builder(it)
@@ -254,10 +256,14 @@ class MediaSession constructor(private val webView: WebView) {
             }
         }
     }
+    private var mediaSession: MediaSessionCompat? = null
     private var artwork: Bitmap? = null
     private var downloadArtworkJob: Job? = null
 
     init {
+        mediaSession = MediaSessionCompat(context, "BeyondWords").apply {
+            setCallback(mediaSessionCallback)
+        }
         context.registerReceiver(mediaButtonReceiver, IntentFilter(Intent.ACTION_MEDIA_BUTTON))
         webView.addJavascriptInterface(bridge, "MediaSessionBridge")
     }
@@ -266,28 +272,34 @@ class MediaSession constructor(private val webView: WebView) {
         context.unregisterReceiver(mediaButtonReceiver)
         webView.removeJavascriptInterface("MediaSessionBridge")
         coroutineScope.cancel()
-        mediaSession.isActive = false
-        mediaSession.release()
-        updateNotification()
+        mediaSession?.isActive = false
+        mediaSession?.release()
+        mediaSession = null
+        cancelNotification()
     }
 
     private fun onPlay() {
+        this@MediaSession.mediaSession ?: return
         onAction("play")
     }
 
     private fun onPause() {
+        this@MediaSession.mediaSession ?: return
         onAction("pause")
     }
 
     private fun onFastForward() {
+        this@MediaSession.mediaSession ?: return
         onAction("seekforward", listOf(object {}))
     }
 
     private fun onRewind() {
+        this@MediaSession.mediaSession ?: return
         onAction("seekbackward", listOf(object {}))
     }
 
     private fun onSkipToPrevious() {
+        val mediaSession = this@MediaSession.mediaSession ?: return
         val actions = mediaSession.controller?.playbackState?.actions ?: 0L
         if (actions and PlaybackStateCompat.ACTION_REWIND != 0L) {
             onAction("seekbackward", listOf(object {}))
@@ -297,6 +309,7 @@ class MediaSession constructor(private val webView: WebView) {
     }
 
     private fun onSkipToNext() {
+        val mediaSession = this@MediaSession.mediaSession ?: return
         val actions = mediaSession.controller?.playbackState?.actions ?: 0L
         if (actions and PlaybackStateCompat.ACTION_FAST_FORWARD != 0L) {
             onAction("seekforward", listOf(object {}))
@@ -306,6 +319,7 @@ class MediaSession constructor(private val webView: WebView) {
     }
 
     private fun onSeekTo(position: Long) {
+        this@MediaSession.mediaSession ?: return
         onAction("seekto", listOf(SeekToParams(position / 1000)))
     }
 
@@ -323,13 +337,18 @@ class MediaSession constructor(private val webView: WebView) {
         )
     }
 
+    private fun cancelNotification() {
+        ContextCompat.getSystemService(context, NotificationManager::class.java)
+            ?.cancel(mediaSessionId)
+    }
+
     @SuppressLint("RestrictedApi")
     private fun updateNotification() {
+        val mediaSession = this@MediaSession.mediaSession ?: return
         val metadata = mediaSession.controller?.metadata
         val playbackState = mediaSession.controller?.playbackState
         if (!mediaSession.isActive || metadata == null || playbackState == null || playbackState.state == PlaybackStateCompat.STATE_NONE) {
-            ContextCompat.getSystemService(context, NotificationManager::class.java)
-                ?.cancel(mediaSessionId)
+            cancelNotification()
             return
         }
 
