@@ -7,6 +7,7 @@ data class PlayerSettings(
     var playlistId: Int? = null,
     var sourceId: String? = null,
     var sourceUrl: String? = null,
+    var playlist: List<Identifier>? = null,
     var showUserInterface: Boolean? = null,
     var playerStyle: String? = null,
     var playerTitle: String? = null,
@@ -33,4 +34,11 @@ data class PlayerSettings(
     var analyticsCustomUrl: String? = null,
     var analyticsTag: String? = null,
     var captureErrors: Boolean? = null
-)
+) {
+    data class Identifier(
+        var contentId: String? = null,
+        var playlistId: Int? = null,
+        var sourceId: String? = null,
+        var sourceUrl: String? = null,
+    )
+}
