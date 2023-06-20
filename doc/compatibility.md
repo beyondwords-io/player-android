@@ -6,7 +6,7 @@ The table below illustrates the compatibility between the Player Settings of the
 |---------------------------|-------------------|
 | playerApiUrl              |:heavy_check_mark: |
 | projectId                 |:heavy_check_mark: |
-| contentId                 |:heavy_check_mark: |
+| contentId *               |:heavy_check_mark: |
 | playlistId                |:heavy_check_mark: |
 | sourceId                  |:heavy_check_mark: |
 | sourceUrl                 |:heavy_check_mark: |
@@ -51,3 +51,5 @@ The table below illustrates the compatibility between the Player Settings of the
 | analyticsTag              |:heavy_check_mark: |
 | transitions               |-                  |
 | captureErrors             |:heavy_check_mark: |
+
+* To use `contentId` with legacy integer id you must convert it to string
