@@ -130,7 +130,7 @@ class MediaSession constructor(private val webView: WebView) {
             try {
                 parsedTypes = gson.fromJson(types, object : TypeToken<List<String>>() {}.type)
             } catch (e: Exception) {
-                Log.e("MediaSession:onActionHandlersChanged", "Failed to parse types $types", e)
+                Log.e("MediaSession", "onActionHandlersChanged: Failed to parse types $types", e)
                 return
             }
 

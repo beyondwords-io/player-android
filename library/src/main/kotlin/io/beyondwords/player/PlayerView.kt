@@ -75,7 +75,7 @@ class PlayerView @JvmOverloads constructor(
             try {
                 parsedEvent = gson.fromJson(event, PlayerEvent::class.java)
             } catch (e: Exception) {
-                Log.e("PlayerView:onEvent", "Failed to parse event $event", e)
+                Log.e("PlayerView", "onEvent: Failed to parse event $event", e)
                 return
             }
 
@@ -83,7 +83,7 @@ class PlayerView @JvmOverloads constructor(
             try {
                 parsedSettings = gson.fromJson(settings, PlayerSettings::class.java)
             } catch (e: Exception) {
-                Log.e("PlayerView:onEvent", "Failed to parse settings $settings", e)
+                Log.e("PlayerView", "onEvent: Failed to parse settings $settings", e)
                 return
             }
 
