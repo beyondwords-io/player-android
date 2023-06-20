@@ -10,7 +10,7 @@ The table below illustrates the compatibility between the Player Settings of the
 | playlistId                |:heavy_check_mark: |
 | sourceId                  |:heavy_check_mark: |
 | sourceUrl                 |:heavy_check_mark: |
-| playlist                  |-                  |
+| playlist                  |:heavy_check_mark: |
 | showUserInterface         |:heavy_check_mark: |
 | playerStyle               |:heavy_check_mark: |
 | playerTitle               |:heavy_check_mark: |
