@@ -16,6 +16,7 @@ data class PlayerSettings(
     var playlistStyle: String? = null,
     var playlistToggle: String? = null,
     var mediaSession: String? = null,
+    var content: List<Content>? = null,
     var contentIndex: Int? = null,
     var introsOutrosIndex: Int? = null,
     var advertIndex: Int? = null,
@@ -40,5 +41,29 @@ data class PlayerSettings(
         var playlistId: Int? = null,
         var sourceId: String? = null,
         var sourceUrl: String? = null,
+    )
+
+    data class Media(
+        var id: Int,
+        var url: String,
+        var contentType: String,
+    )
+
+    data class Segment(
+        var marker: String,
+        var startTime: Float,
+        var duration: Float? = null
+    )
+
+    data class Content(
+        var id: String? = null,
+        var title: String? = null,
+        var imageUrl: String? = null,
+        var sourceId: String? = null,
+        var sourceUrl: String? = null,
+        var adsEnabled: Boolean? = null,
+        var duration: Float? = null,
+        var media: List<Media>? = null,
+        var segments: List<Segment>? = null
     )
 }
