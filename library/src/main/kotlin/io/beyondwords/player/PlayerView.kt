@@ -21,6 +21,10 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 
 @SuppressLint("SetJavaScriptEnabled", "ObsoleteSdkInt")
 class PlayerView @JvmOverloads constructor(
@@ -33,6 +37,7 @@ class PlayerView @JvmOverloads constructor(
         private val gson: Gson by lazy { GsonBuilder().create() }
     }
 
+    private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private val webViewContainer = FrameLayout(context)
     private val webView = WebView(context)
     private val listeners = mutableSetOf<EventListener>()
@@ -40,7 +45,7 @@ class PlayerView @JvmOverloads constructor(
     private val bridge = object {
         @JavascriptInterface
         fun onReady() {
-            post {
+            coroutineScope.launch {
                 ready = true
                 pendingCommands.forEach {
                     webView.evaluateJavascript(it, null)
@@ -52,7 +57,7 @@ class PlayerView @JvmOverloads constructor(
         @Suppress("UNUSED_PARAMETER")
         @JavascriptInterface
         fun onResize(width: Int, height: Int) {
-            webViewContainer.post {
+            coroutineScope.launch {
                 webViewContainer.updateLayoutParams {
                     this.height = TypedValue.applyDimension(
                         TypedValue.COMPLEX_UNIT_DIP,
@@ -81,7 +86,7 @@ class PlayerView @JvmOverloads constructor(
                 return
             }
 
-            post {
+            coroutineScope.launch {
                 listeners.forEach { it.onEvent(parsedEvent, parsedSettings) }
             }
         }
