@@ -7,8 +7,10 @@ import android.content.Intent
 import android.os.Build
 import android.support.v4.media.session.PlaybackStateCompat
 import android.view.KeyEvent
+import androidx.annotation.RequiresApi
 
-open class MediaButtonReceiver(private val mediaSessionId: Int) : BroadcastReceiver() {
+open class MediaButtonReceiver @RequiresApi(24) constructor(private val mediaSessionId: Int) :
+    BroadcastReceiver() {
     companion object {
         const val EXTRA_MEDIA_SESSION_ID = "io.beyondwords.player.MEDIA_SESSION_ID"
 

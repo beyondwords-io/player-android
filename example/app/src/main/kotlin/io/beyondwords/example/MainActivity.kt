@@ -1,6 +1,7 @@
 package io.beyondwords.example
 
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.widget.AutoCompleteTextView
 import android.widget.FrameLayout
@@ -69,18 +70,20 @@ class MainActivity : AppCompatActivity() {
             skipButtonStyle = skipButtonStyleInput.text.toString(),
             playerStyle = playerStyleInput.text.toString()
         )
-        when (playerUIInput.text.toString()) {
-            "default" -> {
-                defaultPlayerView = PlayerView(this).also {
-                    it.load(settings)
-                    playerContainerLayout.addView(it)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            when (playerUIInput.text.toString()) {
+                "default" -> {
+                    defaultPlayerView = PlayerView(this).also {
+                        it.load(settings)
+                        playerContainerLayout.addView(it)
+                    }
                 }
-            }
 
-            "custom" -> {
-                customPlayerView = CustomPlayerView(this).also {
-                    it.load(settings)
-                    playerContainerLayout.addView(it)
+                "custom" -> {
+                    customPlayerView = CustomPlayerView(this).also {
+                        it.load(settings)
+                        playerContainerLayout.addView(it)
+                    }
                 }
             }
         }

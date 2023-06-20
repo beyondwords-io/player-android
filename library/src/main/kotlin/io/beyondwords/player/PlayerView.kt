@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
-import android.os.Build
 import android.util.AttributeSet
 import android.util.Log
 import android.util.TypedValue
@@ -17,6 +16,7 @@ import android.webkit.WebSettings.LOAD_NO_CACHE
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.FrameLayout
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
 import com.google.gson.Gson
@@ -26,8 +26,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
-@SuppressLint("SetJavaScriptEnabled", "ObsoleteSdkInt")
-class PlayerView @JvmOverloads constructor(
+@SuppressLint("SetJavaScriptEnabled")
+class PlayerView @JvmOverloads @RequiresApi(24) constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
@@ -124,10 +124,6 @@ class PlayerView @JvmOverloads constructor(
     private var mediaSession: MediaSession? = null
 
     init {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            throw Exception("Beyondwords Player SDK is supported on Android 7+")
-        }
-
         addView(webViewContainer, LayoutParams(LayoutParams.MATCH_PARENT, 0))
         webViewContainer.addView(
             webView,

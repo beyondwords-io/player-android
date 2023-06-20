@@ -3,6 +3,7 @@ package io.beyondwords.example
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.slider.Slider
@@ -11,7 +12,7 @@ import io.beyondwords.player.PlayerSettings
 import io.beyondwords.player.PlayerView
 import kotlin.math.roundToLong
 
-class CustomPlayerView @JvmOverloads constructor(
+class CustomPlayerView @JvmOverloads @RequiresApi(24) constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
@@ -72,9 +73,11 @@ class CustomPlayerView @JvmOverloads constructor(
     }
 
     fun load(settings: PlayerSettings) {
-        playerView.load(settings.copy(
-            showUserInterface = false
-        ))
+        playerView.load(
+            settings.copy(
+                showUserInterface = false
+            )
+        )
     }
 
     override fun onAttachedToWindow() {
