@@ -40,7 +40,6 @@ class PlayerView @JvmOverloads constructor(
 
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private val webViewContainer = FrameLayout(context)
-    private val webView = WebView(context)
     private val listeners = mutableSetOf<EventListener>()
     private val pendingCommands = mutableListOf<String>()
     private val bridge = object {
@@ -49,7 +48,7 @@ class PlayerView @JvmOverloads constructor(
             coroutineScope.launch {
                 ready = true
                 pendingCommands.forEach {
-                    webView.evaluateJavascript(it, null)
+                    webView?.evaluateJavascript(it, null)
                 }
                 pendingCommands.clear()
             }
@@ -122,58 +121,62 @@ class PlayerView @JvmOverloads constructor(
         }
     }
     private var ready: Boolean = false
+    private var webView: WebView? = null
     private var mediaSession: MediaSession? = null
 
     init {
         addView(webViewContainer, LayoutParams(LayoutParams.MATCH_PARENT, 0))
-        webViewContainer.addView(
-            webView,
-            LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
-        )
-
-        webView.settings.apply {
-            javaScriptEnabled = true
-            domStorageEnabled = true
-            allowFileAccess = false
-            databaseEnabled = false
-            cacheMode = LOAD_NO_CACHE
-            mediaPlaybackRequiresUserGesture = false
-            builtInZoomControls = false
-            displayZoomControls = false
-            loadWithOverviewMode = false
-            setSupportZoom(false)
-            setGeolocationEnabled(false)
-            setSupportMultipleWindows(false)
-        }
-
-        webView.setBackgroundColor(Color.TRANSPARENT)
-        webView.webViewClient = webViewClient
-        webView.setDownloadListener(downloadListener)
-        webView.addJavascriptInterface(bridge, "PlayerViewBridge")
     }
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        mediaSession = MediaSession(webView)
-        webView.loadDataWithBaseURL(
-            "https://beyondwords.io",
-            resources.openRawResource(R.raw.player)
-                .bufferedReader()
-                .use { it.readText() },
-            "text/html",
-            "UTF-8",
-            null
-        )
+        webView = WebView(context).also {
+            webViewContainer.addView(
+                it,
+                LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+            )
+            it.settings.apply {
+                javaScriptEnabled = true
+                domStorageEnabled = true
+                allowFileAccess = false
+                databaseEnabled = false
+                cacheMode = LOAD_NO_CACHE
+                mediaPlaybackRequiresUserGesture = false
+                builtInZoomControls = false
+                displayZoomControls = false
+                loadWithOverviewMode = false
+                setSupportZoom(false)
+                setGeolocationEnabled(false)
+                setSupportMultipleWindows(false)
+            }
+            it.webViewClient = webViewClient
+            it.setDownloadListener(downloadListener)
+            it.setBackgroundColor(Color.TRANSPARENT)
+            it.addJavascriptInterface(bridge, "PlayerViewBridge")
+            mediaSession = MediaSession(it)
+            it.loadDataWithBaseURL(
+                "https://beyondwords.io",
+                resources.openRawResource(R.raw.player)
+                    .bufferedReader()
+                    .use { it.readText() },
+                "text/html",
+                "UTF-8",
+                null
+            )
+        }
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
+        ready = false
         mediaSession?.release()
         mediaSession = null
-        webView.loadUrl("about:blank")
+        webViewContainer.removeAllViews()
         webViewContainer.updateLayoutParams {
             this.height = 0
         }
+        webView?.destroy()
+        webView = null
     }
 
     fun addEventListener(listener: EventListener) {
@@ -231,7 +234,7 @@ class PlayerView @JvmOverloads constructor(
         if (!ready) {
             pendingCommands.add(command)
         } else {
-            webView.evaluateJavascript(command, null)
+            webView?.evaluateJavascript(command, null)
         }
     }
 }
