@@ -324,6 +324,10 @@ class PlayerView @JvmOverloads constructor(
         setProp("player.advertConsent", advertConsent)
     }
 
+    fun setAnalyticsConsent(analyticsConsent: String) {
+        setProp("player.analyticsConsent", analyticsConsent)
+    }
+
     private fun callFunction(name: String, args: List<Any>) {
         exec("""
             try {
