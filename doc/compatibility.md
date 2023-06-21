@@ -44,7 +44,7 @@ The table below illustrates the compatibility between the Player Settings of the
 | clickableSections         |-                  |
 | segmentWidgetSections     |-                  |
 | segmentWidgetPosition     |-                  |
-| currentSegment            |-                  |
+| currentSegment            |:heavy_check_mark: |
 | advertConsent             |:heavy_check_mark: |
 | analyticsConsent          |:heavy_check_mark: |
 | analyticsCustomUrl        |:heavy_check_mark: |
