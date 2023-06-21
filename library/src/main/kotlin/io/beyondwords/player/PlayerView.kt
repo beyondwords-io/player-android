@@ -84,7 +84,8 @@ class PlayerView @JvmOverloads constructor(
 
             val parsedSettings: PlayerSettings
             try {
-                parsedSettings = gson.fromJson(settings, object : TypeToken<PlayerSettings>() {}.type)
+                parsedSettings =
+                    gson.fromJson(settings, object : TypeToken<PlayerSettings>() {}.type)
             } catch (e: Exception) {
                 Log.e("PlayerView", "onEvent: Failed to parse settings $settings", e)
                 return
@@ -238,7 +239,6 @@ class PlayerView @JvmOverloads constructor(
     fun setSkipButtonStyle(skipButtonStyle: String) {
         setProp("player.skipButtonStyle", skipButtonStyle)
     }
-
 
     fun setPlaybackState(playbackState: String) {
         setProp("player.playbackState", playbackState)
