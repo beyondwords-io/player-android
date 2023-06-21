@@ -328,6 +328,10 @@ class PlayerView @JvmOverloads constructor(
         setProp("player.analyticsConsent", analyticsConsent)
     }
 
+    fun setAnalyticsCustomUrl(analyticsCustomUrl: String) {
+        setProp("player.analyticsCustomUrl", analyticsCustomUrl)
+    }
+
     private fun callFunction(name: String, args: List<Any>) {
         exec("""
             try {
