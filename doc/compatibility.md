@@ -24,7 +24,7 @@ The table below illustrates the compatibility between the Player Settings of the
 | contentIndex              |:heavy_check_mark: |
 | introsOutros              |:heavy_check_mark: |
 | introsOutrosIndex         |:heavy_check_mark: |
-| adverts                   |-                  |
+| adverts                   |:heavy_check_mark: |
 | advertIndex               |:heavy_check_mark: |
 | persistentAdImage         |:heavy_check_mark: |
 | persistentIndex           |:heavy_check_mark: |
