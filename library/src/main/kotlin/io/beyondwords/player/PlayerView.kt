@@ -236,6 +236,10 @@ class PlayerView @JvmOverloads constructor(
         setProp("player.playerTitle", playerTitle)
     }
 
+    fun setCallToAction(callToAction: String) {
+        setProp("player.callToAction", callToAction)
+    }
+
     fun setSkipButtonStyle(skipButtonStyle: String) {
         setProp("player.skipButtonStyle", skipButtonStyle)
     }
