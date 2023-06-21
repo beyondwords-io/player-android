@@ -300,6 +300,18 @@ class PlayerView @JvmOverloads constructor(
         setProp("player.playbackRate", playbackRate)
     }
 
+    fun setTextColor(textColor: String) {
+        setProp("player.textColor", textColor)
+    }
+
+    fun setBackgroundColor(backgroundColor: String) {
+        setProp("player.backgroundColor", backgroundColor)
+    }
+
+    fun setIconColor(iconColor: String) {
+        setProp("player.iconColor", iconColor)
+    }
+
     private fun callFunction(name: String, args: List<Any>) {
         exec("""
             try {
