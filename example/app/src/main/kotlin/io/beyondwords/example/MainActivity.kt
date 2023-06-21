@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity() {
             customPlayerView?.release()
             customPlayerView = null
             val settings = PlayerSettings(
-                projectId = projectIdInput.text.toString(),
+                projectId = projectIdInput.text.toString().toIntOrNull(),
                 contentId = contentIdInput.text.toString(),
                 sourceId = sourceIdInput.text.toString(),
                 playlistId = playlistIdInput.text.toString().toIntOrNull(),

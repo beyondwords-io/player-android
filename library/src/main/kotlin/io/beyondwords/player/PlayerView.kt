@@ -199,7 +199,7 @@ class PlayerView @JvmOverloads constructor(
         setProp("player.playerApiUrl", playerApiUrl)
     }
 
-    fun setProjectId(projectId: String) {
+    fun setProjectId(projectId: Int) {
         setProp("player.projectId", projectId)
     }
 
