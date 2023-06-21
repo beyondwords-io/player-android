@@ -316,10 +316,6 @@ class PlayerView @JvmOverloads constructor(
         setProp("player.logoIconEnabled", logoIconEnabled)
     }
 
-    fun setCurrentSegment(currentSegment: PlayerSettings.Segment) {
-        setProp("player.currentSegment", currentSegment)
-    }
-
     fun setAdvertConsent(advertConsent: String) {
         setProp("player.advertConsent", advertConsent)
     }
