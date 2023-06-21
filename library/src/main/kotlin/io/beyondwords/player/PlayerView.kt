@@ -21,6 +21,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -75,7 +76,7 @@ class PlayerView @JvmOverloads constructor(
         fun onEvent(event: String, settings: String) {
             val parsedEvent: PlayerEvent
             try {
-                parsedEvent = gson.fromJson(event, PlayerEvent::class.java)
+                parsedEvent = gson.fromJson(event, object : TypeToken<PlayerEvent>() {}.type)
             } catch (e: Exception) {
                 Log.e("PlayerView", "onEvent: Failed to parse event $event", e)
                 return
@@ -83,7 +84,7 @@ class PlayerView @JvmOverloads constructor(
 
             val parsedSettings: PlayerSettings
             try {
-                parsedSettings = gson.fromJson(settings, PlayerSettings::class.java)
+                parsedSettings = gson.fromJson(settings, object : TypeToken<PlayerSettings>() {}.type)
             } catch (e: Exception) {
                 Log.e("PlayerView", "onEvent: Failed to parse settings $settings", e)
                 return
