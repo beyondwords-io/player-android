@@ -268,6 +268,10 @@ class PlayerView @JvmOverloads constructor(
         setProp("player.introsOutros", introsOutros)
     }
 
+    fun setIntrosOutrosIndex(introsOutrosIndex: Int) {
+        setProp("player.introsOutrosIndex", introsOutrosIndex)
+    }
+
     fun setPlaybackState(playbackState: String) {
         setProp("player.playbackState", playbackState)
     }
