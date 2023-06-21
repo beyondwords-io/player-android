@@ -244,6 +244,10 @@ class PlayerView @JvmOverloads constructor(
         setProp("player.skipButtonStyle", skipButtonStyle)
     }
 
+    fun setPlaylistStyle(playlistStyle: String) {
+        setProp("player.playlistStyle", playlistStyle)
+    }
+
     fun setPlaybackState(playbackState: String) {
         setProp("player.playbackState", playbackState)
     }
