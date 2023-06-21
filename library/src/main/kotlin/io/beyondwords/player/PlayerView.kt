@@ -320,6 +320,10 @@ class PlayerView @JvmOverloads constructor(
         setProp("player.currentSegment", currentSegment)
     }
 
+    fun setAdvertConsent(advertConsent: String) {
+        setProp("player.advertConsent", advertConsent)
+    }
+
     private fun callFunction(name: String, args: List<Any>) {
         exec("""
             try {
