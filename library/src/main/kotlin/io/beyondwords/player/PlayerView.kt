@@ -276,6 +276,10 @@ class PlayerView @JvmOverloads constructor(
         setProp("player.adverts", adverts)
     }
 
+    fun setAdvertIndex(advertIndex: Int) {
+        setProp("player.advertIndex", advertIndex)
+    }
+
     fun setPlaybackState(playbackState: String) {
         setProp("player.playbackState", playbackState)
     }
