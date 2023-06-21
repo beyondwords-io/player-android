@@ -256,6 +256,10 @@ class PlayerView @JvmOverloads constructor(
         setProp("player.mediaSession", mediaSession)
     }
 
+    fun setContent(content: List<PlayerSettings.Content>) {
+        setProp("player.content", content)
+    }
+
     fun setPlaybackState(playbackState: String) {
         setProp("player.playbackState", playbackState)
     }
