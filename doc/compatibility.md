@@ -22,7 +22,7 @@ The table below illustrates the compatibility between the Player Settings of the
 | mediaSession              |:heavy_check_mark: |
 | content                   |:heavy_check_mark: |
 | contentIndex              |:heavy_check_mark: |
-| introsOutros              |-                  |
+| introsOutros              |:heavy_check_mark: |
 | introsOutrosIndex         |:heavy_check_mark: |
 | adverts                   |-                  |
 | advertIndex               |:heavy_check_mark: |
