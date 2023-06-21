@@ -215,6 +215,10 @@ class PlayerView @JvmOverloads constructor(
         setProp("player.sourceId", sourceId)
     }
 
+    fun setSourceUrl(sourceUrl: String) {
+        setProp("player.sourceUrl", sourceUrl)
+    }
+
     fun setSkipButtonStyle(skipButtonStyle: String) {
         setProp("player.skipButtonStyle", skipButtonStyle)
     }
