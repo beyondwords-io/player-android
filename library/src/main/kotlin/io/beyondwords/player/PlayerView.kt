@@ -312,6 +312,10 @@ class PlayerView @JvmOverloads constructor(
         setProp("player.iconColor", iconColor)
     }
 
+    fun setLogoIconEnabled(logoIconEnabled: Boolean) {
+        setProp("player.logoIconEnabled", logoIconEnabled)
+    }
+
     private fun callFunction(name: String, args: List<Any>) {
         exec("""
             try {
