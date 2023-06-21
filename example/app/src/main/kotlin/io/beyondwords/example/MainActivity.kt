@@ -59,30 +59,32 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadOnClick() {
         saveSettings()
-        playerContainerLayout.removeAllViews()
-        defaultPlayerView = null
-        customPlayerView = null
-        val settings = PlayerSettings(
-            projectId = projectIdInput.text.toString(),
-            contentId = contentIdInput.text.toString(),
-            sourceId = sourceIdInput.text.toString(),
-            playlistId = playlistIdInput.text.toString().toIntOrNull(),
-            skipButtonStyle = skipButtonStyleInput.text.toString(),
-            playerStyle = playerStyleInput.text.toString()
-        )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            playerContainerLayout.removeAllViews()
+            defaultPlayerView?.release()
+            defaultPlayerView = null
+            customPlayerView?.release()
+            customPlayerView = null
+            val settings = PlayerSettings(
+                projectId = projectIdInput.text.toString(),
+                contentId = contentIdInput.text.toString(),
+                sourceId = sourceIdInput.text.toString(),
+                playlistId = playlistIdInput.text.toString().toIntOrNull(),
+                skipButtonStyle = skipButtonStyleInput.text.toString(),
+                playerStyle = playerStyleInput.text.toString()
+            )
             when (playerUIInput.text.toString()) {
                 "default" -> {
                     defaultPlayerView = PlayerView(this).also {
-                        it.load(settings)
                         playerContainerLayout.addView(it)
+                        it.load(settings)
                     }
                 }
 
                 "custom" -> {
                     customPlayerView = CustomPlayerView(this).also {
-                        it.load(settings)
                         playerContainerLayout.addView(it)
+                        it.load(settings)
                     }
                 }
             }
