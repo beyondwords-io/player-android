@@ -37,5 +37,20 @@
 -keep class io.beyondwords.player.PlayerSettings$Identifier { *; }
 -keepclassmembers class io.beyondwords.player.PlayerSettings$Identifier { *; }
 
+-keep class io.beyondwords.player.PlayerSettings$Media { *; }
+-keepclassmembers class io.beyondwords.player.PlayerSettings$Media { *; }
+
+-keep class io.beyondwords.player.PlayerSettings$Segment { *; }
+-keepclassmembers class io.beyondwords.player.PlayerSettings$Segment { *; }
+
+-keep class io.beyondwords.player.PlayerSettings$Content { *; }
+-keepclassmembers class io.beyondwords.player.PlayerSettings$Content { *; }
+
+-keep class io.beyondwords.player.PlayerSettings$IntroOutro { *; }
+-keepclassmembers class io.beyondwords.player.PlayerSettings$IntroOutro { *; }
+
+-keep class io.beyondwords.player.PlayerSettings$Advert { *; }
+-keepclassmembers class io.beyondwords.player.PlayerSettings$Advert { *; }
+
 -keep class io.beyondwords.player.MediaSession$SeekToParams { *; }
 -keepclassmembers class io.beyondwords.player.MediaSession$SeekToParams { *; }
