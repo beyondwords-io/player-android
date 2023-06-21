@@ -224,16 +224,17 @@ class PlayerView @JvmOverloads constructor(
     }
 
     fun setShowUserInterface(showUserInterface: Boolean) {
-        setProp("showUserInterface", showUserInterface)
+        setProp("player.showUserInterface", showUserInterface)
+    }
+
+    fun setPlayerStyle(playerStyle: String) {
+        setProp("player.playerStyle", playerStyle)
     }
 
     fun setSkipButtonStyle(skipButtonStyle: String) {
         setProp("player.skipButtonStyle", skipButtonStyle)
     }
 
-    fun setPlayerStyle(playerStyle: String) {
-        setProp("player.playerStyle", playerStyle)
-    }
 
     fun setPlaybackState(playbackState: String) {
         setProp("player.playbackState", playbackState)
