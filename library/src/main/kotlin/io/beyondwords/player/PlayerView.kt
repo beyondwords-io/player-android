@@ -336,6 +336,10 @@ class PlayerView @JvmOverloads constructor(
         setProp("player.analyticsTag", analyticsTag)
     }
 
+    fun setCaptureErrors(captureErrors: Boolean) {
+        setProp("player.captureErrors", captureErrors)
+    }
+
     private fun callFunction(name: String, args: List<Any>) {
         exec("""
             try {
