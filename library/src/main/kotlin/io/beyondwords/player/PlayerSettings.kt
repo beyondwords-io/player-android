@@ -20,6 +20,7 @@ data class PlayerSettings(
     var contentIndex: Int? = null,
     var introsOutros: List<IntroOutro>? = null,
     var introsOutrosIndex: Int? = null,
+    var adverts: List<Advert>? = null,
     var advertIndex: Int? = null,
     var persistentAdImage: Boolean? = null,
     var persistentIndex: Int? = null,
@@ -71,6 +72,18 @@ data class PlayerSettings(
 
     data class IntroOutro(
         val placement: String,
+        var media: List<Media>? = null,
+    )
+
+    data class Advert(
+        val id: Int? = null,
+        val type: String? = null,
+        val placement: String? = null,
+        val clickThroughUrl: String? = null,
+        val vastUrl: String? = null,
+        var textColor: String? = null,
+        var backgroundColor: String? = null,
+        var iconColor: String? = null,
         var media: List<Media>? = null,
     )
 }
