@@ -11,6 +11,8 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+//        Repository for the production build of the SDK
+//        maven { url 'https://jitpack.io' }
     }
 }
 
