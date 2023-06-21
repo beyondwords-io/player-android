@@ -280,6 +280,10 @@ class PlayerView @JvmOverloads constructor(
         setProp("player.advertIndex", advertIndex)
     }
 
+    fun setPersistentAdImage(persistentAdImage: Boolean) {
+        setProp("player.persistentAdImage", persistentAdImage)
+    }
+
     fun setPlaybackState(playbackState: String) {
         setProp("player.playbackState", playbackState)
     }
