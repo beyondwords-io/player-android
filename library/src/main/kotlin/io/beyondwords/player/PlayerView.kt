@@ -248,6 +248,10 @@ class PlayerView @JvmOverloads constructor(
         setProp("player.playlistStyle", playlistStyle)
     }
 
+    fun setPlaylistToggle(playlistToggle: String) {
+        setProp("player.playlistToggle", playlistToggle)
+    }
+
     fun setPlaybackState(playbackState: String) {
         setProp("player.playbackState", playbackState)
     }
