@@ -288,16 +288,16 @@ class PlayerView @JvmOverloads constructor(
         setProp("player.persistentIndex", persistentIndex)
     }
 
+    fun setCurrentTime(currentTime: Float) {
+        setProp("player.currentTime", currentTime)
+    }
+
     fun setPlaybackState(playbackState: String) {
         setProp("player.playbackState", playbackState)
     }
 
     fun setPlaybackRate(playbackRate: Float) {
         setProp("player.playbackRate", playbackRate)
-    }
-
-    fun setCurrentTime(currentTime: Float) {
-        setProp("player.currentTime", currentTime)
     }
 
     private fun callFunction(name: String, args: List<Any>) {
