@@ -24,6 +24,7 @@ import com.google.gson.GsonBuilder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 @RequiresApi(24)
@@ -46,9 +47,10 @@ class PlayerView @JvmOverloads constructor(
         @JavascriptInterface
         fun onReady() {
             coroutineScope.launch {
+                val webView = this@PlayerView.webView ?: return@launch
                 ready = true
                 pendingCommands.forEach {
-                    webView?.evaluateJavascript(it, null)
+                    webView.evaluateJavascript(it, null)
                 }
                 pendingCommands.clear()
             }
@@ -58,6 +60,7 @@ class PlayerView @JvmOverloads constructor(
         @JavascriptInterface
         fun onResize(width: Int, height: Int) {
             coroutineScope.launch {
+                this@PlayerView.webView ?: return@launch
                 webViewContainer.updateLayoutParams {
                     this.height = TypedValue.applyDimension(
                         TypedValue.COMPLEX_UNIT_DIP,
@@ -87,6 +90,7 @@ class PlayerView @JvmOverloads constructor(
             }
 
             coroutineScope.launch {
+                this@PlayerView.webView ?: return@launch
                 listeners.forEach { it.onEvent(parsedEvent, parsedSettings) }
             }
         }
@@ -126,10 +130,6 @@ class PlayerView @JvmOverloads constructor(
 
     init {
         addView(webViewContainer, LayoutParams(LayoutParams.MATCH_PARENT, 0))
-    }
-
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
         webView = WebView(context).also {
             webViewContainer.addView(
                 it,
@@ -166,15 +166,18 @@ class PlayerView @JvmOverloads constructor(
         }
     }
 
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
+    fun release() {
         ready = false
+        listeners.clear()
+        pendingCommands.clear()
+        coroutineScope.cancel()
         mediaSession?.release()
         mediaSession = null
         webViewContainer.removeAllViews()
         webViewContainer.updateLayoutParams {
             this.height = 0
         }
+        webView?.removeJavascriptInterface("PlayerViewBridge")
         webView?.destroy()
         webView = null
     }
@@ -231,10 +234,11 @@ class PlayerView @JvmOverloads constructor(
     }
 
     private fun exec(command: String) {
+        val webView = this.webView ?: return
         if (!ready) {
             pendingCommands.add(command)
         } else {
-            webView?.evaluateJavascript(command, null)
+            webView.evaluateJavascript(command, null)
         }
     }
 }

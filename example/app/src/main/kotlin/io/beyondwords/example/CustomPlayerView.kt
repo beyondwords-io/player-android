@@ -71,6 +71,7 @@ class CustomPlayerView @JvmOverloads constructor(
 
     init {
         inflate(context, R.layout.custom_player, this)
+        playerView.addEventListener(playerEventListener)
     }
 
     fun load(settings: PlayerSettings) {
@@ -81,13 +82,7 @@ class CustomPlayerView @JvmOverloads constructor(
         )
     }
 
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        playerView.addEventListener(playerEventListener)
-    }
-
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        playerView.removeEventListener(playerEventListener)
+    fun release() {
+        playerView.release()
     }
 }
