@@ -76,14 +76,26 @@ class MainActivity : AppCompatActivity() {
             when (playerUIInput.text.toString()) {
                 "default" -> {
                     defaultPlayerView = PlayerView(this).also {
-                        playerContainerLayout.addView(it)
+                        playerContainerLayout.addView(
+                            it,
+                            FrameLayout.LayoutParams(
+                                FrameLayout.LayoutParams.MATCH_PARENT,
+                                FrameLayout.LayoutParams.WRAP_CONTENT
+                            )
+                        )
                         it.load(settings)
                     }
                 }
 
                 "custom" -> {
                     customPlayerView = CustomPlayerView(this).also {
-                        playerContainerLayout.addView(it)
+                        playerContainerLayout.addView(
+                            it,
+                            FrameLayout.LayoutParams(
+                                FrameLayout.LayoutParams.MATCH_PARENT,
+                                FrameLayout.LayoutParams.WRAP_CONTENT
+                            )
+                        )
                         it.load(settings)
                     }
                 }
