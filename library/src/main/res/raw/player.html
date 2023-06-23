@@ -84,8 +84,10 @@
                 widgetStyle: 'none',
             }))
             player.addEventListener("<any>", function (event) {
-                var settings = getPlayerSettings()
-                PlayerViewBridge.onEvent(JSON.stringify(event), JSON.stringify(settings))
+                PlayerViewBridge.onEvent(
+                    JSON.stringify(getPlayerEvent(event)),
+                    JSON.stringify(getPlayerSettings())
+                )
                 if (event.initiatedBy === "media-session-api") {
                     updateMediaSession(event)
                 }
@@ -104,6 +106,18 @@
                     duration: player.duration,
                     playbackRate: player.playbackRate
                 })
+            }
+            function getPlayerEvent(event) {
+                return {
+                    id: event.id,
+                    type: event.type,
+                    description: event.description,
+                    initiatedBy: event.initiatedBy,
+                    emittedFrom: event.emittedFrom,
+                    status: event.status,
+                    createdAt: event.createdAt,
+                    processedAt: event.processedAt
+                }
             }
             function getPlayerSettings() {
                 return {
