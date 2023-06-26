@@ -172,7 +172,17 @@
                 }
             }
         }
-        PlayerViewBridge.onReady()
+        function domContentLoaded() {
+            if (document.readyState === "complete" || document.readyState === "interactive") return Promise.resolve()
+            return new Promise(function (resolve) {
+                document.addEventListener("DOMContentLoaded", function () {
+                    resolve()
+                })
+            })
+        }
+        domContentLoaded().then(function () {
+            PlayerViewBridge.onReady()
+        })
     </script>
 </head>
 
