@@ -15,7 +15,7 @@
         }
         navigator.mediaSession = {
             _metadata: null,
-            _playbackState: 'none',
+            _playbackState: "none",
             _actionHandlers: {},
             get metadata() {
                 return navigator.mediaSession._metadata
@@ -27,7 +27,7 @@
                     value.artist,
                     value.album,
                     (value.artwork || []).find(function (artwork) {
-                        return artwork.src.indexOf('https://') === 0
+                        return artwork.src.indexOf("https://") === 0
                     }) || null
                 )
             },
@@ -51,7 +51,7 @@
             }
         }
     </script>
-    <script src='https://proxy.beyondwords.io/npm/@beyondwords/player@0.0.0-beta31/dist/umd.js'></script>
+    <script src="https://proxy.beyondwords.io/npm/@beyondwords/player@0.0.0-beta31/dist/umd.js"></script>
     <script>
         var resizeObserver = null
         function stopResizeObserver() {
@@ -81,7 +81,7 @@
             player = new BeyondWords.Player(Object.assign({}, settings, {
                 target: document.body,
                 downloadFormats: [],
-                widgetStyle: 'none',
+                widgetStyle: "none",
             }))
             player.addEventListener("<any>", function (event) {
                 PlayerViewBridge.onEvent(
@@ -100,7 +100,7 @@
             player.addEventListener("PlaybackErrored", updateMediaSession)
 
             function updateMediaSession(event) {
-                navigator.mediaSession.playbackState = player.playbackState === 'stopped' ? 'none' : player.playbackState
+                navigator.mediaSession.playbackState = player.playbackState === "stopped" ? "none" : player.playbackState
                 navigator.mediaSession.setPositionState({
                     position: player.currentTime,
                     duration: player.duration,
