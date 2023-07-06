@@ -72,16 +72,16 @@ data class PlayerSettings(
     )
 
     data class IntroOutro(
-        val placement: String,
+        var placement: String,
         var media: List<Media>? = null,
     )
 
     data class Advert(
-        val id: Int? = null,
-        val type: String? = null,
-        val placement: String? = null,
-        val clickThroughUrl: String? = null,
-        val vastUrl: String? = null,
+        var id: Int? = null,
+        var type: String? = null,
+        var placement: String? = null,
+        var clickThroughUrl: String? = null,
+        var vastUrl: String? = null,
         var textColor: String? = null,
         var backgroundColor: String? = null,
         var iconColor: String? = null,
