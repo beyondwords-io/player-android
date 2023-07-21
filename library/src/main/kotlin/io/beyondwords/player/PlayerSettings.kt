@@ -33,6 +33,7 @@ data class PlayerSettings(
     var iconColor: String? = null,
     var logoIconEnabled: Boolean? = null,
     var currentSegment: Segment? = null,
+    var loadedMedia: Media? = null,
     var advertConsent: String? = null,
     var analyticsConsent: String? = null,
     var analyticsCustomUrl: String? = null,
