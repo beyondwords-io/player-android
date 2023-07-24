@@ -51,6 +51,8 @@ data class PlayerSettings(
         var id: Int? = null,
         var url: String,
         var contentType: String? = null,
+        var duration: Float? = null,
+        var format: String? = null,
     )
 
     data class Segment(
