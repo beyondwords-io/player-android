@@ -38,7 +38,6 @@ data class PlayerSettings(
     var analyticsConsent: String? = null,
     var analyticsCustomUrl: String? = null,
     var analyticsTag: String? = null,
-    var captureErrors: Boolean? = null
 ) {
     data class Identifier(
         var contentId: String? = null,
@@ -49,17 +48,19 @@ data class PlayerSettings(
 
     data class Media(
         var id: Int? = null,
-        var url: String,
+        var url: String? = null,
         var contentType: String? = null,
         var duration: Float? = null,
         var format: String? = null,
     )
 
     data class Segment(
-        var marker: String,
-        var section: String,
-        var startTime: Float,
-        var duration: Float? = null
+        var segmentIndex: Int? = null,
+        var contentIndex: Int? = null,
+        var marker: String? = null,
+        var section: String? = null,
+        var startTime: Float? = null,
+        var duration: Float? = null,
     )
 
     data class Content(
@@ -70,13 +71,15 @@ data class PlayerSettings(
         var sourceUrl: String? = null,
         var adsEnabled: Boolean? = null,
         var duration: Float? = null,
-        var media: List<Media>? = null,
+        var audio: List<Media>? = null,
+        var video: List<Media>? = null,
         var segments: List<Segment>? = null
     )
 
     data class IntroOutro(
-        var placement: String,
-        var media: List<Media>? = null,
+        var placement: String? = null,
+        var audio: List<Media>? = null,
+        var video: List<Media>? = null,
     )
 
     data class Advert(
@@ -88,6 +91,7 @@ data class PlayerSettings(
         var textColor: String? = null,
         var backgroundColor: String? = null,
         var iconColor: String? = null,
-        var media: List<Media>? = null,
+        var audio: List<Media>? = null,
+        var video: List<Media>? = null,
     )
 }
