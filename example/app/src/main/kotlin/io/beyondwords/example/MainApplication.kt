@@ -1,8 +1,11 @@
 package io.beyondwords.example
 
 import android.app.Application
+import android.content.Context
+import android.graphics.Bitmap
 import android.os.Build
 import androidx.core.app.NotificationChannelCompat
+import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import io.beyondwords.player.MediaSession
 
@@ -23,7 +26,32 @@ class MainApplication : Application() {
             val channel = channelBuilder.build()
             NotificationManagerCompat.from(this)
                 .createNotificationChannel(channel)
+            // Override the default BeyondWords notification channel
             MediaSession.notificationChannelId = AUDIO_PLAYER_NOTIFICATION_CHANNEL_ID
+            // Override the default BeyondWords notification provider
+            MediaSession.notificationProvider = object :
+                MediaSession.Companion.NotificationProvider() {
+                override fun createNotification(
+                    context: Context,
+                    mediaSession: android.support.v4.media.session.MediaSessionCompat,
+                    mediaSessionId: Int,
+                    playbackState: android.support.v4.media.session.PlaybackStateCompat,
+                    metadata: android.support.v4.media.MediaMetadataCompat,
+                    artwork: Bitmap?
+                ): NotificationCompat.Builder {
+                    val notificationBuilder = super.createNotification(
+                        context,
+                        mediaSession,
+                        mediaSessionId,
+                        playbackState,
+                        metadata,
+                        artwork
+                    )
+                    // You can override all of the notification properties here
+                    // notificationBuilder.setSmallIcon(io.beyondwords.player.R.drawable.ic_play)
+                    return notificationBuilder
+                }
+            }
         }
     }
 }

@@ -41,6 +41,7 @@ class MediaSession constructor(private val webView: WebView) {
 
         @JvmStatic
         var notificationChannelId: String? = null
+        var notificationProvider = NotificationProvider()
 
         private fun ensureNotificationChannel(context: Context) {
             if (notificationChannelId != null) return
@@ -57,6 +58,126 @@ class MediaSession constructor(private val webView: WebView) {
             val channel = channelBuilder.build()
             NotificationManagerCompat.from(context)
                 .createNotificationChannel(channel)
+        }
+
+        open class NotificationProvider {
+            @SuppressLint("RestrictedApi")
+            open fun createNotification(
+                context: Context,
+                mediaSession: MediaSessionCompat,
+                mediaSessionId: Int,
+                playbackState: PlaybackStateCompat,
+                metadata: MediaMetadataCompat,
+                artwork: Bitmap?
+            ): NotificationCompat.Builder {
+                val notificationBuilder = NotificationCompat.Builder(
+                    context,
+                    notificationChannelId ?: DEFAULT_NOTIFICATION_CHANNEL_ID
+                )
+                if (playbackState.actions and PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS != 0L) {
+                    notificationBuilder.addAction(
+                        R.drawable.ic_skip_previous,
+                        "Previous",
+                        MediaButtonReceiver.buildMediaButtonPendingIntent(
+                            context,
+                            mediaSessionId,
+                            PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
+                        )
+                    )
+                } else if (playbackState.actions and PlaybackStateCompat.ACTION_REWIND != 0L) {
+                    notificationBuilder.addAction(
+                        R.drawable.ic_rewind,
+                        "Rewind",
+                        MediaButtonReceiver.buildMediaButtonPendingIntent(
+                            context,
+                            mediaSessionId,
+                            PlaybackStateCompat.ACTION_REWIND
+                        )
+                    )
+                }
+                var playPauseButtonIndex = -1
+                if (playbackState.state == PlaybackStateCompat.STATE_PLAYING) {
+                    if (playbackState.actions and PlaybackStateCompat.ACTION_PAUSE != 0L) {
+                        playPauseButtonIndex = notificationBuilder.mActions.size
+                        notificationBuilder.addAction(
+                            R.drawable.ic_pause,
+                            "Pause",
+                            MediaButtonReceiver.buildMediaButtonPendingIntent(
+                                context,
+                                mediaSessionId,
+                                PlaybackStateCompat.ACTION_PAUSE
+                            )
+                        )
+                    }
+                } else {
+                    if (playbackState.actions and PlaybackStateCompat.ACTION_PLAY != 0L) {
+                        playPauseButtonIndex = notificationBuilder.mActions.size
+                        notificationBuilder.addAction(
+                            R.drawable.ic_play,
+                            "Play",
+                            MediaButtonReceiver.buildMediaButtonPendingIntent(
+                                context,
+                                mediaSessionId,
+                                PlaybackStateCompat.ACTION_PLAY
+                            )
+                        )
+                    }
+                }
+                if (playbackState.actions and PlaybackStateCompat.ACTION_SKIP_TO_NEXT != 0L) {
+                    notificationBuilder.addAction(
+                        R.drawable.ic_skip_next,
+                        "Next",
+                        MediaButtonReceiver.buildMediaButtonPendingIntent(
+                            context,
+                            mediaSessionId,
+                            PlaybackStateCompat.ACTION_SKIP_TO_NEXT
+                        )
+                    )
+                } else if (playbackState.actions and PlaybackStateCompat.ACTION_FAST_FORWARD != 0L) {
+                    notificationBuilder.addAction(
+                        R.drawable.ic_fast_forward,
+                        "Fast forward",
+                        MediaButtonReceiver.buildMediaButtonPendingIntent(
+                            context,
+                            mediaSessionId,
+                            PlaybackStateCompat.ACTION_FAST_FORWARD
+                        )
+                    )
+                }
+                notificationBuilder.setStyle(
+                    androidx.media.app.NotificationCompat.MediaStyle()
+                        .setMediaSession(mediaSession.sessionToken)
+                        .also {
+                            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
+                                if (playPauseButtonIndex != -1 && notificationBuilder.mActions.size > 1) {
+                                    it.setShowActionsInCompactView(playPauseButtonIndex)
+                                }
+                            } else if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
+                                it.setShowActionsInCompactView(
+                                    *List(
+                                        notificationBuilder.mActions.size.coerceAtMost(
+                                            3
+                                        )
+                                    ) { index -> index }.toIntArray()
+                                )
+                            }
+                        }
+                )
+                metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)?.let {
+                    notificationBuilder.setContentTitle(it)
+                }
+                notificationBuilder.setColorized(true)
+                notificationBuilder.setSilent(true)
+                notificationBuilder.setAutoCancel(false)
+                notificationBuilder.setSound(null)
+                notificationBuilder.setVibrate(null)
+                notificationBuilder.setOngoing(true)
+                notificationBuilder.setSmallIcon(R.drawable.ic_volume_up)
+                notificationBuilder.setLargeIcon(artwork)
+                notificationBuilder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                notificationBuilder.priority = NotificationCompat.PRIORITY_LOW
+                return notificationBuilder
+            }
         }
     }
 
@@ -342,7 +463,6 @@ class MediaSession constructor(private val webView: WebView) {
             ?.cancel(mediaSessionId)
     }
 
-    @SuppressLint("RestrictedApi")
     private fun updateNotification() {
         val mediaSession = this@MediaSession.mediaSession ?: return
         val metadata = mediaSession.controller?.metadata
@@ -353,113 +473,14 @@ class MediaSession constructor(private val webView: WebView) {
         }
 
         ensureNotificationChannel(context)
-        val notificationBuilder = NotificationCompat.Builder(
+        val notification = notificationProvider.createNotification(
             context,
-            notificationChannelId ?: DEFAULT_NOTIFICATION_CHANNEL_ID
-        )
-        if (playbackState.actions and PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS != 0L) {
-            notificationBuilder.addAction(
-                R.drawable.ic_skip_previous,
-                "Previous",
-                MediaButtonReceiver.buildMediaButtonPendingIntent(
-                    context,
-                    mediaSessionId,
-                    PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
-                )
-            )
-        } else if (playbackState.actions and PlaybackStateCompat.ACTION_REWIND != 0L) {
-            notificationBuilder.addAction(
-                R.drawable.ic_rewind,
-                "Rewind",
-                MediaButtonReceiver.buildMediaButtonPendingIntent(
-                    context,
-                    mediaSessionId,
-                    PlaybackStateCompat.ACTION_REWIND
-                )
-            )
-        }
-        var playPauseButtonIndex = -1
-        if (playbackState.state == PlaybackStateCompat.STATE_PLAYING) {
-            if (playbackState.actions and PlaybackStateCompat.ACTION_PAUSE != 0L) {
-                playPauseButtonIndex = notificationBuilder.mActions.size
-                notificationBuilder.addAction(
-                    R.drawable.ic_pause,
-                    "Pause",
-                    MediaButtonReceiver.buildMediaButtonPendingIntent(
-                        context,
-                        mediaSessionId,
-                        PlaybackStateCompat.ACTION_PAUSE
-                    )
-                )
-            }
-        } else {
-            if (playbackState.actions and PlaybackStateCompat.ACTION_PLAY != 0L) {
-                playPauseButtonIndex = notificationBuilder.mActions.size
-                notificationBuilder.addAction(
-                    R.drawable.ic_play,
-                    "Play",
-                    MediaButtonReceiver.buildMediaButtonPendingIntent(
-                        context,
-                        mediaSessionId,
-                        PlaybackStateCompat.ACTION_PLAY
-                    )
-                )
-            }
-        }
-        if (playbackState.actions and PlaybackStateCompat.ACTION_SKIP_TO_NEXT != 0L) {
-            notificationBuilder.addAction(
-                R.drawable.ic_skip_next,
-                "Next",
-                MediaButtonReceiver.buildMediaButtonPendingIntent(
-                    context,
-                    mediaSessionId,
-                    PlaybackStateCompat.ACTION_SKIP_TO_NEXT
-                )
-            )
-        } else if (playbackState.actions and PlaybackStateCompat.ACTION_FAST_FORWARD != 0L) {
-            notificationBuilder.addAction(
-                R.drawable.ic_fast_forward,
-                "Fast forward",
-                MediaButtonReceiver.buildMediaButtonPendingIntent(
-                    context,
-                    mediaSessionId,
-                    PlaybackStateCompat.ACTION_FAST_FORWARD
-                )
-            )
-        }
-        notificationBuilder.setStyle(
-            androidx.media.app.NotificationCompat.MediaStyle()
-                .setMediaSession(mediaSession.sessionToken)
-                .also {
-                    if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
-                        if (playPauseButtonIndex != -1 && notificationBuilder.mActions.size > 1) {
-                            it.setShowActionsInCompactView(playPauseButtonIndex)
-                        }
-                    } else if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
-                        it.setShowActionsInCompactView(
-                            *List(
-                                notificationBuilder.mActions.size.coerceAtMost(
-                                    3
-                                )
-                            ) { index -> index }.toIntArray()
-                        )
-                    }
-                }
-        )
-        metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)?.let {
-            notificationBuilder.setContentTitle(it)
-        }
-        notificationBuilder.setColorized(true)
-        notificationBuilder.setSilent(true)
-        notificationBuilder.setAutoCancel(false)
-        notificationBuilder.setSound(null)
-        notificationBuilder.setVibrate(null)
-        notificationBuilder.setOngoing(true)
-        notificationBuilder.setSmallIcon(R.drawable.ic_volume_up)
-        notificationBuilder.setLargeIcon(artwork)
-        notificationBuilder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-        notificationBuilder.priority = NotificationCompat.PRIORITY_LOW
-        val notification = notificationBuilder.build()
+            mediaSession,
+            mediaSessionId,
+            playbackState,
+            metadata,
+            artwork
+        ).build()
         ContextCompat.getSystemService(context, NotificationManager::class.java)
             ?.notify(mediaSessionId, notification)
     }
