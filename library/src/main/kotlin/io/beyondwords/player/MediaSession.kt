@@ -296,7 +296,11 @@ class MediaSession constructor(private val webView: WebView) {
                     artworkUrl?.let {
                         downloadArtworkJob = coroutineScope.launch {
                             artwork = withContext(Dispatchers.IO) {
-                                BitmapFactory.decodeStream(URL(it).openStream())
+                                try {
+                                    return@withContext BitmapFactory.decodeStream(URL(it).openStream())
+                                } catch (e: Exception) {
+                                    return@withContext null
+                                }
                             }
                             updateNotification()
                         }
