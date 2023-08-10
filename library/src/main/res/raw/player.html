@@ -54,27 +54,15 @@
     </script>
     <script src="https://proxy.beyondwords.io/npm/@beyondwords/player@0.1.7/dist/umd.js"></script>
     <script>
-        var resizeObserver = null
-        function stopResizeObserver() {
-            clearInterval(resizeObserver)
-        }
-        function startResizeObserver() {
-            // TODO @juggle/resize-observer
-            stopResizeObserver()
-            resizeObserver = setInterval(function () {
-                PlayerViewBridge.onResize(document.documentElement.offsetWidth, document.documentElement.offsetHeight)
-            }, 1000)
-        }
-
         var player = null
-        function load(settings) {
-            if (settings.showUserInterface !== false) {
-                startResizeObserver()
-            } else {
-                stopResizeObserver()
-                PlayerViewBridge.onResize(0, 0)
-            }
 
+        // TODO @juggle/resize-observer
+        // TODO if player.playerStyle === 'video'
+        setInterval(function () {
+            PlayerViewBridge.onResize(document.documentElement.offsetWidth, document.documentElement.offsetHeight)
+        }, 1000)
+
+        function load(settings) {
             if (player !== null) {
                 player.destroy()
             }
