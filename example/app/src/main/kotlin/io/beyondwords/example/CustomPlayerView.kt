@@ -2,9 +2,9 @@ package io.beyondwords.example
 
 import android.content.Context
 import android.util.AttributeSet
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.RequiresApi
-import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.slider.Slider
 import io.beyondwords.player.PlayerEvent
@@ -18,8 +18,8 @@ class CustomPlayerView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
     defStyleRes: Int = 0
-) : ConstraintLayout(context, attrs, defStyleAttr, defStyleRes) {
-    private val playerView: PlayerView by lazy { findViewById(R.id.hidden_player_view) }
+) : LinearLayout(context, attrs, defStyleAttr, defStyleRes) {
+    private val playerView: PlayerView by lazy { findViewById(R.id.player_view) }
     private val playPauseButton: MaterialButton by lazy { findViewById(R.id.play_pause_button) }
     private val timeTextView: TextView by lazy { findViewById(R.id.time_text_view) }
     private val seekSlider: Slider by lazy { findViewById(R.id.seek_slider) }
@@ -70,6 +70,7 @@ class CustomPlayerView @JvmOverloads constructor(
     }
 
     init {
+        orientation = VERTICAL
         inflate(context, R.layout.custom_player, this)
         playerView.addEventListener(playerEventListener)
     }

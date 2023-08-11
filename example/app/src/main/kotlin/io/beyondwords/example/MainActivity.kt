@@ -39,22 +39,9 @@ class MainActivity : AppCompatActivity() {
         playerStyleInput = findViewById(R.id.player_style_input)
         loadButton = findViewById(R.id.load_button)
 
-        playerUIInput.addTextChangedListener { playerUIOnChange() }
         loadButton.setOnClickListener { loadOnClick() }
 
         loadSettings()
-    }
-
-    private fun playerUIOnChange() {
-        when (playerUIInput.text.toString()) {
-            "default" -> {
-                playerStyleInput.isEnabled = true
-            }
-
-            "custom" -> {
-                playerStyleInput.isEnabled = false
-            }
-        }
     }
 
     private fun loadOnClick() {
