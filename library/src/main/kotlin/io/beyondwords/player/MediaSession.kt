@@ -171,7 +171,7 @@ class MediaSession constructor(private val webView: WebView) {
                 notificationBuilder.setAutoCancel(false)
                 notificationBuilder.setSound(null)
                 notificationBuilder.setVibrate(null)
-                notificationBuilder.setOngoing(true)
+                notificationBuilder.setOngoing(false)
                 notificationBuilder.setSmallIcon(R.drawable.ic_volume_up)
                 notificationBuilder.setLargeIcon(artwork)
                 notificationBuilder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
