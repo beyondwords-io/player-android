@@ -44,6 +44,14 @@ class MainActivity : AppCompatActivity() {
         loadSettings()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            defaultPlayerView?.release()
+            customPlayerView?.release()
+        }
+    }
+
     private fun loadOnClick() {
         saveSettings()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
