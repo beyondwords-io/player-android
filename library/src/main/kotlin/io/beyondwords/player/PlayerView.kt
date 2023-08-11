@@ -229,7 +229,7 @@ class PlayerView @JvmOverloads constructor(
     }
 
     fun setPlayerStyle(playerStyle: String) {
-        setProp("player.playerStyle", playerStyle)
+        callFunction("setPlayerStyle", listOf(playerStyle))
     }
 
     fun setPlayerTitle(playerTitle: String) {

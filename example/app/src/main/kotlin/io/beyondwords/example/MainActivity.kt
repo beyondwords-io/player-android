@@ -7,7 +7,6 @@ import android.widget.AutoCompleteTextView
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
-import androidx.core.widget.addTextChangedListener
 import com.google.android.material.textfield.TextInputEditText
 import io.beyondwords.player.PlayerSettings
 import io.beyondwords.player.PlayerView
@@ -39,7 +38,6 @@ class MainActivity : AppCompatActivity() {
         playerStyleInput = findViewById(R.id.player_style_input)
         loadButton = findViewById(R.id.load_button)
 
-        playerUIInput.addTextChangedListener { playerUIOnChange() }
         loadButton.setOnClickListener { loadOnClick() }
 
         loadSettings()
@@ -50,18 +48,6 @@ class MainActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             defaultPlayerView?.release()
             customPlayerView?.release()
-        }
-    }
-
-    private fun playerUIOnChange() {
-        when (playerUIInput.text.toString()) {
-            "default" -> {
-                playerStyleInput.isEnabled = true
-            }
-
-            "custom" -> {
-                playerStyleInput.isEnabled = false
-            }
         }
     }
 

@@ -4,6 +4,45 @@
 <head>
     <meta name="transparent" content="true">
     <meta name="viewport" content="initial-scale=1, user-scalable=no, width=device-width" />
+    <style>
+        body {
+            margin: 0;
+        }
+
+        #player-target {
+            margin: 0 auto;
+        }
+
+        #player-target.style-video {
+            position: relative;
+            max-width: 720px !important;
+        }
+
+        #player-target.style-video::after {
+            content: ' ';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            z-index: -1;
+            margin: auto;
+            width: 1px;
+            height: 1px;
+            animation: keep-webview-active 10s linear infinite;
+        }
+
+        #player-target.style-small {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+        }
+
+        @keyframes keep-webview-active {
+            from { background-color: #FFFFFF02; }
+            to { background-color: #FFFFFF01; }
+        }
+    </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/core-js/3.30.2/minified.js"
         integrity="sha512-u60H4fcHTGKAVICDO65xbPZn/eTY9S/VkZxMBdfwkCaStJH88PELFskcCVXpAAyVsASRhyiyjP3zEVkFd/3KEA=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -52,12 +91,11 @@
             }
         }
     </script>
-    <script src="https://proxy.beyondwords.io/npm/@beyondwords/player@0.1.7/dist/umd.js"></script>
+    <script src="https://proxy.beyondwords.io/npm/@beyondwords/player@0.1.10/dist/umd.js"></script>
     <script>
         var player = null
 
         // TODO @juggle/resize-observer
-        // TODO if player.playerStyle === 'video'
         setInterval(function () {
             PlayerViewBridge.onResize(document.documentElement.offsetWidth, document.documentElement.offsetHeight)
         }, 1000)
@@ -65,13 +103,15 @@
         function load(settings) {
             if (player !== null) {
                 player.destroy()
+                player.target.className = ''
             }
 
             player = new BeyondWords.Player(Object.assign({}, settings, {
-                target: document.body,
+                target: "#player-target",
                 downloadFormats: [],
                 widgetStyle: "none",
             }))
+            player.target.classList.add('style-' + player.playerStyle)
             player.addEventListener("<any>", function (event) {
                 PlayerViewBridge.onEvent(
                     JSON.stringify(getPlayerEvent(event)),
@@ -161,6 +201,15 @@
                 }
             }
         }
+        function setPlayerStyle(playerStyle) {
+            player.playerStyle = playerStyle
+            player.target.classList.forEach(function(c) {
+                if (c.startsWith('style-') && !c.endsWith(player.playerStyle)) {
+                    player.target.classList.remove(c)
+                }
+            })
+            player.target.classList.add('style-' + player.playerStyle)
+        }
         function domContentLoaded() {
             if (document.readyState === "complete" || document.readyState === "interactive") return Promise.resolve()
             return new Promise(function (resolve) {
@@ -175,6 +224,8 @@
     </script>
 </head>
 
-<body style="margin: 0;"></body>
+<body>
+    <div id="player-target"></div>
+</body>
 
 </html>
