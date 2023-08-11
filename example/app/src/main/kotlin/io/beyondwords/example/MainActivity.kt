@@ -7,7 +7,6 @@ import android.widget.AutoCompleteTextView
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
-import androidx.core.widget.addTextChangedListener
 import com.google.android.material.textfield.TextInputEditText
 import io.beyondwords.player.PlayerSettings
 import io.beyondwords.player.PlayerView
