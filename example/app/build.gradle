@@ -40,6 +40,7 @@ dependencies {
 //    Required only if you override the default notification provider
     implementation 'androidx.media:media:1.6.0'
     implementation project(':beyondwords-player-sdk')
+    implementation 'androidx.appcompat:appcompat:1.6.1'
 //    Production build of the SDK
 //    implementation 'com.github.beyondwords-io:player-android:*'
 }
