@@ -59,13 +59,13 @@ class PlayerView @JvmOverloads constructor(
 
         @Suppress("UNUSED_PARAMETER")
         @JavascriptInterface
-        fun onResize(width: Int, height: Int) {
+        fun onResize(width: Float, height: Float) {
             coroutineScope.launch {
                 this@PlayerView.webView ?: return@launch
                 webViewContainer.updateLayoutParams {
                     this.height = TypedValue.applyDimension(
                         TypedValue.COMPLEX_UNIT_DIP,
-                        height.toFloat(),
+                        height,
                         resources.displayMetrics
                     ).toInt()
                 }
