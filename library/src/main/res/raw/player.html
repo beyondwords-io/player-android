@@ -43,6 +43,9 @@
             to { background-color: #FFFFFF01; }
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/@juggle/resize-observer@4.0.0-4/lib/resize-observer.js"
+        integrity="sha256-XcFCbHkfXuguerzLm6mUYtky4uDuItfY2z1UYmSV8zY="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/core-js/3.30.2/minified.js"
         integrity="sha512-u60H4fcHTGKAVICDO65xbPZn/eTY9S/VkZxMBdfwkCaStJH88PELFskcCVXpAAyVsASRhyiyjP3zEVkFd/3KEA=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -94,11 +97,6 @@
     <script src="https://proxy.beyondwords.io/npm/@beyondwords/player@0.1.12/dist/umd.js"></script>
     <script>
         var player = null
-
-        // TODO @juggle/resize-observer
-        setInterval(function () {
-            PlayerViewBridge.onResize(document.documentElement.offsetWidth, document.documentElement.offsetHeight)
-        }, 1000)
 
         function load(settings) {
             if (player !== null) {
@@ -219,6 +217,10 @@
             })
         }
         domContentLoaded().then(function () {
+            var observer = new ResizeObserver(function (entries) {
+              PlayerViewBridge.onResize(entries[0].contentRect.width, entries[0].contentRect.height)
+            });
+            observer.observe(document.body)
             PlayerViewBridge.onReady()
         })
     </script>
