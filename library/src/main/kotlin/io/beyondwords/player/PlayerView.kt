@@ -11,7 +11,6 @@ import android.util.Log
 import android.util.TypedValue
 import android.webkit.DownloadListener
 import android.webkit.JavascriptInterface
-import android.webkit.ValueCallback
 import android.webkit.WebResourceRequest
 import android.webkit.WebSettings.LOAD_NO_CACHE
 import android.webkit.WebView
@@ -365,7 +364,6 @@ class PlayerView @JvmOverloads constructor(
         if (!ready) {
             pendingCommands.add(command)
         } else {
-            Log.d("abcdef", command)
             webView.evaluateJavascript(command, null)
         }
     }

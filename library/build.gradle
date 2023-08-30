@@ -23,6 +23,10 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+
+    viewBinding {
+        enabled = true
+    }
 }
 
 dependencies {
@@ -30,4 +34,5 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.10.1'
     implementation 'androidx.media:media:1.6.0'
     implementation 'com.google.code.gson:gson:2.8.9'
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
 }
