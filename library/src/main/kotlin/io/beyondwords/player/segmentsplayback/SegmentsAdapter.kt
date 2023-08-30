@@ -3,7 +3,6 @@ package io.beyondwords.player.segmentsplayback
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import io.beyondwords.player.databinding.SegmentViewBinding
 
@@ -31,9 +30,8 @@ class SegmentsAdapter(private val segments: Array<Segment>) :
     override fun onBindViewHolder(holder: RvViewHolder, position: Int) {
         holder.binding.apply {
             bwSegment.text = segments[position].text
+
             bwSegment.setOnClickListener {
-                Toast.makeText(context, "Click: ${segments[position].marker}", Toast.LENGTH_SHORT)
-                    .show()
                 segments[position].onClick()
             }
         }

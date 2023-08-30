@@ -11,6 +11,7 @@ import android.util.Log
 import android.util.TypedValue
 import android.webkit.DownloadListener
 import android.webkit.JavascriptInterface
+import android.webkit.ValueCallback
 import android.webkit.WebResourceRequest
 import android.webkit.WebSettings.LOAD_NO_CACHE
 import android.webkit.WebView
@@ -290,6 +291,22 @@ class PlayerView @JvmOverloads constructor(
 
     fun setCurrentTime(currentTime: Float) {
         setProp("player.currentTime", currentTime)
+    }
+
+    fun playSegment(segmentId: String) {
+        exec("""
+            try {
+                for (const content of player.content || []) {
+                    for (const segment of content.segments || []) {
+                        if (segment.marker === '${segmentId}') {
+                            player.currentTime = segment.startTime;
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error("PlayerView:playSegment:" + e.message, e)
+            }
+        """)
     }
 
     fun setPlaybackState(playbackState: String) {

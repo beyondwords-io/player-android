@@ -3,6 +3,7 @@ package io.beyondwords.player.segmentsplayback
 import android.content.Context
 import android.os.Build
 import android.util.AttributeSet
+import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
 import io.beyondwords.player.PlayerView
 import java.util.UUID
@@ -28,7 +29,7 @@ class SegmentsView(
                 if (markers.size > idx) markers[idx] else UUID.randomUUID().toString()
             ) {
                 if (::player.isInitialized && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    player.setPlaybackState("paused")
+                    player.playSegment(markers[idx])
                 }
             }
         }.toTypedArray()
