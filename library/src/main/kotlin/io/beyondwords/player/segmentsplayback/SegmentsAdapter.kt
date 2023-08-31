@@ -1,9 +1,15 @@
 package io.beyondwords.player.segmentsplayback
 
 import android.content.Context
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.BackgroundColorSpan
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import io.beyondwords.player.R
 import io.beyondwords.player.databinding.SegmentViewBinding
 
 class SegmentsAdapter(private val segments: Array<Segment>) :
@@ -29,10 +35,22 @@ class SegmentsAdapter(private val segments: Array<Segment>) :
 
     override fun onBindViewHolder(holder: RvViewHolder, position: Int) {
         holder.binding.apply {
-            bwSegment.text = segments[position].text
-
             bwSegment.setOnClickListener {
                 segments[position].onClick()
+            }
+
+            if (segments[position].isActive) {
+                val spannable = SpannableString(segments[position].text)
+                spannable.setSpan(
+                    BackgroundColorSpan(ContextCompat.getColor(context, R.color.default_highlight)),
+                    0,
+                    segments[position].text.length,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+
+                bwSegment.text = spannable
+            } else {
+                bwSegment.text = segments[position].text
             }
         }
     }

@@ -7,11 +7,12 @@ import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.util.AttributeSet
+import android.util.JsonReader
+import android.util.JsonToken
 import android.util.Log
 import android.util.TypedValue
 import android.webkit.DownloadListener
 import android.webkit.JavascriptInterface
-import android.webkit.ValueCallback
 import android.webkit.WebResourceRequest
 import android.webkit.WebSettings.LOAD_NO_CACHE
 import android.webkit.WebView
@@ -28,6 +29,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import java.io.StringReader
 
 @RequiresApi(24)
 @SuppressLint("SetJavaScriptEnabled")
@@ -307,6 +309,36 @@ class PlayerView @JvmOverloads constructor(
                 console.error("PlayerView:playSegment:" + e.message, e)
             }
         """)
+    }
+
+    fun getCurrentSegment(callback: (String) -> Unit) {
+        webView?.evaluateJavascript(
+            """
+            (function(){
+                try {
+                    return player.currentSegment['marker'];
+                } catch (e) {
+                    console.error("PlayerView:getCurrentSegment:" + e.message, e)
+                }
+            })();
+            """
+        ) {
+            val reader = JsonReader(StringReader(it))
+            reader.isLenient = true
+
+            try {
+                if (reader.peek() == JsonToken.STRING) {
+                    val message = reader.nextString()
+                    if (message != null) {
+                        callback(message)
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("PlayerView", "getCurrentSegment:Exception:", e)
+            } finally {
+                reader.close()
+            }
+        }
     }
 
     fun setPlaybackState(playbackState: String) {
