@@ -189,6 +189,7 @@
         player.addEventListener("PlaybackPaused", updateMediaSession);
         player.addEventListener("PlaybackPlaying", updateMediaSession);
         player.addEventListener("PlaybackErrored", updateMediaSession);
+        player.addEventListener("IdentifiersChanged", updateMediaSession);
         if (window.os === "ios") {
           player.addEventListener("CurrentTimeUpdated", updateMediaSession);
         }
