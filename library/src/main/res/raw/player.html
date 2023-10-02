@@ -1,233 +1,297 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta name="transparent" content="true">
+  <head>
+    <meta name="transparent" content="true" />
     <meta name="viewport" content="initial-scale=1, user-scalable=no, width=device-width" />
     <style>
-        body {
-            margin: 0;
-        }
+      body {
+        margin: 0;
+      }
 
-        #player-target {
-            margin: 0 auto;
-        }
+      #player-target {
+        margin: 0 auto;
+      }
 
-        #player-target.style-video {
-            position: relative;
-            max-width: 720px !important;
-        }
+      #player-target.style-video {
+        position: relative;
+        max-width: 720px !important;
+      }
 
-        #player-target.style-video::after {
-            content: ' ';
-            position: absolute;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
-            z-index: -1;
-            margin: auto;
-            width: 1px;
-            height: 1px;
-            animation: keep-webview-active 10s linear infinite;
-        }
+      html.android #player-target.style-video::after {
+        content: " ";
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: -1;
+        margin: auto;
+        width: 1px;
+        height: 1px;
+        animation: keep-webview-active 10s linear infinite;
+      }
 
-        #player-target.style-small {
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-        }
+      #player-target.style-small {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+      }
 
-        @keyframes keep-webview-active {
-            from { background-color: #FFFFFF02; }
-            to { background-color: #FFFFFF01; }
+      @keyframes keep-webview-active {
+        from {
+          background-color: #ffffff02;
         }
+        to {
+          background-color: #ffffff01;
+        }
+      }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/@juggle/resize-observer@4.0.0-4/lib/resize-observer.js"
-        integrity="sha256-XcFCbHkfXuguerzLm6mUYtky4uDuItfY2z1UYmSV8zY="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/core-js/3.30.2/minified.js"
-        integrity="sha512-u60H4fcHTGKAVICDO65xbPZn/eTY9S/VkZxMBdfwkCaStJH88PELFskcCVXpAAyVsASRhyiyjP3zEVkFd/3KEA=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@juggle/resize-observer@4.0.0-4/lib/resize-observer.js"
+      integrity="sha256-XcFCbHkfXuguerzLm6mUYtky4uDuItfY2z1UYmSV8zY="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/core-js/3.30.2/minified.js"
+      integrity="sha512-u60H4fcHTGKAVICDO65xbPZn/eTY9S/VkZxMBdfwkCaStJH88PELFskcCVXpAAyVsASRhyiyjP3zEVkFd/3KEA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
     <script>
-        function MediaMetadata(props) {
-            this.title = (props || {}).title
-            this.artist = (props || {}).artist
-            this.album = (props || {}).album
-            this.artwork = (props || {}).artwork
-        }
+      window.os = window.webkit ? "ios" : "android";
+      document.documentElement.classList.add(window.os);
+
+      window.Bridge = {
+        onReady: function () {
+          if (window.os === "ios") {
+            window.webkit.messageHandlers.PlayerViewBridge.postMessage(JSON.stringify({ type: "ready" }));
+          } else {
+            PlayerViewBridge.onReady();
+          }
+        },
+        onResize: function (width, height) {
+          if (window.os === "ios") {
+            window.webkit.messageHandlers.PlayerViewBridge.postMessage(
+              JSON.stringify({
+                type: "resize",
+                width: width,
+                height: height,
+              })
+            );
+          } else {
+            window.PlayerViewBridge.onResize(width, height);
+          }
+        },
+        onEvent: function (event, settings) {
+          if (window.os === "ios") {
+            window.webkit.messageHandlers.PlayerViewBridge.postMessage(
+              JSON.stringify({
+                type: "event",
+                event: event,
+                settings: settings,
+              })
+            );
+          } else {
+            window.PlayerViewBridge.onEvent(JSON.stringify(event), JSON.stringify(settings));
+          }
+        },
+      };
+
+      var _fetch = window.fetch;
+      window.fetch = function (resource, options) {
+        options = Object.assign({}, options, {
+          cache: "no-cache",
+        });
+        return _fetch(resource, options);
+      };
+
+      if (!navigator.mediaSession && window.MediaSessionBridge) {
+        window.MediaMetadata = function (props) {
+          this.title = (props || {}).title;
+          this.artist = (props || {}).artist;
+          this.album = (props || {}).album;
+          this.artwork = (props || {}).artwork;
+        };
         navigator.mediaSession = {
-            _metadata: null,
-            _playbackState: "none",
-            _actionHandlers: {},
-            get metadata() {
-                return navigator.mediaSession._metadata
-            },
-            set metadata(value) {
-                navigator.mediaSession._metadata = value
-                MediaSessionBridge.onMetadataChanged(
-                    value.title,
-                    value.artist,
-                    value.album,
-                    (value.artwork || []).find(function (artwork) {
-                        return artwork.src.indexOf("https://") === 0
-                    }) || null
-                )
-            },
-            get playbackState() {
-                return navigator.mediaSession._playbackState
-            },
-            set playbackState(value) {
-                navigator.mediaSession._playbackState = value
-                MediaSessionBridge.onPlaybackStateChanged(value)
-            },
-            setActionHandler: function (type, callback) {
-                navigator.mediaSession._actionHandlers[type] = callback
-                var attachedHandlerTypes = Object.keys(navigator.mediaSession._actionHandlers)
-                    .filter(function (type) {
-                        return !!navigator.mediaSession._actionHandlers[type]
-                    })
-                MediaSessionBridge.onActionHandlersChanged(JSON.stringify(attachedHandlerTypes))
-            },
-            setPositionState: function (args) {
-                MediaSessionBridge.onPositionStateChanged(args.position, args.duration, args.playbackRate)
-            }
-        }
-    </script>
-    <script src="https://proxy.beyondwords.io/npm/@beyondwords/player@0.1.12/dist/umd.js"></script>
-    <script>
-        var player = null
-
-        function load(settings) {
-            if (player !== null) {
-                player.destroy()
-                player.target.className = ''
-            }
-
-            player = new BeyondWords.Player(Object.assign({}, settings, {
-                target: "#player-target",
-                downloadFormats: [],
-                widgetStyle: "none",
-            }))
-            player.target.classList.add('style-' + player.playerStyle)
-            player.addEventListener("<any>", function (event) {
-                PlayerViewBridge.onEvent(
-                    JSON.stringify(getPlayerEvent(event)),
-                    JSON.stringify(getPlayerSettings())
-                )
-                if (event.initiatedBy === "media-session-api") {
-                    updateMediaSession(event)
-                }
-            })
-            player.addEventListener("DurationUpdated", updateMediaSession)
-            player.addEventListener("PlaybackRateUpdated", updateMediaSession)
-            player.addEventListener("PlaybackEnded", updateMediaSession)
-            player.addEventListener("PlaybackPaused", updateMediaSession)
-            player.addEventListener("PlaybackPlaying", updateMediaSession)
-            player.addEventListener("PlaybackErrored", updateMediaSession)
-
-            function updateMediaSession(event) {
-                navigator.mediaSession.playbackState = player.playbackState === "stopped" ? "none" : player.playbackState
-                navigator.mediaSession.setPositionState({
-                    position: player.currentTime,
-                    duration: player.duration,
-                    playbackRate: player.playbackRate
-                })
-            }
-            function getPlayerEvent(event) {
-                return {
-                    id: event.id,
-                    type: event.type,
-                    description: event.description,
-                    initiatedBy: event.initiatedBy,
-                    emittedFrom: event.emittedFrom,
-                    status: event.status,
-                    createdAt: event.createdAt,
-                    processedAt: event.processedAt
-                }
-            }
-            function getPlayerSettings() {
-                return {
-                    playerApiUrl: player.playerApiUrl,
-                    projectId: player.projectId,
-                    contentId: player.contentId,
-                    playlistId: player.playlistId,
-                    sourceId: player.sourceId,
-                    sourceUrl: player.sourceUrl,
-                    playlist: player.playlist,
-                    showUserInterface: player.showUserInterface,
-                    playerStyle: player.playerStyle,
-                    playerTitle: player.playerTitle,
-                    callToAction: player.callToAction,
-                    skipButtonStyle: player.skipButtonStyle,
-                    playlistStyle: player.playlistStyle,
-                    playlistToggle: player.playlistToggle,
-                    downloadFormats: player.downloadFormats,
-                    mediaSession: player.mediaSession,
-                    content: player.content,
-                    contentIndex: player.contentIndex,
-                    introsOutros: player.introsOutros,
-                    introsOutrosIndex: player.introsOutrosIndex,
-                    adverts: player.adverts,
-                    advertIndex: player.advertIndex,
-                    persistentAdImage: player.persistentAdImage,
-                    persistentIndex: player.persistentIndex,
-                    duration: player.duration,
-                    currentTime: player.currentTime,
-                    playbackState: player.playbackState,
-                    playbackRate: player.playbackRate,
-                    widgetStyle: player.widgetStyle,
-                    widgetPosition: player.widgetPosition,
-                    widgetWidth: player.widgetWidth,
-                    textColor: player.textColor,
-                    backgroundColor: player.backgroundColor,
-                    iconColor: player.iconColor,
-                    highlightColor: player.highlightColor,
-                    logoIconEnabled: player.logoIconEnabled,
-                    highlightSections: player.highlightSections,
-                    clickableSections: player.clickableSections,
-                    segmentWidgetSections: player.segmentWidgetSections,
-                    segmentWidgetPosition: player.segmentWidgetPosition,
-                    currentSegment: player.currentSegment,
-                    hoveredSegment: player.hoveredSegment,
-                    loadedMedia: player.loadedMedia,
-                    advertConsent: player.advertConsent,
-                    analyticsConsent: player.analyticsConsent,
-                    analyticsCustomUrl: player.analyticsCustomUrl,
-                    analyticsTag: player.analyticsTag,
-                    transitions: player.transitions,
-                }
-            }
-        }
-        function setPlayerStyle(playerStyle) {
-            player.playerStyle = playerStyle
-            player.target.classList.forEach(function(c) {
-                if (c.startsWith('style-') && !c.endsWith(player.playerStyle)) {
-                    player.target.classList.remove(c)
-                }
-            })
-            player.target.classList.add('style-' + player.playerStyle)
-        }
-        function domContentLoaded() {
-            if (document.readyState === "complete" || document.readyState === "interactive") return Promise.resolve()
-            return new Promise(function (resolve) {
-                document.addEventListener("DOMContentLoaded", function () {
-                    resolve()
-                })
-            })
-        }
-        domContentLoaded().then(function () {
-            var observer = new ResizeObserver(function (entries) {
-              PlayerViewBridge.onResize(entries[0].contentRect.width, entries[0].contentRect.height)
+          _metadata: null,
+          _playbackState: "none",
+          _actionHandlers: {},
+          get metadata() {
+            return navigator.mediaSession._metadata;
+          },
+          set metadata(value) {
+            navigator.mediaSession._metadata = value;
+            window.MediaSessionBridge.onMetadataChanged(
+              value.title,
+              value.artist,
+              value.album,
+              (value.artwork || []).find(function (artwork) {
+                return artwork.src.indexOf("https://") === 0;
+              }) || null
+            );
+          },
+          get playbackState() {
+            return navigator.mediaSession._playbackState;
+          },
+          set playbackState(value) {
+            navigator.mediaSession._playbackState = value;
+            window.MediaSessionBridge.onPlaybackStateChanged(value);
+          },
+          setActionHandler: function (type, callback) {
+            navigator.mediaSession._actionHandlers[type] = callback;
+            var attachedHandlerTypes = Object.keys(navigator.mediaSession._actionHandlers).filter(function (type) {
+              return !!navigator.mediaSession._actionHandlers[type];
             });
-            observer.observe(document.body)
-            PlayerViewBridge.onReady()
-        })
+            window.MediaSessionBridge.onActionHandlersChanged(JSON.stringify(attachedHandlerTypes));
+          },
+          setPositionState: function (args) {
+            window.MediaSessionBridge.onPositionStateChanged(args.position, args.duration, args.playbackRate);
+          },
+        };
+      }
     </script>
-</head>
+    <script src="https://proxy.beyondwords.io/npm/@beyondwords/player@0.1.23/dist/umd.js"></script>
+    <script>
+      var player = null;
 
-<body>
+      function load(settings) {
+        if (player !== null) {
+          player.destroy();
+          player.target.className = "";
+        }
+
+        player = new BeyondWords.Player(
+          Object.assign({}, settings, {
+            target: "#player-target",
+            downloadFormats: [],
+            widgetStyle: "none",
+          })
+        );
+        player.target.classList.add("style-" + player.playerStyle);
+        player.addEventListener("<any>", function (event) {
+          window.Bridge.onEvent(getPlayerEvent(event), getPlayerSettings());
+          if (event.initiatedBy === "media-session-api") {
+            updateMediaSession();
+          }
+        });
+        player.addEventListener("DurationUpdated", updateMediaSession);
+        player.addEventListener("PlaybackRateUpdated", updateMediaSession);
+        player.addEventListener("PlaybackEnded", updateMediaSession);
+        player.addEventListener("PlaybackPaused", updateMediaSession);
+        player.addEventListener("PlaybackPlaying", updateMediaSession);
+        player.addEventListener("PlaybackErrored", updateMediaSession);
+        if (window.os === "ios") {
+          player.addEventListener("CurrentTimeUpdated", updateMediaSession);
+        }
+
+        function updateMediaSession() {
+          if (window.os === "ios") {
+            if (navigator.mediaSession.metadata) {
+              navigator.mediaSession.metadata = new MediaMetadata(navigator.mediaSession.metadata);
+            }
+          } else {
+            navigator.mediaSession.playbackState = player.playbackState === "stopped" ? "none" : player.playbackState;
+            navigator.mediaSession.setPositionState({
+              position: player.currentTime,
+              duration: player.duration,
+              playbackRate: player.playbackRate,
+            });
+          }
+        }
+        function getPlayerEvent(event) {
+          return {
+            id: event.id,
+            type: event.type,
+            description: event.description,
+            initiatedBy: event.initiatedBy,
+            emittedFrom: event.emittedFrom,
+            status: event.status,
+            createdAt: event.createdAt,
+            processedAt: event.processedAt,
+          };
+        }
+        function getPlayerSettings() {
+          return {
+            playerApiUrl: player.playerApiUrl,
+            projectId: player.projectId,
+            contentId: player.contentId,
+            playlistId: player.playlistId,
+            sourceId: player.sourceId,
+            sourceUrl: player.sourceUrl,
+            playlist: player.playlist,
+            showUserInterface: player.showUserInterface,
+            playerStyle: player.playerStyle,
+            playerTitle: player.playerTitle,
+            callToAction: player.callToAction,
+            skipButtonStyle: player.skipButtonStyle,
+            playlistStyle: player.playlistStyle,
+            playlistToggle: player.playlistToggle,
+            downloadFormats: player.downloadFormats,
+            mediaSession: player.mediaSession,
+            content: player.content,
+            contentIndex: player.contentIndex,
+            introsOutros: player.introsOutros,
+            introsOutrosIndex: player.introsOutrosIndex,
+            adverts: player.adverts,
+            advertIndex: player.advertIndex,
+            persistentAdImage: player.persistentAdImage,
+            persistentIndex: player.persistentIndex,
+            duration: player.duration,
+            currentTime: player.currentTime,
+            playbackState: player.playbackState,
+            playbackRate: player.playbackRate,
+            widgetStyle: player.widgetStyle,
+            widgetPosition: player.widgetPosition,
+            widgetWidth: player.widgetWidth,
+            textColor: player.textColor,
+            backgroundColor: player.backgroundColor,
+            iconColor: player.iconColor,
+            highlightColor: player.highlightColor,
+            logoIconEnabled: player.logoIconEnabled,
+            highlightSections: player.highlightSections,
+            clickableSections: player.clickableSections,
+            segmentWidgetSections: player.segmentWidgetSections,
+            segmentWidgetPosition: player.segmentWidgetPosition,
+            currentSegment: player.currentSegment,
+            hoveredSegment: player.hoveredSegment,
+            loadedMedia: player.loadedMedia,
+            advertConsent: player.advertConsent,
+            analyticsConsent: player.analyticsConsent,
+            analyticsCustomUrl: player.analyticsCustomUrl,
+            analyticsTag: player.analyticsTag,
+            transitions: player.transitions,
+          };
+        }
+      }
+      function setPlayerStyle(playerStyle) {
+        player.playerStyle = playerStyle;
+        player.target.classList.forEach(function (c) {
+          if (c.startsWith("style-") && !c.endsWith(player.playerStyle)) {
+            player.target.classList.remove(c);
+          }
+        });
+        player.target.classList.add("style-" + player.playerStyle);
+      }
+      function domContentLoaded() {
+        if (document.readyState === "complete" || document.readyState === "interactive") return Promise.resolve();
+        return new Promise(function (resolve) {
+          document.addEventListener("DOMContentLoaded", function () {
+            resolve();
+          });
+        });
+      }
+      domContentLoaded().then(function () {
+        var observer = new ResizeObserver(function (entries) {
+          Bridge.onResize(entries[0].contentRect.width, entries[0].contentRect.height);
+        });
+        observer.observe(document.body);
+        Bridge.onReady();
+      });
+    </script>
+  </head>
+
+  <body>
     <div id="player-target"></div>
-</body>
-
+  </body>
 </html>
