@@ -151,16 +151,12 @@
         };
       }
     </script>
-    <script src="https://proxy.beyondwords.io/npm/@beyondwords/player@0.1.23/dist/umd.js"></script>
+    <script src="https://proxy.beyondwords.io/npm/@beyondwords/player@0.1.24/dist/umd.js"></script>
     <script>
       var player = null;
-      var video = null;
 
       function load(settings) {
         if (player !== null) {
-          if (video !== null) {
-            video.removeEventListener("seeked", updateMediaSession);
-          }
           player.destroy();
           player.target.className = "";
         }
@@ -179,10 +175,7 @@
             updateMediaSession();
           }
         });
-        player.addEventListener("MediaLoaded", function () {
-          video = player.mediaElement.video;
-          video.addEventListener("seeked", updateMediaSession);
-        });
+        player.addEventListener("MediaSeeked", updateMediaSession);
         player.addEventListener("DurationUpdated", updateMediaSession);
         player.addEventListener("PlaybackRateUpdated", updateMediaSession);
         player.addEventListener("PlaybackEnded", updateMediaSession);
