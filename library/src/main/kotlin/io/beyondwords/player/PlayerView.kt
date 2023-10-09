@@ -280,6 +280,14 @@ class PlayerView @JvmOverloads constructor(
         setProp("player.advertIndex", advertIndex)
     }
 
+    fun setMinDurationForMidroll(minDurationForMidroll: Float) {
+        setProp("player.minDurationForMidroll", minDurationForMidroll)
+    }
+
+    fun setMinTimeUntilEndForMidroll(minTimeUntilEndForMidroll: Float) {
+        setProp("player.minTimeUntilEndForMidroll", minTimeUntilEndForMidroll)
+    }
+
     fun setPersistentAdImage(persistentAdImage: Boolean) {
         setProp("player.persistentAdImage", persistentAdImage)
     }

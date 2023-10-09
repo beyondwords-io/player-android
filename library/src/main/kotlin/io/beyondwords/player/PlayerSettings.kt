@@ -22,6 +22,8 @@ data class PlayerSettings(
     var introsOutrosIndex: Int? = null,
     var adverts: List<Advert>? = null,
     var advertIndex: Int? = null,
+    var minDurationForMidroll: Float? = null,
+    var minTimeUntilEndForMidroll: Float? = null,
     var persistentAdImage: Boolean? = null,
     var persistentIndex: Int? = null,
     var duration: Float? = null,
