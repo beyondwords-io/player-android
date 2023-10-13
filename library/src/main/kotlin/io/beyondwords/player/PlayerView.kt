@@ -86,7 +86,7 @@ class PlayerView @JvmOverloads constructor(
             try {
                 parsedEvent = gson.fromJson(event, object : TypeToken<PlayerEvent>() {}.type)
             } catch (e: Exception) {
-                Log.e("PlayerView", "onEvent: Failed to parse event $event", e)
+                Log.e("BeyondWordsPlayer", "onEvent: Failed to parse event $event", e)
                 return
             }
 
@@ -95,7 +95,7 @@ class PlayerView @JvmOverloads constructor(
                 parsedSettings =
                     gson.fromJson(settings, object : TypeToken<PlayerSettings>() {}.type)
             } catch (e: Exception) {
-                Log.e("PlayerView", "onEvent: Failed to parse settings $settings", e)
+                Log.e("BeyondWordsPlayer", "onEvent: Failed to parse settings $settings", e)
                 return
             }
 
