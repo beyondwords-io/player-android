@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.Build
+import android.webkit.WebView
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -16,6 +17,7 @@ class MainApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        WebView.setWebContentsDebuggingEnabled(true)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             val channelBuilder = NotificationChannelCompat.Builder(
                 AUDIO_PLAYER_NOTIFICATION_CHANNEL_ID,
