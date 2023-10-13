@@ -38,6 +38,7 @@ class PlayerView @JvmOverloads constructor(
 ) : FrameLayout(context, attrs, defStyleAttr, defStyleRes) {
     companion object {
         private val gson: Gson by lazy { GsonBuilder().create() }
+        @JvmStatic
         var verbose: Boolean = false
     }
 
