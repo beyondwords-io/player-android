@@ -98,14 +98,6 @@
         },
       };
 
-      var _fetch = window.fetch;
-      window.fetch = function (resource, options) {
-        options = Object.assign({}, options, {
-          cache: "no-cache",
-        });
-        return _fetch(resource, options);
-      };
-
       if (!navigator.mediaSession && window.MediaSessionBridge) {
         window.MediaMetadata = function (props) {
           this.title = (props || {}).title;

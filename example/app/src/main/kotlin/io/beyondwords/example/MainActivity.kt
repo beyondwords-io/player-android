@@ -3,6 +3,7 @@ package io.beyondwords.example
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.webkit.WebSettings
 import android.widget.AutoCompleteTextView
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
@@ -77,6 +78,7 @@ class MainActivity : AppCompatActivity() {
                                 FrameLayout.LayoutParams.WRAP_CONTENT
                             )
                         )
+                        it.webView?.settings?.cacheMode = WebSettings.LOAD_NO_CACHE
                         it.load(settings)
                     }
                 }

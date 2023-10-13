@@ -12,7 +12,7 @@ import android.util.TypedValue
 import android.webkit.DownloadListener
 import android.webkit.JavascriptInterface
 import android.webkit.WebResourceRequest
-import android.webkit.WebSettings.LOAD_NO_CACHE
+import android.webkit.WebSettings.LOAD_DEFAULT
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.FrameLayout
@@ -127,8 +127,8 @@ class PlayerView @JvmOverloads constructor(
         }
     }
     private var ready: Boolean = false
-    private var webView: WebView? = null
-    private var mediaSession: MediaSession? = null
+    public var webView: WebView? = null
+    public var mediaSession: MediaSession? = null
 
     init {
         addView(webViewContainer, LayoutParams(LayoutParams.MATCH_PARENT, 0))
@@ -142,7 +142,7 @@ class PlayerView @JvmOverloads constructor(
                 domStorageEnabled = true
                 allowFileAccess = false
                 databaseEnabled = false
-                cacheMode = LOAD_NO_CACHE
+                cacheMode = LOAD_DEFAULT
                 mediaPlaybackRequiresUserGesture = false
                 builtInZoomControls = false
                 displayZoomControls = false
