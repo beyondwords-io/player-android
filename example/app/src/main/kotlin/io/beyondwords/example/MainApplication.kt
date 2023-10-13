@@ -21,6 +21,7 @@ class MainApplication : Application() {
         WebView.setWebContentsDebuggingEnabled(true)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             PlayerView.verbose = true
+            MediaSession.verbose = true
             val channelBuilder = NotificationChannelCompat.Builder(
                 AUDIO_PLAYER_NOTIFICATION_CHANNEL_ID,
                 NotificationManagerCompat.IMPORTANCE_LOW
