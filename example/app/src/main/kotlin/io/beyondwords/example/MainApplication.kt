@@ -9,6 +9,7 @@ import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import io.beyondwords.player.MediaSession
+import io.beyondwords.player.PlayerView
 
 class MainApplication : Application() {
     companion object {
@@ -19,6 +20,7 @@ class MainApplication : Application() {
         super.onCreate()
         WebView.setWebContentsDebuggingEnabled(true)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            PlayerView.verbose = true
             val channelBuilder = NotificationChannelCompat.Builder(
                 AUDIO_PLAYER_NOTIFICATION_CHANNEL_ID,
                 NotificationManagerCompat.IMPORTANCE_LOW
