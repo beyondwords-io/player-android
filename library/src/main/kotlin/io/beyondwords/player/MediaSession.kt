@@ -470,7 +470,7 @@ class MediaSession constructor(private val webView: WebView) {
     }
 
     private fun onSeekTo(position: Long) {
-        if (verbose) println("BeyondWordsMediaSession:onSeekTo")
+        if (verbose) println("BeyondWordsMediaSession:onSeekTo $position")
         this@MediaSession.mediaSession ?: return
         onAction("seekto", listOf(SeekToParams(position / 1000)))
     }
