@@ -127,8 +127,8 @@ class PlayerView @JvmOverloads constructor(
         }
     }
     private var ready: Boolean = false
-    public var webView: WebView? = null
-    public var mediaSession: MediaSession? = null
+    var webView: WebView? = null
+    var mediaSession: MediaSession? = null
 
     init {
         addView(webViewContainer, LayoutParams(LayoutParams.MATCH_PARENT, 0))
