@@ -49,6 +49,7 @@ class PlayerView @JvmOverloads constructor(
     private val bridge = object {
         @JavascriptInterface
         fun onReady() {
+            if (verbose) println("BeyondWordsPlayer:onReady")
             coroutineScope.launch {
                 val webView = this@PlayerView.webView ?: return@launch
                 ready = true
@@ -62,6 +63,7 @@ class PlayerView @JvmOverloads constructor(
         @Suppress("UNUSED_PARAMETER")
         @JavascriptInterface
         fun onResize(width: Float, height: Float) {
+            if (verbose) println("BeyondWordsPlayer:onResize: $width $height")
             coroutineScope.launch {
                 this@PlayerView.webView ?: return@launch
                 webViewContainer.updateLayoutParams {
@@ -76,7 +78,10 @@ class PlayerView @JvmOverloads constructor(
 
         @JavascriptInterface
         fun onEvent(event: String, settings: String) {
-            if (verbose) println("BeyondWordsPlayer:onEvent: ${event.lines().joinToString("")}")
+            if (verbose) {
+                println("BeyondWordsPlayer:onEvent: ${event.lines().joinToString("")}")
+                println("BeyondWordsPlayer:onEvent: ${settings.lines().joinToString("")}")
+            }
             val parsedEvent: PlayerEvent
             try {
                 parsedEvent = gson.fromJson(event, object : TypeToken<PlayerEvent>() {}.type)
