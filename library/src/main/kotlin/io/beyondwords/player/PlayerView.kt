@@ -135,8 +135,9 @@ class PlayerView @JvmOverloads constructor(
         }
     }
     private var ready: Boolean = false
+    private var mediaSession: MediaSession? = null
     var webView: WebView? = null
-    var mediaSession: MediaSession? = null
+        private set
 
     init {
         if (verbose) println("BeyondWordsPlayer:init")
