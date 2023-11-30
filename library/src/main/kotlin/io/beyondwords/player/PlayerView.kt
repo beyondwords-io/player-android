@@ -203,6 +203,8 @@ class PlayerView @JvmOverloads constructor(
     }
 
     fun load(settings: PlayerSettings) {
+        settings.bundleIdentifier = context.packageName
+        settings.vendorIdentifier = null
         callFunction("load", listOf(settings))
     }
 
