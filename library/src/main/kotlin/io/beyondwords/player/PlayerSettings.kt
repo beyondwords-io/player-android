@@ -40,6 +40,8 @@ data class PlayerSettings(
     var analyticsConsent: String? = null,
     var analyticsCustomUrl: String? = null,
     var analyticsTag: String? = null,
+    var bundleIdentifier: String? = null,
+    var vendorIdentifier: String? = null,
 ) {
     data class Identifier(
         var contentId: String? = null,
