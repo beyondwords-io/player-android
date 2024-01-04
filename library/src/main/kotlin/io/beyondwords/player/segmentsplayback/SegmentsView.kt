@@ -19,7 +19,7 @@ class SegmentsView(
     private lateinit var segments: Array<Segment>
     private lateinit var rvAdapter: SegmentsAdapter
 
-    fun bindPlayer(text: String, player: PlayerView) {
+    fun bindPlayer(player: PlayerView, text: String, breakpoint: String = "\n\n") {
         this.player = player
         buildSegments(text) // draw initial UI without segment binding
 
@@ -60,7 +60,7 @@ class SegmentsView(
             override fun onEvent(event: PlayerEvent, settings: PlayerSettings) {
                 if(event.type == "ContentAvailable") {
                     player.getMarkers {
-                        buildSegments(text, markers = it[settings.contentId] ?: listOf())
+                        buildSegments(text, breakpoint, markers = it[settings.contentId] ?: listOf())
                         player.addEventListener(afterLoadListener)
                     }
                 }

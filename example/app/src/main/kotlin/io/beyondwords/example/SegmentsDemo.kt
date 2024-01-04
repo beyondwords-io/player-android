@@ -31,7 +31,7 @@ class SegmentsDemo : AppCompatActivity() {
             segmentsView.layoutManager = LinearLayoutManager(this)
             layout.addView(segmentsView)
 
-            segmentsView.bindPlayer(text, playerView)
+            segmentsView.bindPlayer(playerView, text)
         }
     }
 }
