@@ -7,8 +7,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.util.AttributeSet
-import android.util.JsonReader
-import android.util.JsonToken
 import android.util.Log
 import android.util.TypedValue
 import android.webkit.DownloadListener
@@ -29,7 +27,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import java.io.StringReader
 
 @RequiresApi(24)
 @SuppressLint("SetJavaScriptEnabled")
@@ -49,6 +46,7 @@ class PlayerView @JvmOverloads constructor(
     private val webViewContainer = FrameLayout(context)
     private val listeners = mutableSetOf<EventListener>()
     private val pendingCommands = mutableListOf<String>()
+    private val pendingCommandsWithResult = mutableListOf<Pair<String, (String) -> Unit>>()
     private val bridge = object {
         @JavascriptInterface
         fun onReady() {
@@ -59,7 +57,11 @@ class PlayerView @JvmOverloads constructor(
                 pendingCommands.forEach {
                     webView.evaluateJavascript(it, null)
                 }
+                pendingCommandsWithResult.forEach {
+                    webView.evaluateJavascript(it.first, it.second)
+                }
                 pendingCommands.clear()
+                pendingCommandsWithResult.clear()
             }
         }
 
@@ -185,6 +187,7 @@ class PlayerView @JvmOverloads constructor(
         ready = false
         listeners.clear()
         pendingCommands.clear()
+        pendingCommandsWithResult.clear()
         coroutineScope.cancel()
         mediaSession?.release()
         mediaSession = null
@@ -331,9 +334,32 @@ class PlayerView @JvmOverloads constructor(
         """)
     }
 
+    fun getMarkers(callback: (Map<String, List<String>>) -> Unit) {
+        execWithResult("""
+            (function(){
+                try {
+                    const content = {}
+                    for  (const item of player.content || []) {
+                        const markers = []
+                        for (const segment of item.segments || []) {
+                            markers.push(segment.marker)
+                        }
+                        content[item.id] = markers
+                    }
+                    return content
+                } catch (e) {
+                    console.error("PlayerView:getMarkers:" + e.message, e)
+                }
+            })();
+        """) {
+            val type = object : TypeToken<Map<String, List<String>>>() {}.type
+            val parsedJson = gson.fromJson<Map<String, List<String>>>(it, type)
+            callback(parsedJson)
+        }
+    }
+
     fun getCurrentSegment(callback: (String) -> Unit) {
-        webView?.evaluateJavascript(
-            """
+        execWithResult("""
             (function(){
                 try {
                     return player.currentSegment['marker'];
@@ -341,24 +367,7 @@ class PlayerView @JvmOverloads constructor(
                     console.error("PlayerView:getCurrentSegment:" + e.message, e)
                 }
             })();
-            """
-        ) {
-            val reader = JsonReader(StringReader(it))
-            reader.isLenient = true
-
-            try {
-                if (reader.peek() == JsonToken.STRING) {
-                    val message = reader.nextString()
-                    if (message != null) {
-                        callback(message)
-                    }
-                }
-            } catch (e: Exception) {
-                Log.e("PlayerView", "getCurrentSegment:Exception:", e)
-            } finally {
-                reader.close()
-            }
-        }
+        """) { callback(it.replace("\"", "")) }
     }
 
     fun setPlaybackState(playbackState: String) {
@@ -412,8 +421,7 @@ class PlayerView @JvmOverloads constructor(
             } catch (e) {
                 console.error("PlayerView:callFunction:" + e.message, e)
             }
-        """
-        )
+        """)
     }
 
     private fun setProp(name: String, value: Any) {
@@ -424,8 +432,7 @@ class PlayerView @JvmOverloads constructor(
             } catch (e) {
                 console.error("PlayerView:setProp:" + e.message, e)
             }
-        """
-        )
+        """)
     }
 
     private fun exec(command: String) {
@@ -435,6 +442,18 @@ class PlayerView @JvmOverloads constructor(
             pendingCommands.add(command)
         } else {
             webView.evaluateJavascript(command, null)
+        }
+    }
+
+    private fun execWithResult(command: String, callback: (String) -> Unit) {
+        if (verbose) println("BeyondWordsPlayer:execWithResult: ${command.lines().joinToString("")}")
+        val webView = this.webView ?: return
+        if (!ready) {
+            pendingCommandsWithResult.add(Pair(command, callback))
+        } else {
+            webView.evaluateJavascript(command) {
+                if (it != null) callback(it)
+            }
         }
     }
 }

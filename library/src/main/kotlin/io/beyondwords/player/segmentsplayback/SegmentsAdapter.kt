@@ -35,11 +35,14 @@ class SegmentsAdapter(private val segments: Array<Segment>) :
 
     override fun onBindViewHolder(holder: RvViewHolder, position: Int) {
         holder.binding.apply {
-            bwSegment.setOnClickListener {
-                segments[position].onClick()
+            if (segments[position].marker.isNotBlank()) {
+                bwSegment.setOnClickListener {
+                    segments[position].onClick()
+                }
             }
 
             if (segments[position].isActive) {
+                Log.d("SegmentAdapter", "CurrentSegment: ${segments[position]}")
                 val spannable = SpannableString(segments[position].text)
                 spannable.setSpan(
                     BackgroundColorSpan(ContextCompat.getColor(context, R.color.default_highlight)),
