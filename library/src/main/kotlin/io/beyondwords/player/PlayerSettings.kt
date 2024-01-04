@@ -22,6 +22,8 @@ data class PlayerSettings(
     var introsOutrosIndex: Int? = null,
     var adverts: List<Advert>? = null,
     var advertIndex: Int? = null,
+    var minDurationForMidroll: Float? = null,
+    var minTimeUntilEndForMidroll: Float? = null,
     var persistentAdImage: Boolean? = null,
     var persistentIndex: Int? = null,
     var duration: Float? = null,
@@ -38,6 +40,8 @@ data class PlayerSettings(
     var analyticsConsent: String? = null,
     var analyticsCustomUrl: String? = null,
     var analyticsTag: String? = null,
+    var bundleIdentifier: String? = null,
+    var vendorIdentifier: String? = null,
 ) {
     data class Identifier(
         var contentId: String? = null,

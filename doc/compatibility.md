@@ -26,6 +26,8 @@ The table below illustrates the compatibility between the Player Settings of the
 | introsOutrosIndex         |:heavy_check_mark: |
 | adverts                   |:heavy_check_mark: |
 | advertIndex               |:heavy_check_mark: |
+| minDurationForMidroll     |:heavy_check_mark: |
+| minTimeUntilEndForMidroll |:heavy_check_mark: |
 | persistentAdImage         |:heavy_check_mark: |
 | persistentIndex           |:heavy_check_mark: |
 | duration                  |:heavy_check_mark: |

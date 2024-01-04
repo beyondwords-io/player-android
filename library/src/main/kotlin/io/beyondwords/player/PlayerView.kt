@@ -41,6 +41,8 @@ class PlayerView @JvmOverloads constructor(
 ) : FrameLayout(context, attrs, defStyleAttr, defStyleRes) {
     companion object {
         private val gson: Gson by lazy { GsonBuilder().create() }
+        @JvmStatic
+        var verbose: Boolean = false
     }
 
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
@@ -50,6 +52,7 @@ class PlayerView @JvmOverloads constructor(
     private val bridge = object {
         @JavascriptInterface
         fun onReady() {
+            if (verbose) println("BeyondWordsPlayer:onReady")
             coroutineScope.launch {
                 val webView = this@PlayerView.webView ?: return@launch
                 ready = true
@@ -62,13 +65,14 @@ class PlayerView @JvmOverloads constructor(
 
         @Suppress("UNUSED_PARAMETER")
         @JavascriptInterface
-        fun onResize(width: Int, height: Int) {
+        fun onResize(width: Float, height: Float) {
+            if (verbose) println("BeyondWordsPlayer:onResize: $width $height")
             coroutineScope.launch {
                 this@PlayerView.webView ?: return@launch
                 webViewContainer.updateLayoutParams {
                     this.height = TypedValue.applyDimension(
                         TypedValue.COMPLEX_UNIT_DIP,
-                        height.toFloat(),
+                        height,
                         resources.displayMetrics
                     ).toInt()
                 }
@@ -77,11 +81,15 @@ class PlayerView @JvmOverloads constructor(
 
         @JavascriptInterface
         fun onEvent(event: String, settings: String) {
+            if (verbose) {
+                println("BeyondWordsPlayer:onEvent: ${event.lines().joinToString("")}")
+                println("BeyondWordsPlayer:onEvent: ${settings.lines().joinToString("")}")
+            }
             val parsedEvent: PlayerEvent
             try {
                 parsedEvent = gson.fromJson(event, object : TypeToken<PlayerEvent>() {}.type)
             } catch (e: Exception) {
-                Log.e("PlayerView", "onEvent: Failed to parse event $event", e)
+                Log.e("BeyondWordsPlayer", "onEvent: Failed to parse event $event", e)
                 return
             }
 
@@ -90,7 +98,7 @@ class PlayerView @JvmOverloads constructor(
                 parsedSettings =
                     gson.fromJson(settings, object : TypeToken<PlayerSettings>() {}.type)
             } catch (e: Exception) {
-                Log.e("PlayerView", "onEvent: Failed to parse settings $settings", e)
+                Log.e("BeyondWordsPlayer", "onEvent: Failed to parse settings $settings", e)
                 return
             }
 
@@ -134,6 +142,7 @@ class PlayerView @JvmOverloads constructor(
     private var mediaSession: MediaSession? = null
 
     init {
+        if (verbose) println("BeyondWordsPlayer:init")
         addView(webViewContainer, LayoutParams(LayoutParams.MATCH_PARENT, 0))
         webView = WebView(context).also {
             webViewContainer.addView(
@@ -172,6 +181,7 @@ class PlayerView @JvmOverloads constructor(
     }
 
     fun release() {
+        if (verbose) println("BeyondWordsPlayer:release")
         ready = false
         listeners.clear()
         pendingCommands.clear()
@@ -196,6 +206,8 @@ class PlayerView @JvmOverloads constructor(
     }
 
     fun load(settings: PlayerSettings) {
+        settings.bundleIdentifier = context.packageName
+        settings.vendorIdentifier = null
         callFunction("load", listOf(settings))
     }
 
@@ -281,6 +293,14 @@ class PlayerView @JvmOverloads constructor(
 
     fun setAdvertIndex(advertIndex: Int) {
         setProp("player.advertIndex", advertIndex)
+    }
+
+    fun setMinDurationForMidroll(minDurationForMidroll: Float) {
+        setProp("player.minDurationForMidroll", minDurationForMidroll)
+    }
+
+    fun setMinTimeUntilEndForMidroll(minTimeUntilEndForMidroll: Float) {
+        setProp("player.minTimeUntilEndForMidroll", minTimeUntilEndForMidroll)
     }
 
     fun setPersistentAdImage(persistentAdImage: Boolean) {
@@ -409,6 +429,7 @@ class PlayerView @JvmOverloads constructor(
     }
 
     private fun exec(command: String) {
+        if (verbose) println("BeyondWordsPlayer:exec: ${command.lines().joinToString("")}")
         val webView = this.webView ?: return
         if (!ready) {
             pendingCommands.add(command)

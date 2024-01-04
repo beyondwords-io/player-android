@@ -41,7 +41,12 @@ class MediaSession constructor(private val webView: WebView) {
 
         @JvmStatic
         var notificationChannelId: String? = null
+
+        @JvmStatic
         var notificationProvider = NotificationProvider()
+
+        @JvmStatic
+        var verbose: Boolean = false
 
         private fun ensureNotificationChannel(context: Context) {
             if (notificationChannelId != null) return
@@ -245,11 +250,15 @@ class MediaSession constructor(private val webView: WebView) {
     private val bridge = object {
         @JavascriptInterface
         fun onActionHandlersChanged(types: String) {
+            if (verbose) println(
+                "BeyondWordsMediaSession:onActionHandlersChanged: " +
+                        types.lines().joinToString("")
+            )
             val parsedTypes: List<String>
             try {
                 parsedTypes = gson.fromJson(types, object : TypeToken<List<String>>() {}.type)
             } catch (e: Exception) {
-                Log.e("MediaSession", "onActionHandlersChanged: Failed to parse types $types", e)
+                Log.e("BeyondWordsMediaSession", "onActionHandlersChanged: Failed to parse types $types", e)
                 return
             }
 
@@ -286,6 +295,13 @@ class MediaSession constructor(private val webView: WebView) {
             album: String?,
             artworkUrl: String?
         ) {
+            if (verbose) println(
+                "BeyondWordsMediaSession:onMetadataChanged: " +
+                        "${title?.lines()?.joinToString("")} " +
+                        "${artist?.lines()?.joinToString("")} " +
+                        "${album?.lines()?.joinToString("")} " +
+                        "${artworkUrl?.lines()?.joinToString("")}"
+            )
             coroutineScope.launch {
                 val mediaSession = this@MediaSession.mediaSession ?: return@launch
                 val metadata = mediaSession.controller?.metadata
@@ -325,6 +341,7 @@ class MediaSession constructor(private val webView: WebView) {
 
         @JavascriptInterface
         fun onPositionStateChanged(position: Float, duration: Float, playbackSpeed: Float) {
+            if (verbose) println("BeyondWordsMediaSession:onPositionStateChanged: $position $duration $playbackSpeed")
             coroutineScope.launch {
                 val mediaSession = this@MediaSession.mediaSession ?: return@launch
                 val metadata = mediaSession.controller?.metadata
@@ -356,6 +373,7 @@ class MediaSession constructor(private val webView: WebView) {
 
         @JavascriptInterface
         fun onPlaybackStateChanged(state: String) {
+            if (verbose) println("BeyondWordsMediaSession:onPlaybackStateChanged: $state")
             coroutineScope.launch {
                 val mediaSession = this@MediaSession.mediaSession ?: return@launch
                 val playbackState = mediaSession.controller?.playbackState
@@ -386,6 +404,7 @@ class MediaSession constructor(private val webView: WebView) {
     private var downloadArtworkJob: Job? = null
 
     init {
+        if (verbose) println("BeyondWordsMediaSession:init")
         mediaSession = MediaSessionCompat(context, "BeyondWords").apply {
             setCallback(mediaSessionCallback)
         }
@@ -394,6 +413,7 @@ class MediaSession constructor(private val webView: WebView) {
     }
 
     fun release() {
+        if (verbose) println("BeyondWordsMediaSession:release")
         context.unregisterReceiver(mediaButtonReceiver)
         webView.removeJavascriptInterface("MediaSessionBridge")
         coroutineScope.cancel()
@@ -404,26 +424,31 @@ class MediaSession constructor(private val webView: WebView) {
     }
 
     private fun onPlay() {
+        if (verbose) println("BeyondWordsMediaSession:onPlay")
         this@MediaSession.mediaSession ?: return
         onAction("play")
     }
 
     private fun onPause() {
+        if (verbose) println("BeyondWordsMediaSession:onPause")
         this@MediaSession.mediaSession ?: return
         onAction("pause")
     }
 
     private fun onFastForward() {
+        if (verbose) println("BeyondWordsMediaSession:onFastForward")
         this@MediaSession.mediaSession ?: return
         onAction("seekforward", listOf(object {}))
     }
 
     private fun onRewind() {
+        if (verbose) println("BeyondWordsMediaSession:onRewind")
         this@MediaSession.mediaSession ?: return
         onAction("seekbackward", listOf(object {}))
     }
 
     private fun onSkipToPrevious() {
+        if (verbose) println("BeyondWordsMediaSession:onSkipToPrevious")
         val mediaSession = this@MediaSession.mediaSession ?: return
         val actions = mediaSession.controller?.playbackState?.actions ?: 0L
         if (actions and PlaybackStateCompat.ACTION_REWIND != 0L) {
@@ -434,6 +459,7 @@ class MediaSession constructor(private val webView: WebView) {
     }
 
     private fun onSkipToNext() {
+        if (verbose) println("BeyondWordsMediaSession:onSkipToNext")
         val mediaSession = this@MediaSession.mediaSession ?: return
         val actions = mediaSession.controller?.playbackState?.actions ?: 0L
         if (actions and PlaybackStateCompat.ACTION_FAST_FORWARD != 0L) {
@@ -444,6 +470,7 @@ class MediaSession constructor(private val webView: WebView) {
     }
 
     private fun onSeekTo(position: Long) {
+        if (verbose) println("BeyondWordsMediaSession:onSeekTo $position")
         this@MediaSession.mediaSession ?: return
         onAction("seekto", listOf(SeekToParams(position / 1000)))
     }
@@ -456,7 +483,7 @@ class MediaSession constructor(private val webView: WebView) {
                     ${args.map { gson.toJson(it) }.joinToString(",") { it }}
                 )
             } catch (e) {
-                console.error("MediaSession:onAction:" + e.message, e)
+                console.error("BeyondWordsMediaSession:onAction:" + e.message, e)
             }
         """, null
         )

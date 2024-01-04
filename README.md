@@ -22,6 +22,7 @@ The [doc/](doc/) directory contains these useful resources:
 
 1. [Getting Started](./doc/getting-started.md): A guide for how to use the player on your app.
 2. [Compatibility](./doc/compatibility.md): A table that illustrates the compatibility between the Player Settings of the [Web Player](https://github.com/beyondwords-io/player) and the Android Player.
+3. [Deployment](./doc/deployment.md): How to release a new version of the player to the public and some things to consider.
 
 ## License
 
