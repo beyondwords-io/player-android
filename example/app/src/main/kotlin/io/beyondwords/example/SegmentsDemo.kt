@@ -36,8 +36,8 @@ class SegmentsDemo : AppCompatActivity() {
             layout.addView(segmentsView)
 
             // This builds playback from paragraph with unformatted text
-            // '\n\n' is the default breakpoint to build a paragraph
-            // val text = getString(R.string.article)
+            // Please provide a list of strings
+            // val text = getString(R.string.article).split("\n\n")
             // segmentsView.bindPlayer(playerView, text)
 
             val splitText = getString(R.string.articleWithHeadings).split("\n\n")

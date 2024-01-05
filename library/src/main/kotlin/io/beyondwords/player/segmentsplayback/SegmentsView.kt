@@ -20,6 +20,20 @@ class SegmentsView(
     private lateinit var segments: List<Segment>
     private lateinit var rvAdapter: SegmentsAdapter
 
+    private val onLoadListener: (text: List<Any>) -> EventListener = { text ->
+        object : EventListener {
+            @RequiresApi(Build.VERSION_CODES.N)
+            override fun onEvent(event: PlayerEvent, settings: PlayerSettings) {
+                if(event.type == "ContentAvailable") {
+                    player.getMarkers {
+                        buildSegments(text, markers = it[settings.contentId] ?: listOf())
+                        player.addEventListener(afterLoadListener)
+                    }
+                }
+            }
+        }
+    }
+
     private val afterLoadListener = object : EventListener {
         @RequiresApi(Build.VERSION_CODES.N)
         override fun onEvent(event: PlayerEvent, settings: PlayerSettings) {
@@ -50,138 +64,42 @@ class SegmentsView(
         }
     }
 
-    @JvmName("bindWithString")
-    fun bindPlayer(player: PlayerView, text: String, breakpoint: String = "\n\n") {
+    fun bindPlayer(player: PlayerView, text: List<Any>) {
         this.player = player
         buildSegments(text) // draw initial UI without segment binding
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return
 
-        player.addEventListener(object : EventListener {
-            @RequiresApi(Build.VERSION_CODES.N)
-            override fun onEvent(event: PlayerEvent, settings: PlayerSettings) {
-                if(event.type == "ContentAvailable") {
-                    player.getMarkers {
-                        buildSegments(text, breakpoint, markers = it[settings.contentId] ?: listOf())
-                        player.addEventListener(afterLoadListener)
-                    }
-                }
-            }
-        })
+        player.addEventListener(onLoadListener(text))
     }
 
-    @JvmName("bindWithList")
-    fun bindPlayer(player: PlayerView, text: List<String>) {
-        this.player = player
-        buildSegments(text) // draw initial UI without segment binding
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return
-
-        player.addEventListener(object : EventListener {
-            @RequiresApi(Build.VERSION_CODES.N)
-            override fun onEvent(event: PlayerEvent, settings: PlayerSettings) {
-                if(event.type == "ContentAvailable") {
-                    player.getMarkers {
-                        buildSegments(text, markers = it[settings.contentId] ?: listOf())
-                        player.addEventListener(afterLoadListener)
-                    }
-                }
-            }
-        })
-    }
-
-    @JvmName("bindWithSpannables")
-    fun bindPlayer(player: PlayerView, text: List<SpannableString>) {
-        this.player = player
-        buildSegments(text) // draw initial UI without segment binding
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return
-
-        player.addEventListener(object : EventListener {
-            @RequiresApi(Build.VERSION_CODES.N)
-            override fun onEvent(event: PlayerEvent, settings: PlayerSettings) {
-                if(event.type == "ContentAvailable") {
-                    player.getMarkers {
-                        buildSegments(text, markers = it[settings.contentId] ?: listOf())
-                        player.addEventListener(afterLoadListener)
-                    }
-                }
-            }
-        })
-    }
-
-    @JvmName("buildSegmentsFromString")
     private fun buildSegments(
-        text: String,
-        delimiter: String = "\n\n",
+        text: List<Any>,
         markers: List<String> = listOf()
     ) {
+        val isListOfStrings = text.all { it is String }
+        val isListOfSpannables = text.all { it is SpannableString }
+
+        if (!isListOfStrings && !isListOfSpannables) {
+            throw Exception("BeyondWordsPlayer:buildSegments: " +
+                    "Please provide a list of strings or spannables")
+        }
+
         if (markers.isEmpty()) {
-            this.segments = text.split(delimiter).mapIndexed { _, paragraph ->
-                Segment(paragraph, "") {}
+            this.segments = text.mapIndexed { _, value ->
+                if (isListOfStrings) Segment(value as String, "") {}
+                else Segment(span = value as SpannableString, marker = "") {}
             }
             rvAdapter = SegmentsAdapter(segments)
             this.adapter = rvAdapter
             return
         }
 
-        val segments = text.split(delimiter).mapIndexed { idx, paragraph ->
+        val segments = text.mapIndexed { idx, value ->
             Segment(
-                paragraph,
-                if (markers.size > idx) markers[idx] else ""
-            ) { updatePlayBack(markers[idx]) }
-        }
-
-        this.segments = segments
-        rvAdapter = SegmentsAdapter(segments)
-        this.adapter = rvAdapter
-    }
-
-    @JvmName("buildSegmentsFromList")
-    private fun buildSegments(
-        text: List<String>,
-        markers: List<String> = listOf()
-    ) {
-
-        if (markers.isEmpty()) {
-            this.segments = text.mapIndexed { _, paragraph ->
-                Segment(paragraph, "") {}
-            }
-            rvAdapter = SegmentsAdapter(segments)
-            this.adapter = rvAdapter
-            return
-        }
-
-        val segments = text.mapIndexed { idx, paragraph ->
-            Segment(
-                paragraph,
-                if (markers.size > idx) markers[idx] else ""
-            ) { updatePlayBack(markers[idx]) }
-        }
-
-        this.segments = segments
-        rvAdapter = SegmentsAdapter(segments)
-        this.adapter = rvAdapter
-    }
-
-    @JvmName("buildSegmentsFromSpannables")
-    private fun buildSegments(
-        text: List<SpannableString>,
-        markers: List<String> = listOf()
-    ) {
-        if (markers.isEmpty()) {
-            this.segments = text.mapIndexed { _, spannable ->
-                Segment(span = spannable, marker = "") {}
-            }
-            rvAdapter = SegmentsAdapter(segments)
-            this.adapter = rvAdapter
-            return
-        }
-
-        val segments = text.mapIndexed { idx, spannable ->
-            Segment(
-                span = spannable,
-                marker = if (markers.size > idx) markers[idx] else ""
+                if (isListOfStrings) value as String else "",
+                if (markers.size > idx) markers[idx] else "",
+                if (!isListOfStrings) value as SpannableString else null
             ) { updatePlayBack(markers[idx]) }
         }
 
