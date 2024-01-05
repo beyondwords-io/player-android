@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Build
 import android.text.SpannableString
 import android.util.AttributeSet
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import io.beyondwords.player.EventListener
@@ -17,7 +18,7 @@ class SegmentsView(
 ): RecyclerView(context, attrs) {
     private var isPlaying: Boolean = false
     private lateinit var player: PlayerView
-    private lateinit var segments: List<Segment>
+    private lateinit var segments: List<Any>
     private lateinit var rvAdapter: SegmentsAdapter
 
     private val onLoadListener: (text: List<Any>) -> EventListener = { text ->
@@ -39,23 +40,21 @@ class SegmentsView(
         override fun onEvent(event: PlayerEvent, settings: PlayerSettings) {
             if (event.type == "CurrentSegmentUpdated") {
                 player.getCurrentSegment {
-                    segments.forEach { segment ->
-                        segment.isActive = false
-                    }
+                    segments.forEach { if (it is Segment) it.isActive = false }
 
-                    val newSegmentIdx = segments.indexOfFirst { segment ->
-                        segment.marker == it
+                    val newSegmentIdx = segments.indexOfFirst { item ->
+                        item is Segment && item.marker == it
                     }
 
                     if (newSegmentIdx != -1 && newSegmentIdx < segments.size)
-                        segments[newSegmentIdx].isActive = true
+                        (segments[newSegmentIdx] as Segment).isActive = true
 
                     rvAdapter.notifyDataSetChanged()
                 }
             }
 
             if (event.type == "PlaybackEnded") {
-                segments.forEach { it.isActive = false }
+                segments.forEach { if (it is Segment) it.isActive = false }
                 rvAdapter.notifyDataSetChanged()
             }
 
@@ -69,7 +68,6 @@ class SegmentsView(
         buildSegments(text) // draw initial UI without segment binding
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return
-
         player.addEventListener(onLoadListener(text))
     }
 
@@ -77,30 +75,39 @@ class SegmentsView(
         text: List<Any>,
         markers: List<String> = listOf()
     ) {
-        val isListOfStrings = text.all { it is String }
-        val isListOfSpannables = text.all { it is SpannableString }
-
-        if (!isListOfStrings && !isListOfSpannables) {
-            throw Exception("BeyondWordsPlayer:buildSegments: " +
-                    "Please provide a list of strings or spannables")
-        }
-
         if (markers.isEmpty()) {
-            this.segments = text.mapIndexed { _, value ->
-                if (isListOfStrings) Segment(value as String, "") {}
-                else Segment(span = value as SpannableString, marker = "") {}
+            this.segments = text.map { value ->
+                when (value) {
+                    is String -> Segment(value, "") {}
+                    is SpannableString -> Segment(span = value, marker = "") {}
+                    else -> value
+                }
             }
             rvAdapter = SegmentsAdapter(segments)
             this.adapter = rvAdapter
             return
         }
 
-        val segments = text.mapIndexed { idx, value ->
-            Segment(
-                if (isListOfStrings) value as String else "",
-                if (markers.size > idx) markers[idx] else "",
-                if (!isListOfStrings) value as SpannableString else null
-            ) { updatePlayBack(markers[idx]) }
+        val segments = text.filter { it is String || it is SpannableString }.mapIndexed { idx, value ->
+            when (value) {
+                is String -> {
+                    Segment(value, if (markers.size > idx) markers[idx] else "") {
+                        updatePlayBack(markers[idx])
+                    }
+                }
+
+                is SpannableString -> {
+                    Segment(span = value, marker = if (markers.size > idx) markers[idx] else "") {
+                        updatePlayBack(markers[idx])
+                    }
+                }
+
+                else -> {}
+            }
+        }.toMutableList()
+
+        text.forEachIndexed { idx, it ->
+            if (it !is String && it !is SpannableString) segments.add(idx, it)
         }
 
         this.segments = segments
@@ -110,7 +117,7 @@ class SegmentsView(
 
     private fun updatePlayBack(segmentId: String) {
         val isSameSegmentClicked = try {
-            segments.first { it.isActive }.marker == segmentId
+            (segments.first { it is Segment && it.isActive } as Segment).marker == segmentId
         } catch (e: Exception) {
             false
         }

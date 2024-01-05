@@ -5,8 +5,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.style.AbsoluteSizeSpan
+import android.widget.Button
+import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.button.MaterialButton
 import io.beyondwords.player.PlayerSettings
 import io.beyondwords.player.PlayerView
 import io.beyondwords.player.segmentsplayback.SegmentsView
@@ -53,12 +57,36 @@ class SegmentsDemo : AppCompatActivity() {
                 spannable
             }
 
-            segmentsView.bindPlayer(playerView, headingSpannables)
+            val list = mutableListOf<Any>()
+            list.addAll(headingSpannables)
+
+            val params = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            params.setMargins(30, 30, 30, 30)
+
+            val button = MaterialButton(this)
+            button.text = "Click me!"
+            button.layoutParams = params
+            button.setOnClickListener {
+                Toast.makeText(this, "Button clicked!", Toast.LENGTH_SHORT).show()
+            }
+
+            list.add(3, button)
+
+            val imageView = ImageView(this)
+            imageView.setImageResource(R.drawable.beyondwords_logo)
+            imageView.layoutParams = params
+
+            list.add(7, imageView)
+            segmentsView.bindPlayer(playerView, list)
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && ::playerView.isInitialized) {
             playerView.release()
         }
