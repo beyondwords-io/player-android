@@ -30,7 +30,11 @@ open class MediaButtonReceiver constructor(private val mediaSessionId: Int) :
             intent.putExtra(Intent.EXTRA_KEY_EVENT, KeyEvent(KeyEvent.ACTION_DOWN, keyCode))
             intent.putExtra(EXTRA_MEDIA_SESSION_ID, mediaSessionId)
             val requestCode = mediaSessionId * 1000 + keyCode // keyCode is a 3 digit number
-            val flags = if (Build.VERSION.SDK_INT >= 31) PendingIntent.FLAG_IMMUTABLE else 0
+            val flags = when {
+                Build.VERSION.SDK_INT >= 34 -> PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_ALLOW_UNSAFE_IMPLICIT_INTENT
+                Build.VERSION.SDK_INT >= 31 -> PendingIntent.FLAG_MUTABLE
+                else -> 0
+            }
             return PendingIntent.getBroadcast(context, requestCode, intent, flags)
         }
     }
