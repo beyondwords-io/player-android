@@ -408,7 +408,12 @@ class MediaSession constructor(private val webView: WebView) {
         mediaSession = MediaSessionCompat(context, "BeyondWords").apply {
             setCallback(mediaSessionCallback)
         }
-        context.registerReceiver(mediaButtonReceiver, IntentFilter(Intent.ACTION_MEDIA_BUTTON))
+        ContextCompat.registerReceiver(
+            context,
+            mediaButtonReceiver,
+            IntentFilter(Intent.ACTION_MEDIA_BUTTON),
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
         webView.addJavascriptInterface(bridge, "MediaSessionBridge")
     }
 
