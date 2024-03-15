@@ -101,6 +101,7 @@ class PlayerView @JvmOverloads constructor(
 
             coroutineScope.launch {
                 this@PlayerView.webView ?: return@launch
+                currentSegment = parsedSettings.currentSegment
                 listeners.forEach { it.onEvent(parsedEvent, parsedSettings) }
             }
         }
@@ -137,6 +138,8 @@ class PlayerView @JvmOverloads constructor(
     private var ready: Boolean = false
     private var webView: WebView? = null
     private var mediaSession: MediaSession? = null
+    var currentSegment: PlayerSettings.Segment? = null
+        private set
 
     init {
         if (verbose) println("BeyondWordsPlayer:init")
@@ -248,6 +251,10 @@ class PlayerView @JvmOverloads constructor(
         setProp("player.playerTitle", playerTitle)
     }
 
+    fun setCurrentSegment(segmentMarker: String? = null, segmentXPath: String? = null, segmentMD5: String? = null) {
+        callFunction("setCurrentSegment", listOf(segmentMarker, segmentXPath, segmentMD5))
+    }
+
     fun setCallToAction(callToAction: String) {
         setProp("player.callToAction", callToAction)
     }
@@ -356,7 +363,7 @@ class PlayerView @JvmOverloads constructor(
         setProp("player.captureErrors", captureErrors)
     }
 
-    private fun callFunction(name: String, args: List<Any>) {
+    private fun callFunction(name: String, args: List<Any?>) {
         exec("""
             try {
                 $name(${args.map { gson.toJson(it) }.joinToString(",") { it }})
