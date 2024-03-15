@@ -358,18 +358,6 @@ class PlayerView @JvmOverloads constructor(
         }
     }
 
-    fun getCurrentSegment(callback: (String) -> Unit) {
-        execWithResult("""
-            (function(){
-                try {
-                    return player.currentSegment['marker'];
-                } catch (e) {
-                    console.error("PlayerView:getCurrentSegment:" + e.message, e)
-                }
-            })();
-        """) { callback(it.replace("\"", "")) }
-    }
-
     fun setPlaybackState(playbackState: String) {
         setProp("player.playbackState", playbackState)
     }

@@ -38,19 +38,17 @@ class SegmentsView(
     private val afterLoadListener = object : EventListener {
         @RequiresApi(Build.VERSION_CODES.N)
         override fun onEvent(event: PlayerEvent, settings: PlayerSettings) {
-            if (event.type == "CurrentSegmentUpdated") {
-                player.getCurrentSegment {
-                    segments.forEach { if (it is Segment) it.isActive = false }
+            if (event.type == "CurrentSegmentUpdated" && settings.currentSegment != null) {
+                segments.forEach { if (it is Segment) it.isActive = false }
 
-                    val newSegmentIdx = segments.indexOfFirst { item ->
-                        item is Segment && item.marker == it
-                    }
-
-                    if (newSegmentIdx != -1 && newSegmentIdx < segments.size)
-                        (segments[newSegmentIdx] as Segment).isActive = true
-
-                    rvAdapter.notifyDataSetChanged()
+                val newSegmentIdx = segments.indexOfFirst {
+                    it is Segment && it.marker == settings.currentSegment?.marker
                 }
+
+                if (newSegmentIdx != -1 && newSegmentIdx < segments.size)
+                    (segments[newSegmentIdx] as Segment).isActive = true
+
+                rvAdapter.notifyDataSetChanged()
             }
 
             if (event.type == "PlaybackEnded") {
