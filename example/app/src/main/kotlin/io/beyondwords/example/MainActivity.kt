@@ -1,6 +1,7 @@
 package io.beyondwords.example
 
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.widget.AutoCompleteTextView
@@ -21,6 +22,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var skipButtonStyleInput: AutoCompleteTextView
     private lateinit var playerStyleInput: AutoCompleteTextView
     private lateinit var loadButton: AppCompatButton
+    private lateinit var playFromParagraphButton: AppCompatButton
     private var defaultPlayerView: PlayerView? = null
     private var customPlayerView: CustomPlayerView? = null
 
@@ -37,8 +39,12 @@ class MainActivity : AppCompatActivity() {
         skipButtonStyleInput = findViewById(R.id.skip_button_style_input)
         playerStyleInput = findViewById(R.id.player_style_input)
         loadButton = findViewById(R.id.load_button)
+        playFromParagraphButton = findViewById(R.id.play_from_paragraph_button)
 
         loadButton.setOnClickListener { loadOnClick() }
+        playFromParagraphButton.setOnClickListener {
+            startActivity(Intent(this, PlayFromParagraphActivity::class.java))
+        }
 
         loadSettings()
     }
