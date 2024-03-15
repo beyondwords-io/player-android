@@ -5,13 +5,13 @@ plugins {
 
 android {
     namespace 'io.beyondwords.player'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         minSdk 21
-        targetSdk 33
-        versionCode 18
-        versionName "0.1.9"
+        targetSdk 34
+        versionCode 19
+        versionName "0.1.10"
         consumerProguardFiles 'proguard-rules.pro'
     }
 
