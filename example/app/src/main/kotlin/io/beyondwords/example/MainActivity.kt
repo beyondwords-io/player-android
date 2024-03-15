@@ -42,9 +42,7 @@ class MainActivity : AppCompatActivity() {
         playFromParagraphButton = findViewById(R.id.play_from_paragraph_button)
 
         loadButton.setOnClickListener { loadOnClick() }
-        playFromParagraphButton.setOnClickListener {
-            startActivity(Intent(this, PlayFromParagraphActivity::class.java))
-        }
+        playFromParagraphButton.setOnClickListener { goToPlayFromParagraphDemo() }
 
         loadSettings()
     }
@@ -54,6 +52,12 @@ class MainActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             defaultPlayerView?.release()
             customPlayerView?.release()
+        }
+    }
+
+    private fun  goToPlayFromParagraphDemo() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            startActivity(Intent(this, PlayFromParagraphActivity::class.java))
         }
     }
 
