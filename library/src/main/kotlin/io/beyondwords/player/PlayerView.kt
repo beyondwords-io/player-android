@@ -101,7 +101,6 @@ class PlayerView @JvmOverloads constructor(
 
             coroutineScope.launch {
                 this@PlayerView.webView ?: return@launch
-                currentSegment = parsedSettings.currentSegment
                 listeners.forEach { it.onEvent(parsedEvent, parsedSettings) }
             }
         }
@@ -138,8 +137,6 @@ class PlayerView @JvmOverloads constructor(
     private var ready: Boolean = false
     private var webView: WebView? = null
     private var mediaSession: MediaSession? = null
-    var currentSegment: PlayerSettings.Segment? = null
-        private set
 
     init {
         if (verbose) println("BeyondWordsPlayer:init")

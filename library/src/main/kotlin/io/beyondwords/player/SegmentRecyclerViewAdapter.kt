@@ -16,10 +16,12 @@ abstract class SegmentRecyclerViewAdapter<T : SegmentRecyclerViewAdapter.Segment
     private val listener = object : EventListener {
         override fun onEvent(event: PlayerEvent, settings: PlayerSettings) {
             if (event.type == "CurrentSegmentUpdated") {
+                currentSegment = settings.currentSegment
                 notifyDataSetChanged()
             }
         }
     }
+    private var currentSegment: PlayerSettings.Segment? = null
 
     init {
         playerView.addEventListener(listener)
@@ -29,9 +31,9 @@ abstract class SegmentRecyclerViewAdapter<T : SegmentRecyclerViewAdapter.Segment
         val segmentMarker = getSegmentMarker(position)
         val segmentXPath = getSegmentXPath(position)
         val segmentMD5 = getSegmentMD5(position)
-        viewHolder.current = (segmentMarker != null && segmentMarker == playerView.currentSegment?.marker) ||
-                (segmentXPath != null && segmentXPath == playerView.currentSegment?.xpath) ||
-                (segmentMD5 != null && segmentMD5 == playerView.currentSegment?.md5)
+        viewHolder.current = (segmentMarker != null && segmentMarker == currentSegment?.marker) ||
+                (segmentXPath != null && segmentXPath == currentSegment?.xpath) ||
+                (segmentMD5 != null && segmentMD5 == currentSegment?.md5)
         viewHolder.onSelect = {
             playerView.setCurrentSegment(
                 segmentMarker = segmentMarker,
