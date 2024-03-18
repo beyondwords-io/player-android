@@ -15,7 +15,7 @@ import io.beyondwords.player.PlayerSettings
 import io.beyondwords.player.PlayerView
 import io.beyondwords.player.SegmentRecyclerViewAdapter
 
-@RequiresApi(Build.VERSION_CODES.N)
+@RequiresApi(24)
 class PlayFromParagraphActivity : AppCompatActivity() {
     private data class Segment(val text: String, val marker: String)
 
@@ -92,22 +92,18 @@ class PlayFromParagraphActivity : AppCompatActivity() {
         articleView.layoutManager = LinearLayoutManager(this)
         articleView.adapter = MySegmentAdapter(paragraphs, playerView)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            playerView.load(
-                PlayerSettings(
-                    projectId = 40510,
-                    contentId = "7ab9f4c7-70ba-4135-82f3-a38a836568de"
-                )
+        playerView.load(
+            PlayerSettings(
+                projectId = 40510,
+                contentId = "7ab9f4c7-70ba-4135-82f3-a38a836568de"
             )
-        }
+        )
     }
 
     override fun onDestroy() {
         super.onDestroy()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && ::playerView.isInitialized) {
-            playerView.release()
-            (articleView.adapter as MySegmentAdapter).release()
-        }
+        (articleView.adapter as MySegmentAdapter).release()
+        if (::playerView.isInitialized) playerView.release()
     }
 }

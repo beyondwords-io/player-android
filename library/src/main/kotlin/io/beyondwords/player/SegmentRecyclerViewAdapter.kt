@@ -5,7 +5,7 @@ import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 
-@RequiresApi(Build.VERSION_CODES.N)
+@RequiresApi(24)
 abstract class SegmentRecyclerViewAdapter<T : SegmentRecyclerViewAdapter.SegmentViewHolder>(private var playerView: PlayerView) :
     RecyclerView.Adapter<T>() {
     abstract class SegmentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
