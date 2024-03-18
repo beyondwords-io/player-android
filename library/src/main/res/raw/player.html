@@ -281,6 +281,19 @@
         });
         player.target.classList.add("style-" + player.playerStyle);
       }
+      function setCurrentSegment(marker, xpath, md5) {
+        for (var contentIndex = 0; contentIndex < player.content.length; contentIndex++) {
+          var currentSegment = player.content[contentIndex].segments.find(function (segment) {
+            return (typeof marker === "string" && segment.marker === marker) ||
+              (typeof xpath === "string" && segment.xpath === xpath) ||
+              (typeof md5 === "string" && segment.md5 === md5);
+          });
+          if (currentSegment) {
+            player.currentTime = currentSegment.startTime;
+            return;
+          }
+        }
+      }
       function domContentLoaded() {
         if (document.readyState === "complete" || document.readyState === "interactive") return Promise.resolve();
         return new Promise(function (resolve) {
