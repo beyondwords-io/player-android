@@ -107,6 +107,7 @@ class PlayFromParagraphActivity : AppCompatActivity() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && ::playerView.isInitialized) {
             playerView.release()
+            (articleView.adapter as MySegmentAdapter).release()
         }
     }
 }
