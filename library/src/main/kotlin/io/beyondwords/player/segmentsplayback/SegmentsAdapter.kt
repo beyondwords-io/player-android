@@ -13,7 +13,6 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import io.beyondwords.player.R
-import io.beyondwords.player.databinding.SegmentViewBinding
 
 class SegmentsAdapter(private val segments: List<Any>) :
     RecyclerView.Adapter<SegmentsAdapter.RvViewHolder>() {
@@ -23,23 +22,23 @@ class SegmentsAdapter(private val segments: List<Any>) :
     }
     private lateinit var context: Context
 
-    inner class RvViewHolder(view: View? = null, binding: SegmentViewBinding? = null) :
-        RecyclerView.ViewHolder(binding?.root ?: view!!)
+    inner class RvViewHolder(view: View? = null, itemView: View? = null) :
+        RecyclerView.ViewHolder(itemView ?: view!!)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RvViewHolder {
         context = parent.context
 
-        if(viewType == EXTRENALVIEW) {
-            val layout = LinearLayout(parent.context)
-            layout.orientation = LinearLayout.VERTICAL
-            return RvViewHolder(layout, null)
-        }
-
-        val binding = SegmentViewBinding.inflate(
-            LayoutInflater.from(parent.context), parent, false,
-        )
-
-        return RvViewHolder(null, binding)
+//        if(viewType == EXTRENALVIEW) {
+        val layout = LinearLayout(parent.context)
+        layout.orientation = LinearLayout.VERTICAL
+        return RvViewHolder(layout, null)
+//        }
+//
+//        val itemView = LayoutInflater.from(parent.context).inflate(
+//            R.layout.segment_view, parent, false,
+//        )
+//
+//        return RvViewHolder(null, binding)
     }
 
     override fun getItemCount(): Int {
@@ -66,7 +65,8 @@ class SegmentsAdapter(private val segments: List<Any>) :
         }
 
         holder.itemView.apply {
-            val bwSegment = findViewById<TextView>(R.id.bw_segment)
+//            val bwSegment = findViewById<TextView>(R.id.bw_segment)
+            val bwSegment = TextView(this.context)
 
             if (segments[position] is Segment) {
                 val segment = segments[position] as Segment

@@ -62,6 +62,8 @@ data class PlayerSettings(
         var segmentIndex: Int? = null,
         var contentIndex: Int? = null,
         var marker: String? = null,
+        var md5: String? = null,
+        var xpath: String? = null,
         var section: String? = null,
         var startTime: Float? = null,
         var duration: Float? = null,

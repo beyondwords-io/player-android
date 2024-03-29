@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var skipButtonStyleInput: AutoCompleteTextView
     private lateinit var playerStyleInput: AutoCompleteTextView
     private lateinit var loadButton: AppCompatButton
-    private lateinit var segmentsDemoButton: AppCompatButton
+    private lateinit var playFromParagraphButton: AppCompatButton
     private var defaultPlayerView: PlayerView? = null
     private var customPlayerView: CustomPlayerView? = null
 
@@ -39,12 +39,11 @@ class MainActivity : AppCompatActivity() {
         skipButtonStyleInput = findViewById(R.id.skip_button_style_input)
         playerStyleInput = findViewById(R.id.player_style_input)
         loadButton = findViewById(R.id.load_button)
-        segmentsDemoButton = findViewById(R.id.segments_demo_button)
+
+        playFromParagraphButton = findViewById(R.id.play_from_paragraph_button)
 
         loadButton.setOnClickListener { loadOnClick() }
-        segmentsDemoButton.setOnClickListener {
-            startActivity(Intent(this, SegmentsDemo::class.java))
-        }
+        playFromParagraphButton.setOnClickListener { goToPlayFromParagraphDemo() }
 
         loadSettings()
     }
@@ -54,6 +53,12 @@ class MainActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             defaultPlayerView?.release()
             customPlayerView?.release()
+        }
+    }
+
+    private fun  goToPlayFromParagraphDemo() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            startActivity(Intent(this, PlayFromParagraphActivity::class.java))
         }
     }
 

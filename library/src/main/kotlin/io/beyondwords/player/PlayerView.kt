@@ -254,6 +254,10 @@ class PlayerView @JvmOverloads constructor(
         setProp("player.playerTitle", playerTitle)
     }
 
+    fun setCurrentSegment(segmentMarker: String? = null, segmentXPath: String? = null, segmentMD5: String? = null) {
+        callFunction("setCurrentSegment", listOf(segmentMarker, segmentXPath, segmentMD5))
+    }
+
     fun setCallToAction(callToAction: String) {
         setProp("player.callToAction", callToAction)
     }
@@ -402,7 +406,7 @@ class PlayerView @JvmOverloads constructor(
         setProp("player.captureErrors", captureErrors)
     }
 
-    private fun callFunction(name: String, args: List<Any>) {
+    private fun callFunction(name: String, args: List<Any?>) {
         exec("""
             try {
                 $name(${args.map { gson.toJson(it) }.joinToString(",") { it }})

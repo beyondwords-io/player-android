@@ -17,7 +17,7 @@
         </activity>
         <activity
             android:exported="false"
-            android:name=".SegmentsDemo"
+            android:name=".PlayFromParagraphActivity"
             android:parentActivityName=".MainActivity" />
     </application>
 
