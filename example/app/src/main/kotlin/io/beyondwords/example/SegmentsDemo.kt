@@ -44,7 +44,8 @@ class SegmentsDemo : AppCompatActivity() {
             // val text = getString(R.string.article).split("\n\n")
             // segmentsView.bindPlayer(playerView, text)
 
-            val splitText = getString(R.string.articleWithHeadings).split("\n\n")
+//            val splitText = getString(R.string.articleWithHeadings).split("\n\n")
+            val splitText = "".split("\n\n")
             val headingSpannables = splitText.map { paragraph ->
                 val spannable = SpannableString(paragraph)
                 if (paragraph.lowercase().contains("heading"))
