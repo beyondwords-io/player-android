@@ -90,9 +90,9 @@ class PlayFromParagraphActivity : AppCompatActivity() {
         playerView.addEventListener(object : EventListener {
             override fun onEvent(event: PlayerEvent, settings: PlayerSettings) {
                 if (event.type == "ContentAvailable") {
-                    playerView.getMarkers {
+                    settings.content?.first { it.id == settings.contentId }?.segments?.let {
                         paragraphs.forEachIndexed { idx, segment ->
-                            segment.marker = it[settings.contentId]?.get(idx)
+                            segment.marker = it.getOrNull(idx)?.marker
                         }
 
                         (articleView.adapter as MySegmentAdapter).notifyDataSetChanged()

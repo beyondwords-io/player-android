@@ -338,30 +338,6 @@ class PlayerView @JvmOverloads constructor(
         """)
     }
 
-    fun getMarkers(callback: (Map<String, List<String>>) -> Unit) {
-        execWithResult("""
-            (function(){
-                try {
-                    const content = {}
-                    for  (const item of player.content || []) {
-                        const markers = []
-                        for (const segment of item.segments || []) {
-                            markers.push(segment.marker)
-                        }
-                        content[item.id] = markers
-                    }
-                    return content
-                } catch (e) {
-                    console.error("PlayerView:getMarkers:" + e.message, e)
-                }
-            })();
-        """) {
-            val type = object : TypeToken<Map<String, List<String>>>() {}.type
-            val parsedJson = gson.fromJson<Map<String, List<String>>>(it, type)
-            callback(parsedJson)
-        }
-    }
-
     fun setPlaybackState(playbackState: String) {
         setProp("player.playbackState", playbackState)
     }

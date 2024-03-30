@@ -26,10 +26,10 @@ class SegmentsView(
             @RequiresApi(Build.VERSION_CODES.N)
             override fun onEvent(event: PlayerEvent, settings: PlayerSettings) {
                 if(event.type == "ContentAvailable") {
-                    player.getMarkers {
-                        buildSegments(text, markers = it[settings.contentId] ?: listOf())
-                        player.addEventListener(afterLoadListener)
-                    }
+//                    player.getMarkers {
+//                        buildSegments(text, markers = it[settings.contentId] ?: listOf())
+//                        player.addEventListener(afterLoadListener)
+//                    }
                 }
             }
         }
