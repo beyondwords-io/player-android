@@ -3,6 +3,8 @@ package io.beyondwords.example
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.style.AbsoluteSizeSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,7 +21,7 @@ import io.beyondwords.player.SegmentRecyclerViewAdapter
 
 @RequiresApi(24)
 class PlayFromParagraphActivity : AppCompatActivity() {
-    private data class Segment(val text: String, var marker: String? = null)
+    private data class Segment(val text: SpannableString, var marker: String? = null)
 
     private class MySegmentViewHolder(itemView: View) :
         SegmentRecyclerViewAdapter.SegmentViewHolder(itemView) {
@@ -69,11 +71,26 @@ class PlayFromParagraphActivity : AppCompatActivity() {
 
 
         val paragraphs = getString(R.string.article).split("\n\n").map {
-            Segment(it)
+            // If you have the marker mapping already, supply them here itself:
+            // Segment(SpannableString(it), marker = "marker")
+            // else, fetch them from the player after the audio loads (see the event listener below)
 
-            // If you have the marker mapping already, supply them here:
-            // Segment(it, marker = "marker")
-            // else, fetch them from the player after the audio loads (see below)
+            if (it.contains("#")) {
+                // make the text a heading
+                Segment(SpannableString(it.removePrefix("#")).apply {
+                    setSpan(
+                        AbsoluteSizeSpan(26, true), 0, length,
+                        SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+
+                    setSpan(
+                        android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 0, length,
+                        SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+                })
+            } else {
+                Segment(SpannableString(it))
+            }
         }
 
         articleView.layoutManager = LinearLayoutManager(this)
