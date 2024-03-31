@@ -74,6 +74,10 @@ class PlayFromParagraphActivity : AppCompatActivity() {
             val segment = paragraphs[position] as Segment
             val textView = viewHolder.itemView.findViewById<TextView>(R.id.text_view)
 
+            // Full view width segment highlighting:
+            // textView.setBackgroundColor(if (viewHolder.isActive) Color.YELLOW else Color.WHITE)
+
+            // Text width segment highlighting:
             if (viewHolder.isActive) {
                 segment.text.setSpan(
                     BackgroundColorSpan(Color.LTGRAY), 0, segment.text.length,
