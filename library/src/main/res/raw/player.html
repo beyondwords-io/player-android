@@ -288,10 +288,19 @@
               (typeof xpath === "string" && segment.xpath === xpath) ||
               (typeof md5 === "string" && segment.md5 === md5);
           });
-          if (currentSegment) {
-            player.currentTime = currentSegment.startTime;
-            return;
+
+          if (!currentSegment) continue;
+
+          if (player.playbackState === "playing" && player.currentSegment?.startTime === currentSegment.startTime) {
+            player.playbackState = "paused";
+          } else {
+            player.playbackState = "playing";
+
+            if (player.currentSegment?.startTime !== currentSegment.startTime)
+              player.currentTime = currentSegment.startTime;
           }
+
+          return;
         }
       }
       function domContentLoaded() {

@@ -44,21 +44,11 @@ abstract class SegmentRecyclerViewAdapter<T : SegmentRecyclerViewAdapter.Segment
                 (segmentXPath != null && segmentXPath == currentSegment?.xpath) ||
                 (segmentMD5 != null && segmentMD5 == currentSegment?.md5)
         viewHolder.onSelect = {
-            val isSameSegmentClicked = currentSegment?.let {
-                it.marker.orEmpty() == segmentMarker || it.xpath.orEmpty() == segmentXPath || it.md5.orEmpty() == segmentMD5
-            } ?: false
-
-            if (isPlaying && isSameSegmentClicked) {
-                playerView.setPlaybackState("paused")
-            } else {
-                playerView.setPlaybackState("playing")
-
-                if (!isSameSegmentClicked) playerView.setCurrentSegment(
-                    segmentMarker = segmentMarker,
-                    segmentXPath = segmentXPath,
-                    segmentMD5 = segmentMD5
-                )
-            }
+            playerView.setCurrentSegment(
+                segmentMarker = segmentMarker,
+                segmentXPath = segmentXPath,
+                segmentMD5 = segmentMD5
+            )
         }
     }
 
