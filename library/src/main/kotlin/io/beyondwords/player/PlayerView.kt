@@ -46,7 +46,6 @@ class PlayerView @JvmOverloads constructor(
     private val webViewContainer = FrameLayout(context)
     private val listeners = mutableSetOf<EventListener>()
     private val pendingCommands = mutableListOf<String>()
-    private val pendingCommandsWithResult = mutableListOf<Pair<String, (String) -> Unit>>()
     private val bridge = object {
         @JavascriptInterface
         fun onReady() {
@@ -57,11 +56,7 @@ class PlayerView @JvmOverloads constructor(
                 pendingCommands.forEach {
                     webView.evaluateJavascript(it, null)
                 }
-                pendingCommandsWithResult.forEach {
-                    webView.evaluateJavascript(it.first, it.second)
-                }
                 pendingCommands.clear()
-                pendingCommandsWithResult.clear()
             }
         }
 
@@ -187,7 +182,6 @@ class PlayerView @JvmOverloads constructor(
         ready = false
         listeners.clear()
         pendingCommands.clear()
-        pendingCommandsWithResult.clear()
         coroutineScope.cancel()
         mediaSession?.release()
         mediaSession = null
@@ -410,18 +404,6 @@ class PlayerView @JvmOverloads constructor(
             pendingCommands.add(command)
         } else {
             webView.evaluateJavascript(command, null)
-        }
-    }
-
-    private fun execWithResult(command: String, callback: (String) -> Unit) {
-        if (verbose) println("BeyondWordsPlayer:execWithResult: ${command.lines().joinToString("")}")
-        val webView = this.webView ?: return
-        if (!ready) {
-            pendingCommandsWithResult.add(Pair(command, callback))
-        } else {
-            webView.evaluateJavascript(command) {
-                if (it != null) callback(it)
-            }
         }
     }
 }
