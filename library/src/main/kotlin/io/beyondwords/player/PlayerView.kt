@@ -316,22 +316,6 @@ class PlayerView @JvmOverloads constructor(
         setProp("player.currentTime", currentTime)
     }
 
-    fun playSegment(segmentId: String) {
-        exec("""
-            try {
-                for (const content of player.content || []) {
-                    for (const segment of content.segments || []) {
-                        if (segment.marker === '${segmentId}') {
-                            player.currentTime = segment.startTime;
-                        }
-                    }
-                }
-            } catch (e) {
-                console.error("PlayerView:playSegment:" + e.message, e)
-            }
-        """)
-    }
-
     fun setPlaybackState(playbackState: String) {
         setProp("player.playbackState", playbackState)
     }
