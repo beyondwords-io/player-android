@@ -7,10 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 @RequiresApi(24)
 abstract class SegmentRecyclerViewAdapter<T : SegmentRecyclerViewAdapter.SegmentViewHolder>(private var playerView: PlayerView) :
     RecyclerView.Adapter<T>() {
-    companion object {
-        const val SEGMENT_VIEW = 0
-        const val EXTERNAL_VIEW = 1
-    }
 
     abstract class SegmentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var isActive = false
@@ -33,7 +29,6 @@ abstract class SegmentRecyclerViewAdapter<T : SegmentRecyclerViewAdapter.Segment
     }
 
     override fun onBindViewHolder(viewHolder: T, position: Int) {
-        if (viewHolder.itemViewType == EXTERNAL_VIEW) return
         val segmentMarker = getSegmentMarker(position)
         val segmentXPath = getSegmentXPath(position)
         val segmentMD5 = getSegmentMD5(position)

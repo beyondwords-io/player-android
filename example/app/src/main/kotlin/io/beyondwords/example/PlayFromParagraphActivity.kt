@@ -33,6 +33,10 @@ class PlayFromParagraphActivity : AppCompatActivity() {
 
     private class MySegmentAdapter(private val paragraphs: List<Any>, playerView: PlayerView) :
         SegmentRecyclerViewAdapter<MySegmentViewHolder>(playerView) {
+        companion object {
+            private const val SEGMENT_VIEW = 0
+            private const val EXTERNAL_VIEW = 1
+        }
         override fun getItemCount() = paragraphs.size
 
         override fun getItemViewType(position: Int): Int {
