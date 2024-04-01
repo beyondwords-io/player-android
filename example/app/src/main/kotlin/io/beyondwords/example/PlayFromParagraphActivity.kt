@@ -109,14 +109,12 @@ class PlayFromParagraphActivity : AppCompatActivity() {
         playerView = findViewById(R.id.player_view)
         articleView = findViewById(R.id.article_view)
 
-        val paragraphs: MutableList<Any> = getString(R.string.article).split("\n\n").map {
-            // If you have the marker mapping already, supply them here itself:
-            // Segment(SpannableString(it), marker = "marker")
+        val paragraphs = mutableListOf<Any>(
+            // If you have the markers already, supply them with the text here itself:
+            // Segment(SpannableString("text"), marker = "marker")
             // else, fetch them from the player after the audio loads (see the event listener below)
-
-            if (it.contains("#")) {
-                // make the text a heading
-                Segment(SpannableString(it.removePrefix("#")).apply {
+            Segment(
+                SpannableString("Artificial intelligence").apply {
                     setSpan(
                         AbsoluteSizeSpan(26, true), 0, length,
                         SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
@@ -126,12 +124,29 @@ class PlayFromParagraphActivity : AppCompatActivity() {
                         android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 0, length,
                         SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
                     )
-                })
-            } else {
-                Segment(SpannableString(it))
-            }
-        }.toMutableList()
+                }
+            ),
+            Segment(
+                SpannableString("Artificial intelligence (AI) is the intelligence of machines or software, as opposed to the intelligence of living beings, primarily of humans. It is a field of study in computer science that develops and studies intelligent machines. Such machines may be called AIs.")
+            ),
+            Segment(
+                SpannableString("AI technology is widely used throughout industry, government, and science. Some high-profile applications are: advanced web search engines (e.g., Google Search), recommendation systems (used by YouTube, Amazon, and Netflix), interacting via human speech (e.g., Google Assistant, Siri, and Alexa), self-driving cars (e.g., Waymo), generative and creative tools (e.g., ChatGPT and AI art), and superhuman play and analysis in strategy games (e.g., chess and Go).[1]")
+            ),
+            Segment(
+                SpannableString("Alan Turing was the first person to conduct substantial research in the field that he called machine intelligence.[2] Artificial intelligence was founded as an academic discipline in 1956.[3] The field went through multiple cycles of optimism,[4][5] followed by periods of disappointment and loss of funding, known as AI winter.[6][7] Funding and interest vastly increased after 2012 when deep learning surpassed all previous AI techniques,[8] and after 2017 with the transformer architecture.[9] This led to the AI spring of the early 2020s, with companies, universities, and laboratories overwhelmingly based in the United States pioneering significant advances in artificial intelligence.[10]")
+            ),
+            Segment(
+                SpannableString("The growing use of artificial intelligence in the 21st century is influencing a societal and economic shift towards increased automation, data-driven decision-making, and the integration of AI systems into various economic sectors and areas of life, impacting job markets, healthcare, government, industry, and education. This raises questions about the ethical implications and risks of AI, prompting discussions about regulatory policies to ensure the safety and benefits of the technology.")
+            ),
+            Segment(
+                SpannableString("The various sub-fields of AI research are centered around particular goals and the use of particular tools. The traditional goals of AI research include reasoning, knowledge representation, planning, learning, natural language processing, perception, and support for robotics.[a] General intelligence (the ability to complete any task performable by a human on an at least equal level) is among the field\\'s long-term goals.[11]")
+            ),
+            Segment(
+                SpannableString("To solve these problems, AI researchers have adapted and integrated a wide range of problem-solving techniques, including search and mathematical optimization, formal logic, artificial neural networks, and methods based on statistics, operations research, and economics.[b] AI also draws upon psychology, linguistics, philosophy, neuroscience and other fields.")
+            )
+        )
 
+        // Add a native button and an image to the article
         val params = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
@@ -162,7 +177,7 @@ class PlayFromParagraphActivity : AppCompatActivity() {
             )
         )
 
-        // If you supplied the markers already, you can skip this
+        // If you manually supplied the markers in the paragraphs data above, you can skip this
         playerView.addEventListener(object : EventListener {
             override fun onEvent(event: PlayerEvent, settings: PlayerSettings) {
                 if (event.type == "ContentAvailable") {
