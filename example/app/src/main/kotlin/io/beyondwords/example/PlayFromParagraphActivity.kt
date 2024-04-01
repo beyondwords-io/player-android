@@ -44,8 +44,7 @@ class PlayFromParagraphActivity : AppCompatActivity() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MySegmentViewHolder {
             if (viewType == EXTERNAL_VIEW) {
-                val layout = LinearLayout(parent.context)
-                layout.orientation = LinearLayout.VERTICAL
+                val layout = LinearLayout(parent.context).apply { orientation = LinearLayout.VERTICAL }
                 return MySegmentViewHolder(layout)
             }
 
@@ -59,15 +58,11 @@ class PlayFromParagraphActivity : AppCompatActivity() {
             super.onBindViewHolder(viewHolder, position)
 
             if (viewHolder.itemViewType == EXTERNAL_VIEW) {
-                viewHolder.itemView.apply {
-                    val externalView = paragraphs[position] as View
+                val externalView = paragraphs[position] as View
 
-                    if (externalView.parent != null) {
-                        (externalView.parent as ViewGroup).removeView(externalView)
-                    }
+                externalView.parent?.let { (it as ViewGroup).removeView(externalView) }
+                (viewHolder.itemView as LinearLayout).addView(externalView)
 
-                    (viewHolder.itemView as LinearLayout).addView(externalView)
-                }
                 return
             }
 
@@ -90,11 +85,10 @@ class PlayFromParagraphActivity : AppCompatActivity() {
             }
 
             textView.text = segment.text
+            if (segment.marker.isNullOrBlank()) return
 
-            if (!segment.marker.isNullOrBlank()) {
-                viewHolder.itemView.setOnClickListener {
-                    viewHolder.onSelect?.invoke()
-                }
+            viewHolder.itemView.setOnClickListener {
+                viewHolder.onSelect?.invoke()
             }
         }
     }
@@ -150,8 +144,7 @@ class PlayFromParagraphActivity : AppCompatActivity() {
         val params = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
-        )
-        params.setMargins(0, 30, 0, 30)
+        ).apply { setMargins(0, 30, 0, 30) }
 
         paragraphs.add(2, MaterialButton(this).apply {
             text = "Click me!"

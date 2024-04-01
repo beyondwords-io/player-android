@@ -19,8 +19,6 @@ abstract class SegmentRecyclerViewAdapter<T : SegmentRecyclerViewAdapter.Segment
 
     private val listener = object : EventListener {
         override fun onEvent(event: PlayerEvent, settings: PlayerSettings) {
-            if (event.type == "PlaybackPlaying") isPlaying = true
-            if (event.type == "PlaybackPaused") isPlaying = false
             if (event.type == "CurrentSegmentUpdated") {
                 currentSegment = settings.currentSegment
                 notifyDataSetChanged()
@@ -28,7 +26,6 @@ abstract class SegmentRecyclerViewAdapter<T : SegmentRecyclerViewAdapter.Segment
         }
     }
 
-    private var isPlaying: Boolean = false
     private var currentSegment: PlayerSettings.Segment? = null
 
     init {
