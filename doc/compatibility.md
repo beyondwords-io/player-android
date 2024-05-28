@@ -11,6 +11,7 @@ The table below illustrates the compatibility between the Player Settings of the
 | sourceId                  |:heavy_check_mark: |
 | sourceUrl                 |:heavy_check_mark: |
 | playlist                  |:heavy_check_mark: |
+| loadContentAs             |:heavy_check_mark: |
 | showUserInterface         |:heavy_check_mark: |
 | playerStyle               |:heavy_check_mark: |
 | playerTitle               |:heavy_check_mark: |
