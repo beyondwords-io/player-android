@@ -8,6 +8,8 @@ data class PlayerSettings(
     var sourceId: String? = null,
     var sourceUrl: String? = null,
     var playlist: List<Identifier>? = null,
+    var loadContentAs: List<String>? = null,
+    var contentVariant: String? = null,
     var showUserInterface: Boolean? = null,
     var playerStyle: String? = null,
     var playerTitle: String? = null,
@@ -56,6 +58,7 @@ data class PlayerSettings(
         var contentType: String? = null,
         var duration: Float? = null,
         var format: String? = null,
+        var variant: String? = null,
     )
 
     data class Segment(
@@ -79,7 +82,8 @@ data class PlayerSettings(
         var duration: Float? = null,
         var audio: List<Media>? = null,
         var video: List<Media>? = null,
-        var segments: List<Segment>? = null
+        var segments: List<Segment>? = null,
+        var summarization: Summarization? = null
     )
 
     data class IntroOutro(
@@ -97,6 +101,11 @@ data class PlayerSettings(
         var textColor: String? = null,
         var backgroundColor: String? = null,
         var iconColor: String? = null,
+        var audio: List<Media>? = null,
+        var video: List<Media>? = null,
+    )
+
+    data class Summarization(
         var audio: List<Media>? = null,
         var video: List<Media>? = null,
     )
