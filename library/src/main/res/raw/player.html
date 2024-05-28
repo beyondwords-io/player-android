@@ -166,8 +166,8 @@
             target: "#player-target",
             downloadFormats: [],
             widgetStyle: "none",
-            analyticsDeviceType: "android",
-            platform: "android",
+            analyticsDeviceType: window.os,
+            platform: window.os,
           })
         );
         player.target.classList.add("style-" + player.playerStyle);
