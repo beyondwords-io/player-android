@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import android.app.DownloadManager
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.Color
+import android.net.ConnectivityManager
 import android.net.Uri
 import android.util.AttributeSet
 import android.util.Log
@@ -46,6 +48,7 @@ class PlayerView @JvmOverloads constructor(
     private val webViewContainer = FrameLayout(context)
     private val listeners = mutableSetOf<EventListener>()
     private val pendingCommands = mutableListOf<String>()
+    private val networkListener: NetworkListener
     private val bridge = object {
         @JavascriptInterface
         fun onReady() {
@@ -141,6 +144,11 @@ class PlayerView @JvmOverloads constructor(
     init {
         if (verbose) println("BeyondWordsPlayer:init")
         addView(webViewContainer, LayoutParams(LayoutParams.MATCH_PARENT, 0))
+
+        networkListener = NetworkListener(this)
+        (context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager)
+            .registerDefaultNetworkCallback(networkListener)
+
         webView = WebView(context).also {
             webViewContainer.addView(
                 it,
@@ -175,6 +183,12 @@ class PlayerView @JvmOverloads constructor(
                 null
             )
         }
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        (context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager)
+            .unregisterNetworkCallback(networkListener)
     }
 
     fun release() {
