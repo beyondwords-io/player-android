@@ -52,5 +52,8 @@
 -keep class io.beyondwords.player.PlayerSettings$Advert { *; }
 -keepclassmembers class io.beyondwords.player.PlayerSettings$Advert { *; }
 
+-keep class io.beyondwords.player.PlayerSettings$Summarization { *; }
+-keepclassmembers class io.beyondwords.player.PlayerSettings$Summarization { *; }
+
 -keep class io.beyondwords.player.MediaSession$SeekToParams { *; }
 -keepclassmembers class io.beyondwords.player.MediaSession$SeekToParams { *; }
