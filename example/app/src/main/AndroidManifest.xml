@@ -17,6 +17,7 @@
         </activity>
         <activity
             android:exported="false"
+            android:label="Play from paragraph demo"
             android:name=".PlayFromParagraphActivity"
             android:parentActivityName=".MainActivity" />
     </application>

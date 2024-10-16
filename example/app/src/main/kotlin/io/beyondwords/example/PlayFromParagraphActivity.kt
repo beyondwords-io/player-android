@@ -10,14 +10,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.button.MaterialButton
 import io.beyondwords.player.EventListener
 import io.beyondwords.player.PlayerEvent
 import io.beyondwords.player.PlayerSettings
@@ -26,30 +23,34 @@ import io.beyondwords.player.SegmentRecyclerViewAdapter
 
 @RequiresApi(24)
 class PlayFromParagraphActivity : AppCompatActivity() {
-    private data class Segment(val text: SpannableString, var marker: String? = null)
-
+    interface Segment { var marker: String? }
+    data class ImageSegment(val resId: Int, override var marker: String? = null) : Segment
+    data class TextSegment(val text: SpannableString, override var marker: String? = null) : Segment
+    
     private class MySegmentViewHolder(itemView: View) :
         SegmentRecyclerViewAdapter.SegmentViewHolder(itemView)
 
     private class MySegmentAdapter(private val paragraphs: List<Any>, playerView: PlayerView) :
         SegmentRecyclerViewAdapter<MySegmentViewHolder>(playerView) {
         companion object {
-            private const val SEGMENT_VIEW = 0
-            private const val EXTERNAL_VIEW = 1
+            private const val TEXT_VIEW = 0
+            private const val IMAGE_VIEW = 1
         }
         override fun getItemCount() = paragraphs.size
 
         override fun getItemViewType(position: Int): Int {
-            return if (paragraphs[position] is Segment) SEGMENT_VIEW else EXTERNAL_VIEW
+            return if (paragraphs[position] is TextSegment) TEXT_VIEW else IMAGE_VIEW
         }
 
         override fun getSegmentMarker(position: Int): String? =
             (paragraphs[position] as? Segment)?.marker
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MySegmentViewHolder {
-            if (viewType == EXTERNAL_VIEW) {
-                val layout = LinearLayout(parent.context).apply { orientation = LinearLayout.VERTICAL }
-                return MySegmentViewHolder(layout)
+            if (viewType == IMAGE_VIEW) {
+                val itemView = LayoutInflater.from(parent.context)
+                    .inflate(R.layout.image_view, parent, false)
+
+                return MySegmentViewHolder(itemView)
             }
 
             val itemView = LayoutInflater.from(parent.context)
@@ -61,16 +62,16 @@ class PlayFromParagraphActivity : AppCompatActivity() {
         override fun onBindViewHolder(viewHolder: MySegmentViewHolder, position: Int) {
             super.onBindViewHolder(viewHolder, position)
 
-            if (viewHolder.itemViewType == EXTERNAL_VIEW) {
-                val externalView = paragraphs[position] as View
+            if (viewHolder.itemViewType == IMAGE_VIEW) {
+                val imageView = paragraphs[position] as ImageSegment
 
-                externalView.parent?.let { (it as ViewGroup).removeView(externalView) }
-                (viewHolder.itemView as LinearLayout).addView(externalView)
+                viewHolder.itemView.findViewById<ImageView>(R.id.image_view)
+                    .setImageResource(imageView.resId)
 
                 return
             }
 
-            val segment = paragraphs[position] as Segment
+            val segment = paragraphs[position] as TextSegment
             val textView = viewHolder.itemView.findViewById<TextView>(R.id.text_view)
 
             // Full view width segment highlighting:
@@ -107,12 +108,13 @@ class PlayFromParagraphActivity : AppCompatActivity() {
         playerView = findViewById(R.id.player_view)
         articleView = findViewById(R.id.article_view)
 
-        val paragraphs = mutableListOf<Any>(
+        val paragraphs = mutableListOf(
+            ImageSegment(R.drawable.article_thumb),
             // If you have the markers already, supply them with the text here itself:
-            // Segment(SpannableString("text"), marker = "marker")
+            // TextSegment(SpannableString("text"), marker = "marker")
             // else, fetch them from the player after the audio loads (see the event listener below)
-            Segment(
-                SpannableString("Artificial intelligence").apply {
+            TextSegment(
+                SpannableString("Lisbon team meetup").apply {
                     setSpan(
                         AbsoluteSizeSpan(26, true), 0, length,
                         SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
@@ -124,53 +126,119 @@ class PlayFromParagraphActivity : AppCompatActivity() {
                     )
                 }
             ),
-            Segment(
-                SpannableString("Artificial intelligence (AI) is the intelligence of machines or software, as opposed to the intelligence of living beings, primarily of humans. It is a field of study in computer science that develops and studies intelligent machines. Such machines may be called AIs.")
+            TextSegment(
+                SpannableString("Last week, the BeyondWords team, less one or two, gathered in sunny Lisbon for our annual team meetup.")
             ),
-            Segment(
-                SpannableString("AI technology is widely used throughout industry, government, and science. Some high-profile applications are: advanced web search engines (e.g., Google Search), recommendation systems (used by YouTube, Amazon, and Netflix), interacting via human speech (e.g., Google Assistant, Siri, and Alexa), self-driving cars (e.g., Waymo), generative and creative tools (e.g., ChatGPT and AI art), and superhuman play and analysis in strategy games (e.g., chess and Go).[1]")
+            TextSegment(
+                SpannableString("Flying in from all corners of Europe (and some from further afar) we enjoyed what has become an essential part of life at BeyondWords.")
             ),
-            Segment(
-                SpannableString("Alan Turing was the first person to conduct substantial research in the field that he called machine intelligence.[2] Artificial intelligence was founded as an academic discipline in 1956.[3] The field went through multiple cycles of optimism,[4][5] followed by periods of disappointment and loss of funding, known as AI winter.[6][7] Funding and interest vastly increased after 2012 when deep learning surpassed all previous AI techniques,[8] and after 2017 with the transformer architecture.[9] This led to the AI spring of the early 2020s, with companies, universities, and laboratories overwhelmingly based in the United States pioneering significant advances in artificial intelligence.[10]")
+            TextSegment(
+                SpannableString("Our meetups are designed in a way to share ideas and foster connection and collaboration amongst our team - making the most out of the precious time we have all-together.")
             ),
-            Segment(
-                SpannableString("The growing use of artificial intelligence in the 21st century is influencing a societal and economic shift towards increased automation, data-driven decision-making, and the integration of AI systems into various economic sectors and areas of life, impacting job markets, healthcare, government, industry, and education. This raises questions about the ethical implications and risks of AI, prompting discussions about regulatory policies to ensure the safety and benefits of the technology.")
+            TextSegment(
+                SpannableString("This year was a great balance of roadmap planning, team building, a little sightseeing, and lots of productivity breaks for pastéis de nata!")
             ),
-            Segment(
-                SpannableString("The various sub-fields of AI research are centered around particular goals and the use of particular tools. The traditional goals of AI research include reasoning, knowledge representation, planning, learning, natural language processing, perception, and support for robotics.[a] General intelligence (the ability to complete any task performable by a human on an at least equal level) is among the field\\'s long-term goals.[11]")
+            TextSegment(
+                SpannableString("Below we've highlighted a few themes from the meetup.")
             ),
-            Segment(
-                SpannableString("To solve these problems, AI researchers have adapted and integrated a wide range of problem-solving techniques, including search and mathematical optimization, formal logic, artificial neural networks, and methods based on statistics, operations research, and economics.[b] AI also draws upon psychology, linguistics, philosophy, neuroscience and other fields.")
-            )
+            TextSegment(
+                SpannableString("Our exceptional team").apply {
+                    setSpan(
+                        AbsoluteSizeSpan(20, true), 0, length,
+                        SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+
+                    setSpan(
+                        android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 0, length,
+                        SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+                }
+            ),
+            TextSegment(
+                SpannableString("Over the past few years, we've developed into a lean product-focused and customer-obsessed team. Through a number of pivots, we've fine-tuned our strategy, creating and delivering best-in-class AI voice products for news publishers.")
+            ),
+            TextSegment(
+                SpannableString("From product development to support, every team member - linguists, engineers, founders - are focused on helping our customers succeed.")
+            ),
+            TextSegment(
+                SpannableString("Our customer-first approach has been key to our growth, and our time in Lisbon reinforced that the passion and commitment of our team will continue to drive BeyondWords forward.")
+            ),
+            TextSegment(
+                SpannableString("Fun fact: Alongside our customer-obsession, we're also enthusiastic about burritos…next week will mark our 100th trip to Chipotle since we returned to the office!")
+            ),
+            TextSegment(
+                SpannableString("Operational focus").apply {
+                    setSpan(
+                        AbsoluteSizeSpan(20, true), 0, length,
+                        SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+
+                    setSpan(
+                        android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 0, length,
+                        SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+                }
+            ),
+            TextSegment(
+                SpannableString("As we moved from remote to hybrid working - adding an office in central London - Lisbon also gave us an opportunity to strengthen our operational model.")
+            ),
+            TextSegment(
+                SpannableString("As a company, we've matured around 3 departments - Growth, Engineering and Ops - with cross-functional teams within each department.")
+            ),
+            TextSegment(
+                SpannableString("We think of ourselves as an arrow, with customer-led product development at the tip.")
+            ),
+            TextSegment(
+                SpannableString("Simplifying the org chart into this structure provides us with clarity over responsibilities, improved accountability and ownership, better communication and team cohesion.")
+            ),
+            ImageSegment(R.drawable.in_article_img),
+            TextSegment(
+                SpannableString("And not to miss the crucial element to any long term strategy…having fun!"),
+                marker = "segment-16"
+            ),
+            TextSegment(
+                SpannableString("On this meetup, we took on the famous hills of Lisbon (on electric bikes!) while receiving a fun and informative introduction to Portuguese history from our guide, Avi, and we sampled delicious local food at the TimeOut market."),
+                marker = "segment-17"
+            ),
+            TextSegment(
+                SpannableString("New customer partnerships").apply {
+                    setSpan(
+                        AbsoluteSizeSpan(20, true), 0, length,
+                        SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+
+                    setSpan(
+                        android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 0, length,
+                        SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+                },
+                marker = "segment-18"
+            ),
+            TextSegment(
+                SpannableString("Lastly, we celebrated new customer partnerships with Thomson Reuters, Nation Media, Stavanger Aftenblad, Die Presse, Kleine Zeitung, Charities Aid Foundation and many more."),
+                marker = "segment-19"
+            ),
+            TextSegment(
+                SpannableString("We're also excited to have recently helped News Australia successfully train and launch a number of custom AI voices, based on their journalists, across their titles."),
+                marker = "segment-20"
+            ),
+            TextSegment(
+                SpannableString("As a team we hope to continue to grow and collaborate more effectively, to be creative, open minded, bold, and, in doing-so, delight our customers."),
+                marker = "segment-21"
+            ),
+            TextSegment(
+                SpannableString("If you're interested in working with us, in our team, as a partner or as a customer, feel free to book a meeting or reach out to us at hello@beyondwords.io."),
+                marker = "segment-22"
+            ),
         )
-
-        // Add a native button and an image to the article
-        val params = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        ).apply { setMargins(0, 30, 0, 30) }
-
-        paragraphs.add(2, MaterialButton(this).apply {
-            text = "Click me!"
-            layoutParams = params
-            setOnClickListener {
-                Toast.makeText(this@PlayFromParagraphActivity, "Button clicked!", Toast.LENGTH_SHORT)
-                    .show()
-            }
-        })
-
-        paragraphs.add(4, ImageView(this).apply {
-            layoutParams = params
-            setImageResource(R.drawable.beyondwords_logo)
-        })
 
         articleView.layoutManager = LinearLayoutManager(this)
         articleView.adapter = MySegmentAdapter(paragraphs, playerView)
 
         playerView.load(
             PlayerSettings(
-                projectId = 40510,
-                contentId = "7ab9f4c7-70ba-4135-82f3-a38a836568de"
+                projectId = 9504,
+                contentId = "0d0cec6c-4bba-4c26-bf14-adacb6b801bb"
             )
         )
 
@@ -179,8 +247,8 @@ class PlayFromParagraphActivity : AppCompatActivity() {
             override fun onEvent(event: PlayerEvent, settings: PlayerSettings) {
                 if (event.type == "ContentAvailable") {
                     settings.content?.first { it.id == settings.contentId }?.segments?.let {
-                        paragraphs.filter { it is Segment }.forEachIndexed { idx, item ->
-                            (item as Segment).marker = it.getOrNull(idx)?.marker
+                        paragraphs.filterIsInstance<TextSegment>().forEachIndexed { idx, item ->
+                            if (item.marker == null) item.marker = it.getOrNull(idx)?.marker
                         }
 
                         (articleView.adapter as MySegmentAdapter).notifyDataSetChanged()
