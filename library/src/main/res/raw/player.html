@@ -155,11 +155,16 @@
     <script>
       var player = null;
 
-      function load(settings) {
+      function destroy() {
         if (player !== null) {
           player.destroy();
           player.target.className = "";
+          player = null;
         }
+      }
+
+      function load(settings) {
+        destroy();
 
         player = new BeyondWords.Player(
           Object.assign({}, settings, {
