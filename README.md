@@ -1,3 +1,5 @@
+[![](https://jitpack.io/v/beyondwords-io/player-android.svg)](https://jitpack.io/#beyondwords-io/player-android)
+
 ## BeyondWords Android Player
 
 BeyondWords is an AI voice and audio CMS that enables publishers to transform their content into natural-sounding and captivating audio experiences for their audiences.
