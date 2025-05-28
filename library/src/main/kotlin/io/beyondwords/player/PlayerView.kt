@@ -236,6 +236,10 @@ class PlayerView @JvmOverloads constructor(
         setProp("player.playlist", playlist)
     }
 
+    fun setSummary(summary: Boolean) {
+        setProp("player.summary", summary)
+    }
+
     fun setLoadContentAs(loadContentAs: List<String>) {
         setProp("player.loadContentAs", loadContentAs)
     }
