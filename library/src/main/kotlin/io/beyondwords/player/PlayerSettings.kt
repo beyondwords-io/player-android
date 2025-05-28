@@ -8,6 +8,7 @@ data class PlayerSettings(
     var sourceId: String? = null,
     var sourceUrl: String? = null,
     var playlist: List<Identifier>? = null,
+    var summary: Boolean? = null,
     var loadContentAs: List<String>? = null,
     var contentVariant: String? = null,
     var showUserInterface: Boolean? = null,
