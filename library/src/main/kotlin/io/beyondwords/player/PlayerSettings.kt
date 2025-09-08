@@ -33,6 +33,7 @@ data class PlayerSettings(
     var currentTime: Float? = null,
     var playbackState: String? = null,
     var playbackRate: Float? = null,
+    var playbackRates: List<Float>? = null,
     var textColor: String? = null,
     var backgroundColor: String? = null,
     var iconColor: String? = null,

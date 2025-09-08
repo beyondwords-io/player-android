@@ -332,6 +332,10 @@ class PlayerView @JvmOverloads constructor(
         setProp("player.playbackRate", playbackRate)
     }
 
+    fun setPlaybackRates(playbackRates: List<Float>) {
+        setProp("player.playbackRates", playbackRates)
+    }
+
     fun setTextColor(textColor: String) {
         setProp("player.textColor", textColor)
     }
