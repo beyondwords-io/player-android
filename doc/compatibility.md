@@ -36,6 +36,7 @@ The table below illustrates the compatibility between the Player Settings of the
 | currentTime               |:heavy_check_mark: |
 | playbackState             |:heavy_check_mark: |
 | playbackRate              |:heavy_check_mark: |
+| playbackRates             |:heavy_check_mark: |
 | widgetStyle               |-                  |
 | widgetPosition            |-                  |
 | widgetWidth               |-                  |
