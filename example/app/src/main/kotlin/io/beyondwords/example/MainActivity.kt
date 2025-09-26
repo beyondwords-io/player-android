@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var skipButtonStyleInput: AutoCompleteTextView
     private lateinit var playerStyleInput: AutoCompleteTextView
     private lateinit var loadButton: AppCompatButton
-    private lateinit var playFromParagraphButton: AppCompatButton
+    private lateinit var playbackFromSegmentsRecyclerButton: AppCompatButton
     private var defaultPlayerView: PlayerView? = null
     private var customPlayerView: CustomPlayerView? = null
 
@@ -40,10 +40,10 @@ class MainActivity : AppCompatActivity() {
         playerStyleInput = findViewById(R.id.player_style_input)
         loadButton = findViewById(R.id.load_button)
 
-        playFromParagraphButton = findViewById(R.id.play_from_paragraph_button)
+        playbackFromSegmentsRecyclerButton = findViewById(R.id.playback_from_segments_recycler_button)
 
         loadButton.setOnClickListener { loadOnClick() }
-        playFromParagraphButton.setOnClickListener { goToPlayFromParagraphDemo() }
+        playbackFromSegmentsRecyclerButton.setOnClickListener { goToPlaybackFromSegmentsRecyclerDemo() }
 
         loadSettings()
     }
@@ -56,9 +56,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun  goToPlayFromParagraphDemo() {
+    private fun goToPlaybackFromSegmentsRecyclerDemo() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            startActivity(Intent(this, PlayFromParagraphActivity::class.java))
+            startActivity(Intent(this, PlaybackFromSegmentsRecyclerActivity::class.java))
         }
     }
 

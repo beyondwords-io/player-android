@@ -22,7 +22,7 @@ import io.beyondwords.player.PlayerView
 import io.beyondwords.player.SegmentRecyclerViewAdapter
 
 @RequiresApi(24)
-class PlayFromParagraphActivity : AppCompatActivity() {
+class PlaybackFromSegmentsRecyclerActivity : AppCompatActivity() {
     interface Segment { var marker: String? }
     data class ImageSegment(val resId: Int, override var marker: String? = null) : Segment
     data class TextSegment(val text: SpannableString, override var marker: String? = null) : Segment
@@ -103,7 +103,7 @@ class PlayFromParagraphActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_play_from_paragraph)
+        setContentView(R.layout.activity_playback_from_segments_recycler)
 
         playerView = findViewById(R.id.player_view)
         articleView = findViewById(R.id.article_view)
