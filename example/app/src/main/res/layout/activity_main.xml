@@ -149,6 +149,13 @@
             android:layout_margin="4dp"
             android:text="Playback from segments (RecyclerView)" />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/playback_from_segments_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:text="Playback from segments" />
+
     </LinearLayout>
 
 </ScrollView>

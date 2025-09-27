@@ -23,6 +23,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var playerStyleInput: AutoCompleteTextView
     private lateinit var loadButton: AppCompatButton
     private lateinit var playbackFromSegmentsRecyclerButton: AppCompatButton
+    private lateinit var playbackFromSegmentsButton: AppCompatButton
     private var defaultPlayerView: PlayerView? = null
     private var customPlayerView: CustomPlayerView? = null
 
@@ -41,9 +42,11 @@ class MainActivity : AppCompatActivity() {
         loadButton = findViewById(R.id.load_button)
 
         playbackFromSegmentsRecyclerButton = findViewById(R.id.playback_from_segments_recycler_button)
+        playbackFromSegmentsButton = findViewById(R.id.playback_from_segments_button)
 
         loadButton.setOnClickListener { loadOnClick() }
         playbackFromSegmentsRecyclerButton.setOnClickListener { goToPlaybackFromSegmentsRecyclerDemo() }
+        playbackFromSegmentsButton.setOnClickListener { goToPlaybackFromSegmentsDemo() }
 
         loadSettings()
     }
@@ -59,6 +62,12 @@ class MainActivity : AppCompatActivity() {
     private fun goToPlaybackFromSegmentsRecyclerDemo() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             startActivity(Intent(this, PlaybackFromSegmentsRecyclerActivity::class.java))
+        }
+    }
+
+    private fun goToPlaybackFromSegmentsDemo() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            startActivity(Intent(this, PlaybackFromSegmentsActivity::class.java))
         }
     }
 
