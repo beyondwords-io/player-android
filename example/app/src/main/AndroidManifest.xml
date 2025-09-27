@@ -17,8 +17,13 @@
         </activity>
         <activity
             android:exported="false"
-            android:label="Play from paragraph demo"
-            android:name=".PlayFromParagraphActivity"
+            android:label="Playback from segments recycler demo"
+            android:name=".PlaybackFromSegmentsRecyclerActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:exported="false"
+            android:label="Playback from segments demo"
+            android:name=".PlaybackFromSegmentsActivity"
             android:parentActivityName=".MainActivity" />
     </application>
 
