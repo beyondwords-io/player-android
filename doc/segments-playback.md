@@ -2,7 +2,7 @@
 
 The player supports a feature called 'Playback from Segments'. This lets you to click on a segment in your app (i.e. a paragraph) to begin playback from that segment. If the segment is already playing then it will be paused instead.
 
-The segments playback in the Android Player is based on the [Segments Playback in the Web Player](https://github.com/beyondwords-io/player/blob/main/doc/segments-playback.md). The Android SDK cannot automatically identify segments, instead you should be able to manually link each text segment with its beyonwordas marker.
+The segments playback in the Android Player is based on the [Segments Playback in the Web Player](https://github.com/beyondwords-io/player/blob/main/doc/segments-playback.md). The Android SDK cannot automatically identify segments, instead you should be able to manually link each text segment with its beyondwords marker.
 
 You can find an example of how segment playback can be integrated in your app in [PlaybackFromSegmentsActivity.kt](../example/app/src/main/kotlin/io/beyondwords/example/PlaybackFromSegmentsActivity.kt) and [PlaybackFromSegmentsRecyclerActivity.kt](../example/app/src/main/kotlin/io/beyondwords/example/PlaybackFromSegmentsRecyclerActivity.kt)
 
