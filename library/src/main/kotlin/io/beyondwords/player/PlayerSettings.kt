@@ -11,6 +11,7 @@ data class PlayerSettings(
     var summary: Boolean? = null,
     var loadContentAs: List<String>? = null,
     var contentVariant: String? = null,
+    var videoSizes: List<String>? = null,
     var showUserInterface: Boolean? = null,
     var playerStyle: String? = null,
     var playerTitle: String? = null,
@@ -54,6 +55,13 @@ data class PlayerSettings(
         var sourceUrl: String? = null,
     )
 
+    data class VideoSize(
+        var name: String? = null,
+        var description: String? = null,
+        var width: Int? = null,
+        var height: Int? = null,
+    )
+
     data class Media(
         var id: Int? = null,
         var url: String? = null,
@@ -61,6 +69,7 @@ data class PlayerSettings(
         var duration: Float? = null,
         var format: String? = null,
         var variant: String? = null,
+        var videoSize: VideoSize? = null,
     )
 
     data class Segment(
