@@ -20,6 +20,7 @@ The table below illustrates the compatibility between the Player Settings of the
 | skipButtonStyle           |:heavy_check_mark: |
 | playlistStyle             |:heavy_check_mark: |
 | playlistToggle            |:heavy_check_mark: |
+| continuousPlaybackMode    |:heavy_check_mark: |
 | downloadFormats           |-                  |
 | mediaSession              |:heavy_check_mark: |
 | content                   |:heavy_check_mark: |
