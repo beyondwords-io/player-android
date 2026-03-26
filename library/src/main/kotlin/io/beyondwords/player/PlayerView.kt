@@ -368,6 +368,10 @@ class PlayerView @JvmOverloads constructor(
         setProp("player.analyticsTag", analyticsTag)
     }
 
+    fun setMediaCustomUrl(mediaCustomUrl: String) {
+        setProp("player.mediaCustomUrl", mediaCustomUrl)
+    }
+
     fun setCaptureErrors(captureErrors: Boolean) {
         setProp("player.captureErrors", captureErrors)
     }

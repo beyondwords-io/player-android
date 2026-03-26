@@ -45,6 +45,7 @@ data class PlayerSettings(
     var analyticsConsent: String? = null,
     var analyticsCustomUrl: String? = null,
     var analyticsTag: String? = null,
+    var mediaCustomUrl: String? = null,
     var bundleIdentifier: String? = null,
     var vendorIdentifier: String? = null,
 ) {
