@@ -12,6 +12,7 @@ data class PlayerSettings(
     var loadContentAs: List<String>? = null,
     var contentVariant: String? = null,
     var videoSizes: List<String>? = null,
+    var continuousPlaybackMode: String? = null,
     var showUserInterface: Boolean? = null,
     var playerStyle: String? = null,
     var playerTitle: String? = null,

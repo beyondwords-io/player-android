@@ -288,6 +288,10 @@ class PlayerView @JvmOverloads constructor(
         setProp("player.contentIndex", contentIndex)
     }
 
+    fun setContinuousPlaybackMode(continuousPlaybackMode: String) {
+        setProp("player.continuousPlaybackMode", continuousPlaybackMode)
+    }
+
     fun setIntrosOutros(introsOutros: List<PlayerSettings.IntroOutro>) {
         setProp("player.introsOutros", introsOutros)
     }
