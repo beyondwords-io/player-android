@@ -55,6 +55,7 @@ The table below illustrates the compatibility between the Player Settings of the
 | analyticsConsent          |:heavy_check_mark: |
 | analyticsCustomUrl        |:heavy_check_mark: |
 | analyticsTag              |:heavy_check_mark: |
+| mediaCustomUrl            |:heavy_check_mark: |
 | transitions               |-                  |
 
 * To use `contentId` with legacy integer id you must convert it to string
