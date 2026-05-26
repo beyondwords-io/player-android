@@ -232,6 +232,14 @@ class PlayerView @JvmOverloads constructor(
         setProp("player.sourceUrl", sourceUrl)
     }
 
+    fun setAccessTier(accessTier: String) {
+        setProp("player.accessTier", accessTier)
+    }
+
+    fun setSegmentLimit(segmentLimit: Int) {
+        setProp("player.segmentLimit", segmentLimit)
+    }
+
     fun setPlaylist(playlist: List<PlayerSettings.Identifier>) {
         setProp("player.playlist", playlist)
     }
