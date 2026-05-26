@@ -21,6 +21,8 @@ The table below illustrates the compatibility between the Player Settings of the
 | playlistStyle             |:heavy_check_mark: |
 | playlistToggle            |:heavy_check_mark: |
 | continuousPlaybackMode    |:heavy_check_mark: |
+| segmentLimit              |:heavy_check_mark: |
+| accessTier                |:heavy_check_mark: |
 | downloadFormats           |-                  |
 | mediaSession              |:heavy_check_mark: |
 | content                   |:heavy_check_mark: |
