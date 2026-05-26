@@ -10,8 +10,8 @@ android {
     defaultConfig {
         minSdk 21
         targetSdk 34
-        versionCode 27
-        versionName "0.1.18"
+        versionCode 28
+        versionName "0.1.19"
         consumerProguardFiles 'proguard-rules.pro'
     }
 
