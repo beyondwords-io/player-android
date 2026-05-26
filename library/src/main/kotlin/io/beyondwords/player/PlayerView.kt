@@ -308,6 +308,10 @@ class PlayerView @JvmOverloads constructor(
         setProp("player.introsOutrosIndex", introsOutrosIndex)
     }
 
+    fun setOutroPlaybackMode(outroPlaybackMode: String) {
+        setProp("player.outroPlaybackMode", outroPlaybackMode)
+    }
+
     fun setAdverts(adverts: List<PlayerSettings.Advert>) {
         setProp("player.adverts", adverts)
     }
