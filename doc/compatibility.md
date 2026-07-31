@@ -30,6 +30,7 @@ The table below illustrates the compatibility between the Player Settings of the
 | introsOutros              |:heavy_check_mark: |
 | introsOutrosIndex         |:heavy_check_mark: |
 | outroPlaybackMode         |:heavy_check_mark: |
+| playerLanguage            |:heavy_check_mark: |
 | adverts                   |:heavy_check_mark: |
 | advertIndex               |:heavy_check_mark: |
 | minDurationForMidroll     |:heavy_check_mark: |
