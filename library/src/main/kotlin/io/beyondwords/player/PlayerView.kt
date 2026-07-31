@@ -312,6 +312,10 @@ class PlayerView @JvmOverloads constructor(
         setProp("player.outroPlaybackMode", outroPlaybackMode)
     }
 
+    fun setPlayerLanguage(playerLanguage: String) {
+        setProp("player.playerLanguage", playerLanguage)
+    }
+
     fun setAdverts(adverts: List<PlayerSettings.Advert>) {
         setProp("player.adverts", adverts)
     }

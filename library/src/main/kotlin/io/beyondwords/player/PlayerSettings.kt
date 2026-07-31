@@ -28,6 +28,7 @@ data class PlayerSettings(
     var introsOutros: List<IntroOutro>? = null,
     var introsOutrosIndex: Int? = null,
     var outroPlaybackMode: String? = null,
+    var playerLanguage: String? = null,
     var adverts: List<Advert>? = null,
     var advertIndex: Int? = null,
     var minDurationForMidroll: Float? = null,
